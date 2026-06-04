@@ -28,3 +28,6 @@ bld/
 project.lock.json
 project.fragment.lock.json
 artifacts/
+
+# Generated playground mockup screenshots (regenerable from docs/playground-mockup.html)
+shot-*.png
