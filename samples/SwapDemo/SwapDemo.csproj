@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Outlet.Samples.SwapDemo</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    In a real project, `outlet add email-smtp email-sendgrid` copies these files into
+    your repo (you own and edit them). The sample compiles them straight from the
+    registry sources to keep a single source of truth in this monorepo.
+  -->
+  <ItemGroup>
+    <Compile Include="../../registry/email/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" />
+    <PackageReference Include="SendGrid" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+
+</Project>
