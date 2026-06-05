@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>outlet</ToolCommandName>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Outlet.Core.Application\Outlet.Core.Application.csproj" />
+    <ProjectReference Include="..\Outlet.Core.Domain\Outlet.Core.Domain.csproj" />
+    <ProjectReference Include="..\Outlet.Core.Infrastructure\Outlet.Core.Infrastructure.csproj" />
+    <ProjectReference Include="..\Kernel.Shared\Outlet.Kernel.Shared\Outlet.Kernel.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+  </ItemGroup>
+
+</Project>

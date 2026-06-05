@@ -28,3 +28,19 @@ bld/
 project.lock.json
 project.fragment.lock.json
 artifacts/
+
+# Mutation testing
+StrykerOutput/
+
+# Node / frontend
+node_modules/
+packages/*/dist/
+*.tsbuildinfo
+coverage/
+.turbo/
+
+# Generated registry manifest: dist/registry/ is tracked (published artefact),
+# anything else under dist/ is build output. Order matters: the un-ignore must
+# target a directory whose parent is not itself excluded (hence dist/* not dist/).
+dist/*
+!dist/registry/

@@ -1,50 +1,40 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Outlet Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Ownership / Copier-coller d'abord
+Tout code distribué par le registre appartient à l'utilisateur : il est copié dans son repo, éditable librement, et ne crée **aucune dépendance runtime vers Outlet**. Désinstaller Outlet ne casse rien. Outlet n'est pas une librairie — c'est du code qu'on s'approprie.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Pureté des ports
+Le contrat (port + DTOs) a **zéro dépendance externe** et reste **minimal et identique** entre adapters — c'est la garantie de swappabilité. Aucune spécificité provider dans un port générique : une feature provider passe par une seconde interface dédiée ou par l'édition de la copie. Côté engine, le hexagone (Domain + Application) ne touche jamais HTTP, JSON, DB, logging, Roslyn ni MSBuild — ces préoccupations vivent derrière des ports, implémentées en Infrastructure (vérifié par `TechnicalDependencyTests`).
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Discipline de scope (NON-NÉGOCIABLE)
+Une préoccupation à la fois. **Cible v1 = email uniquement** (1 contrat + 2 adapters). Aucun élargissement tant que la tranche v1 n'est pas propre et livrable. Zéro dette : un finding est corrigé dans la session ou explicitement différé avec ticket Linear ; un refactor inachevé est une régression.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Barre qualité tests
+TDD ; tests sociables avec **fakes écrits main** (aucun framework de mock) ; nommage `Should_X_When_Y` ; lane PR hermétique et sans secret (`--filter "Category!=Live"`), lane live nightly non bloquante ; suite de conformité de port rejouée par chaque adapter ; ≥ 90 % de couverture Domain+Application ; mutation Stryker seuils 80/60/50. Tout item registre compile et est testé — **le manifeste ne ment jamais**.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Hexagonal + DDD outillés
+Layering strict `Kernel ← Domain ← Application ← Infrastructure ← Cli` ; agrégats sealed à factory `Create` retournant `Result` ; Value Objects validés à la construction ; IDs fortement typés ; erreurs métier via `Result`/`Result<T>` (jamais d'exception métier) ; horloge via `ICurrentDateTimeProvider` ; primary constructors hors Domain ; collection expressions en erreurs de build. **Chaque règle est encodée dans `tests/Outlet.ArchitectureTests/`** — si une règle gêne, on amende la constitution, on ne contourne pas le test.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Contraintes technologiques
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- .NET 10 / C# 14, `Nullable` + `ImplicitUsings`, CPM (`Directory.Packages.props`), solution `.slnx`.
+- CLI = `dotnet tool` (`outlet`) au-dessus d'un core engine réutilisable (System.CommandLine).
+- Réécriture de namespace via Roslyn `CSharpSyntaxRewriter` (jamais find/replace).
+- Preflight via valeurs évaluées MSBuild (`dotnet msbuild -getProperty/-getItem`), jamais le XML brut.
+- Distribution : manifestes JSON `*.registry.json` + fichiers servis en HTTP, multi-sources.
+- NuGet : deps directes uniquement, versions plancher, détection CPM.
+- Frontend (playground futur) : npm workspaces, TypeScript strict, Vite, Vitest, Effect v3, `@outlet/hateoas` + `@outlet/effect-react`.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Workflow de développement
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- Cadrage par Spec Kit (`.specify/`) : spec → plan → tasks → implémentation ; le suivi vit dans Linear (team Hijoxx, projets « Outlet — MVP » et « Outlet — Suite / Roadmap »).
+- Gates de merge : `dotnet build` 0 warning, tous les tests verts (dont les 36+ tests d'architecture), lint/test/build front verts.
+- CI GitHub Actions : job dotnet + job frontend sur chaque PR ; le manifeste `dist/registry/` est généré et validé en CI, jamais édité à la main.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+Cette constitution prime sur toute autre pratique. Tout amendement est documenté (PR dédiée), justifié, et accompagné de la mise à jour des tests d'architecture qui l'encodent. Toute revue de PR vérifie la conformité ; la complexité doit être justifiée. `CLAUDE.md` est le guide d'exécution courant et doit rester cohérent avec ce document.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-06-05 | **Last Amended**: 2026-06-05

@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  dotnet:
+    name: .NET — build & test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore Outlet.slnx
+
+      - name: Build (Release, 0 warning)
+        run: dotnet build Outlet.slnx -c Release --no-restore
+
+      # Lane PR : hermétique, rapide, sans secret. Les tests "Live"
+      # (providers réels) appartiennent à une lane planifiée non bloquante.
+      - name: Test
+        run: dotnet test Outlet.slnx -c Release --no-build --filter "Category!=Live"
+
+  frontend:
+    name: Frontend — lint, test & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build

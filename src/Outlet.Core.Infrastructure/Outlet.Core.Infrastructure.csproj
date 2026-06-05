@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Outlet.Core.Application\Outlet.Core.Application.csproj" />
+    <ProjectReference Include="..\Outlet.Core.Domain\Outlet.Core.Domain.csproj" />
+    <ProjectReference Include="..\Kernel.Shared\Outlet.Kernel.Shared\Outlet.Kernel.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+  </ItemGroup>
+
+</Project>
