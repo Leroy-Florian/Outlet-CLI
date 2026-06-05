@@ -1,6 +1,7 @@
 using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Outlet.Core.Application.Configuration;
 using Outlet.Core.Application.RegistryItems;
 using Outlet.Core.Infrastructure.DependencyInjection;
 using Outlet.Kernel.Shared;
@@ -22,10 +23,27 @@ var rootCommand = new RootCommand(
 
 // outlet init
 var initCommand = new Command("init", "Initialize outlet.json in the current project.");
-initCommand.SetAction(_ =>
+initCommand.SetAction(async (_, cancellationToken) =>
 {
-    Console.Error.WriteLine("'outlet init' is not implemented yet (Linear: Outlet — MVP).");
-    return 1;
+    await using var scope = provider.CreateAsyncScope();
+    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+    var result = await mediator.ExecuteAsync<InitProjectCommand, OutletConfig>(
+        new InitProjectCommand(Environment.CurrentDirectory), cancellationToken);
+
+    return result.Match(
+        onSuccess: config =>
+        {
+            Console.WriteLine(
+                $"Initialized outlet.json (target project '{config.Targets.Adapter.Project}', " +
+                $"namespace '{config.Targets.Adapter.Namespace}').");
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
 });
 
 // outlet add <item>
@@ -35,10 +53,33 @@ var itemArgument = new Argument<string>("item")
 };
 var addCommand = new Command("add", "Copy a registry item (and its dependencies) into the project.");
 addCommand.Arguments.Add(itemArgument);
-addCommand.SetAction(_ =>
+addCommand.SetAction(async (parseResult, cancellationToken) =>
 {
-    Console.Error.WriteLine("'outlet add' is not implemented yet (Linear: Outlet — MVP).");
-    return 1;
+    await using var scope = provider.CreateAsyncScope();
+    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+    var command = new AddItemCommand(Environment.CurrentDirectory, parseResult.GetValue(itemArgument)!);
+    var result = await mediator.ExecuteAsync<AddItemCommand, InstallationReport>(command, cancellationToken);
+
+    return result.Match(
+        onSuccess: report =>
+        {
+            foreach (var name in report.InstalledItems)
+                Console.WriteLine($"installed {name}");
+            foreach (var file in report.WrittenFiles)
+                Console.WriteLine($"  + {file}");
+            foreach (var warning in report.Warnings)
+                Console.Error.WriteLine($"warning: {warning}");
+
+            if (report.InstalledItems.Count == 0)
+                Console.WriteLine("Nothing to install (already up to date).");
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
 });
 
 // outlet list [--concern <name>]
