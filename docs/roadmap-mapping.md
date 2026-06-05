@@ -20,7 +20,7 @@ Le **squelette compilable** est en place (cf. `CLAUDE.md`) :
 - `src/Kernel.Shared/Outlet.Kernel.Shared` : building blocks DDD + Mediator + Result.
 - `src/Outlet.Core.{Domain,Application,Infrastructure}` : langage du domaine minimal + 5 ports + 1 use case (`ListRegistryItemsUseCase`) + adapters **stubs**.
 - `src/Outlet.Cli` : `dotnet tool` `outlet` (`PackAsTool`, `ToolCommandName=outlet`). `list` câblé, `init`/`add` = stubs renvoyant exit code 1.
-- `tests/` : `Outlet.Core.UnitTests` + `Outlet.Core.Infrastructure.UnitTests` + `Outlet.Registry.Email.Tests` + `Outlet.ArchitectureTests` (le gate des conventions). **114 tests verts** sur .NET 10.0.300 (47 Kernel + 11 Core + 12 Infra + 8 Registry email + 36 Architecture), build Release **0 warning / 0 erreur**.
+- `tests/` : `Outlet.Core.UnitTests` + `Outlet.Core.Infrastructure.UnitTests` + `Outlet.Registry.Email.Tests` + `Outlet.ArchitectureTests` (le gate des conventions). **141 tests verts** sur .NET 10.0.300 (47 Kernel + 18 Core + 32 Infra + 8 Registry email + 36 Architecture), build Release **0 warning / 0 erreur**.
 - `packages/` : `@outlet/hateoas` + `@outlet/effect-react` (briques front portées de WOW).
 - `.github/workflows/ci.yml` : lane .NET (build Release + test `Category!=Live`) + lane front (lint/test/build).
 - **Vide** : `registry/`, `samples/`, `docs/` ne contiennent qu'un `README.md`. **Pas de `dist/`.** Aucun contenu de registre, aucun manifeste, aucun playground.
@@ -29,10 +29,10 @@ Le **squelette compilable** est en place (cf. `CLAUDE.md`) :
 
 | Port (Application) | Adapter (Infrastructure) | État |
 |---|---|---|
-| `IRegistryClient` | `HttpRegistryClient` | 🟡 stub : retourne `[]` / `null`, fetch `throw` |
-| `IProjectInspector` | `MsBuildProjectInspector` | 🟡 stub : `throw NotSupported` (record `ProjectInspection` défini) |
-| `INamespaceRewriter` | `RoslynNamespaceRewriter` | 🟡 **le plus avancé** : réécrit les déclarations de namespace (file-scoped + block). Manque : `using` croisés + tests |
-| `INuGetEditor` | `ProjectNuGetEditor` | 🟡 stub : `throw NotSupported` |
+| `IRegistryClient` | `MultiSourceRegistryClient` (+ `HttpRegistrySource`) | ✅ fan-out multi-source + transport HTTP (HIJ-492) |
+| `IProjectInspector` | `MsBuildProjectInspector` (+ `IMsBuildEvaluator`) | ✅ preflight réel via valeurs MSBuild évaluées (HIJ-510) |
+| `INamespaceRewriter` | `RoslynNamespaceRewriter` | 🟡 réécrit les déclarations de namespace (file-scoped + block). Manque : `using` croisés + tests (HIJ-493) |
+| `INuGetEditor` | `ProjectNuGetEditor` | 🟡 stub : `throw NotSupported` (HIJ-495) |
 | `IFileSystem` | `PhysicalFileSystem` | ✅ implémenté (réel) ; fake main côté tests |
 
 ---
@@ -48,8 +48,8 @@ Trié par n° de séquence (01→19). Priorité = priorité Linear.
 | 03 | HIJ-488 | Item `email-abstractions` (port + DTOs) | Urgent | ✅ | `IEmailSender`, `EmailMessage`, `EmailAddress`, `EmailAttachment`, `EmailResult` (zéro dépendance) + manifeste. |
 | 04 | HIJ-489 | Adapter `email-smtp` (triptyque) | High | ✅ | `SmtpEmailSender` (MailKit 4.16.0) + `SmtpEmailOptions` + `AddSmtpEmail()`, `registryDependency: email-abstractions` + manifeste. |
 | 05 | HIJ-490 | Adapter `email-sendgrid` (forwarding DI) | High | ✅ | `SendGridEmailSender` + `ISendGridEmailSender` (templates) forwardés vers une seule instance, `AddSendGridEmail()` + manifeste. Swap = 1 ligne de DI. Compilés + testés par `tests/Outlet.Registry.Email.Tests`. |
-| 06 | HIJ-491 | Engine — résolution item + registry-deps | Urgent | ⬜ | Use case de résolution récursive + dédoublonnage + détection de cycles → liste ordonnée à installer. (Aujourd'hui seul `ListRegistryItemsUseCase` existe.) |
-| 07 | HIJ-492 | Engine — fetch HTTP + multi-source | Urgent | 🟡 | Port `IRegistryClient` OK ; `HttpRegistryClient` = stub. Reste : abstraction `IRegistrySource`, désérialisation manifeste, fetch fichiers, multi-source. |
+| 06 | HIJ-491 | Engine — résolution item + registry-deps | Urgent | ✅ | `ResolveItemDependenciesUseCase` (Application) : DFS post-order, dédoublonnage, détection de cycles → liste ordonnée. 7 tests (diamant, cycle, manquants…). |
+| 07 | HIJ-492 | Engine — fetch HTTP + multi-source | Urgent | ✅ | `IRegistrySource` + `HttpRegistrySource` (index `registry.json` + fichiers) + `MultiSourceRegistryClient` (fan-out, premier gagne). 13 tests hermétiques (StubHttpMessageHandler). Sources alimentées par `outlet.json` → HIJ-494. |
 | 08 | HIJ-493 | Engine — réécriture namespace Roslyn | Urgent | 🟡 | Déclarations de namespace **faites**. Reste : réécriture des `using` croisés entre fichiers/items + tests dédiés. |
 | 09 | HIJ-494 | Config projet `outlet.json` | Urgent | ⬜ | Modèle `registries` / `targets` (routage par type) / `installed` (lockfile) + lecture/écriture. |
 | 10 | HIJ-495 | Engine — `PackageReference` + CPM + conflits | Urgent | 🟡 | Port `INuGetEditor` OK ; `ProjectNuGetEditor` = stub. Reste : ajout deps directes (version plancher), détection CPM → version au central + ref versionless, avertissement sur conflit. Dépend de 16. |
@@ -58,18 +58,20 @@ Trié par n° de séquence (01→19). Priorité = priorité Linear.
 | 13 | HIJ-498 | CI — build+test registre + génération/publication manifeste + lanes | High | 🟡 | `ci.yml` build+test + filtre `Category!=Live`. Reste : tests du contenu registre (rien à tester encore), génération+publication du manifeste agrégé (`dist/`), matrice TFM, lane planifiée nightly live. |
 | 14 | HIJ-499 | Sample + README — swap SMTP↔SendGrid | High | ⬜ | Appli démo dans `samples/`, swap en 1 ligne de DI, README produit (pitch + quickstart + ownership). Dépend de 03/04/05 + CLI. |
 | 15 | HIJ-509 | Compat TFM/.NET — déclaration + pré-check CLI + matrice CI | Urgent | ⬜ | Champ `targetFrameworks` au manifeste (← 02), pré-check CLI avant écriture, matrice CI par TFM. |
-| 16 | HIJ-510 | Détection d'environnement (preflight) | Urgent | 🟡 | Port `IProjectInspector` + record `ProjectInspection` définis ; `MsBuildProjectInspector` = stub. Reste : détection mono/multi, CPM + fichier central gouvernant, TFM par projet, refs existantes via valeurs **évaluées** MSBuild. **Brique de lecture qui alimente 07/09/10/12/15.** |
+| 16 | HIJ-510 | Détection d'environnement (preflight) | Urgent | ✅ | `MsBuildProjectInspector` réel : mono/multi, CPM + fichier central gouvernant, TFMs, refs existantes, via valeurs **évaluées** (`IMsBuildEvaluator` + `dotnet msbuild -getProperty/-getItem`, jamais le XML). Parseur pur testé + inspecteur (workspace temp) + 1 test d'intégration du vrai évaluateur. **Alimente 09/10/12/15.** |
 | 17 | HIJ-512 | Stratégie de tests + segmentation CI | Urgent | 🟡 | Posé : filtre `Category!=Live`, `stryker-config.json`, fakes main. Reste : formaliser la stratégie (niveaux A HTTP mocké / B émulateur Testcontainers smtp4dev / C live), suite de **conformité de port** réutilisable, lane nightly non bloquante. |
 | 18 | HIJ-513 | Playground interactif d'adapters (démo phare) | High | ⬜ | Maquette `docs/playground-mockup.html` **non committée** (docs/ = README). Playground consommant les adapters via DI, formulaire généré depuis les Options. Briques front présentes (`@outlet/*`). |
 | 19 | HIJ-514 | Production-readiness adapters (charge/concurrence/fault-injection) | High | ⬜ | Tests hermétiques : concurrence, injection de fautes (Toxiproxy), débit/alloc (BenchmarkDotNet/NBomber), checklist. Dépend des adapters. |
 
 ### Synthèse MVP
 
-- ✅ Fait : **5** (01, **02, 03, 04, 05** — Tranche 1 livrée).
-- 🟡 Partiel : **8** (07, 08, 10, 11, 12, 13, 16, 17). → ports/stubs/CI échafaudés.
-- ⬜ À faire : **6** (06, 09, 14, 15, 18, 19).
+- ✅ Fait : **8** (01–07 sauf rien, + 16 ; soit 01, 02, 03, 04, 05, 06, 07, 16).
+- 🟡 Partiel : **6** (08, 10, 11, 12, 13, 17). → stubs/CI échafaudés.
+- ⬜ À faire : **5** (09, 14, 15, 18, 19).
 
-**Tranche 1 livrée** (2026-06-05) : schéma de manifeste + contenu email complet (contract + 2 adapters), compilés et testés. La fondation contenu/contrat est en place ; l'étape suivante est l'**engine** (06 résolution, 07 fetch, 16 detection) qui consomme ces manifestes.
+**Tranche 1 livrée** (2026-06-05) : schéma de manifeste + contenu email complet (contract + 2 adapters).
+
+**Tranche 2 livrée** (2026-06-05) : engine côté lecture — résolution de dépendances (06), fetch HTTP multi-source (07), détection d'environnement (16). Restent pour boucler un `add` de bout en bout : **08** (finir le rewriter Roslyn), **09** (`outlet.json`), **10** (NuGet/CPM), **11** (orchestration), **12** (CLI).
 
 ---
 
