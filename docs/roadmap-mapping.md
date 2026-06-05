@@ -20,7 +20,7 @@ Le **squelette compilable** est en place (cf. `CLAUDE.md`) :
 - `src/Kernel.Shared/Outlet.Kernel.Shared` : building blocks DDD + Mediator + Result.
 - `src/Outlet.Core.{Domain,Application,Infrastructure}` : langage du domaine minimal + 5 ports + 1 use case (`ListRegistryItemsUseCase`) + adapters **stubs**.
 - `src/Outlet.Cli` : `dotnet tool` `outlet` (`PackAsTool`, `ToolCommandName=outlet`). `list` câblé, `init`/`add` = stubs renvoyant exit code 1.
-- `tests/` : `Outlet.Core.UnitTests` + `Outlet.ArchitectureTests` (le gate des conventions). *(94 tests verts annoncés ; non rejoués ici — `dotnet` absent de l'environnement.)*
+- `tests/` : `Outlet.Core.UnitTests` + `Outlet.ArchitectureTests` (le gate des conventions). **94 tests verts vérifiés** sur .NET 10.0.300 (47 Kernel + 11 Core + 36 Architecture), build Release **0 warning / 0 erreur**.
 - `packages/` : `@outlet/hateoas` + `@outlet/effect-react` (briques front portées de WOW).
 - `.github/workflows/ci.yml` : lane .NET (build Release + test `Category!=Live`) + lane front (lint/test/build).
 - **Vide** : `registry/`, `samples/`, `docs/` ne contiennent qu'un `README.md`. **Pas de `dist/`.** Aucun contenu de registre, aucun manifeste, aucun playground.
@@ -120,8 +120,8 @@ Respecte les dépendances + les priorités Linear. Deux fronts parallélisables.
 
 ## 5. Observations / écarts notés
 
-- **Nommage config** : Linear issue 09 et `CLAUDE.md` disent `outlet.json` ; le **descriptif de projet MVP** et l'issue 08 mentionnent encore `hexakit.json` (ancien nom de travail). À harmoniser sur `outlet.json`.
+- **Nommage config** : ✅ harmonisé sur `outlet.json` (2026-06-05). Le code du repo était déjà sur `outlet.json` ; les références résiduelles `hexakit.json` dans Linear (descriptif projet MVP, HIJ-493, HIJ-500) ont été corrigées. Seule subsiste la note historique volontaire dans `CLAUDE.md` (nom de travail du repo `HexaKit` vs produit `Outlet`, rename GitHub = HIJ-486).
 - **`docs/playground-mockup.html`** est référencé comme « commité » par l'issue 18 mais **absent** du repo (`docs/` = README seul).
 - **`dist/`** (manifeste généré/publié) n'existe pas encore — normal tant que 02/13 ne sont pas faits.
 - **Rename repo GitHub** (`leroy-florian/outlet-cli` → Outlet) reste à faire (issue 01 / note `CLAUDE.md`).
-- Environnement de cette session : **`dotnet` indisponible** → build/tests .NET non rejoués ici (les 94 tests verts sont repris de `CLAUDE.md`).
+- Environnement de cette session : **.NET 10.0.300 installé** → build Release + 94 tests rejoués et verts.
