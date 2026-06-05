@@ -10,6 +10,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/Outlet.Core.UnitTests/Outlet.Core.UnitTests.csproj" />
     <Project Path="tests/Outlet.Core.Infrastructure.UnitTests/Outlet.Core.Infrastructure.UnitTests.csproj" />
+    <Project Path="tests/Outlet.Registry.Email.Tests/Outlet.Registry.Email.Tests.csproj" />
     <Project Path="tests/Outlet.ArchitectureTests/Outlet.ArchitectureTests.csproj" />
   </Folder>
 </Solution>

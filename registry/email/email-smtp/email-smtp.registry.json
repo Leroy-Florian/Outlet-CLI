@@ -1,0 +1,19 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "email-smtp",
+  "type": "outlet:adapter",
+  "concern": "email",
+  "description": "SMTP adapter for IEmailSender, backed by MailKit.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["email-abstractions"],
+  "nugetDependencies": [
+    { "id": "MailKit", "version": "4.16.0" },
+    { "id": "Microsoft.Extensions.Options", "version": "8.0.0" },
+    { "id": "Microsoft.Extensions.DependencyInjection.Abstractions", "version": "8.0.0" }
+  ],
+  "files": [
+    { "path": "SmtpEmailOptions.cs", "target": "adapter" },
+    { "path": "SmtpEmailSender.cs", "target": "adapter" },
+    { "path": "SmtpEmailServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

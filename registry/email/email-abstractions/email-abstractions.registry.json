@@ -1,0 +1,17 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "email-abstractions",
+  "type": "outlet:contract",
+  "concern": "email",
+  "description": "Generic e-mail port (IEmailSender) and DTOs — zero external dependency.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": [],
+  "nugetDependencies": [],
+  "files": [
+    { "path": "IEmailSender.cs", "target": "contract" },
+    { "path": "EmailAddress.cs", "target": "contract" },
+    { "path": "EmailAttachment.cs", "target": "contract" },
+    { "path": "EmailMessage.cs", "target": "contract" },
+    { "path": "EmailResult.cs", "target": "contract" }
+  ]
+}
