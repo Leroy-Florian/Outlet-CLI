@@ -20,7 +20,7 @@ Le **squelette compilable** est en place (cf. `CLAUDE.md`) :
 - `src/Kernel.Shared/Outlet.Kernel.Shared` : building blocks DDD + Mediator + Result.
 - `src/Outlet.Core.{Domain,Application,Infrastructure}` : langage du domaine minimal + 5 ports + 1 use case (`ListRegistryItemsUseCase`) + adapters **stubs**.
 - `src/Outlet.Cli` : `dotnet tool` `outlet` (`PackAsTool`, `ToolCommandName=outlet`). `list` câblé, `init`/`add` = stubs renvoyant exit code 1.
-- `tests/` : `Outlet.Core.UnitTests` + `Outlet.ArchitectureTests` (le gate des conventions). **94 tests verts vérifiés** sur .NET 10.0.300 (47 Kernel + 11 Core + 36 Architecture), build Release **0 warning / 0 erreur**.
+- `tests/` : `Outlet.Core.UnitTests` + `Outlet.Core.Infrastructure.UnitTests` + `Outlet.Registry.Email.Tests` + `Outlet.ArchitectureTests` (le gate des conventions). **114 tests verts** sur .NET 10.0.300 (47 Kernel + 11 Core + 12 Infra + 8 Registry email + 36 Architecture), build Release **0 warning / 0 erreur**.
 - `packages/` : `@outlet/hateoas` + `@outlet/effect-react` (briques front portées de WOW).
 - `.github/workflows/ci.yml` : lane .NET (build Release + test `Category!=Live`) + lane front (lint/test/build).
 - **Vide** : `registry/`, `samples/`, `docs/` ne contiennent qu'un `README.md`. **Pas de `dist/`.** Aucun contenu de registre, aucun manifeste, aucun playground.
@@ -44,10 +44,10 @@ Trié par n° de séquence (01→19). Priorité = priorité Linear.
 | # | Issue | Titre court | Prio | État | Ce qu'il reste à faire |
 |---|---|---|---|---|---|
 | 01 | HIJ-486 | Init monorepo (nom Outlet) | Urgent | ✅ | Rename repo GitHub (`outlet-cli` → `outlet`), vérifier dispo du nom `dotnet tool`/NuGet `outlet` + org GitHub. `dist/` à créer (généré). |
-| 02 | HIJ-487 | Schéma manifeste `*.registry.json` + validation | Urgent | ⬜ | Définir le format JSON (`name`, `type`, `targetFrameworks`/`minTfm`, `registryDependencies`, `nugetDependencies[{id,version}]`, `files[{path,target}]`), JSON Schema, validation + générateur CI. Le Domain a déjà les VOs (`RegistryItem`, `PackageDependency`…) mais **aucune (dé)sérialisation**. |
-| 03 | HIJ-488 | Item `email-abstractions` (port + DTOs) | Urgent | ⬜ | `IEmailSender` (`SendAsync`), `EmailMessage`, `EmailResult`, zéro dépendance, + manifeste. Premier contenu de `registry/email/`. |
-| 04 | HIJ-489 | Adapter `email-smtp` (triptyque) | High | ⬜ | `SmtpEmailSender` + `SmtpEmailOptions` + `AddSmtpEmail()`, `registryDependency: email-abstractions`. Gabarit du triptyque. |
-| 05 | HIJ-490 | Adapter `email-sendgrid` (forwarding DI) | High | ⬜ | `SendGridEmailSender` (+ option `ISendGridEmailSender`), `AddSendGridEmail()` forwardant une seule instance. Démontre la swappabilité. |
+| 02 | HIJ-487 | Schéma manifeste `*.registry.json` + validation | Urgent | ✅ | `registry/registry-item.schema.json` (JSON Schema 2020-12) + `Infrastructure/Manifests` (`RegistryItemManifest` DTO + `RegistryItemManifestSerializer` parse/validate/serialize + mapping vers l'agrégat Domain). 12 tests. **Reste (HIJ-498)** : génération du manifeste agrégé en CI. Champ `concern` ajouté explicitement. |
+| 03 | HIJ-488 | Item `email-abstractions` (port + DTOs) | Urgent | ✅ | `IEmailSender`, `EmailMessage`, `EmailAddress`, `EmailAttachment`, `EmailResult` (zéro dépendance) + manifeste. |
+| 04 | HIJ-489 | Adapter `email-smtp` (triptyque) | High | ✅ | `SmtpEmailSender` (MailKit 4.16.0) + `SmtpEmailOptions` + `AddSmtpEmail()`, `registryDependency: email-abstractions` + manifeste. |
+| 05 | HIJ-490 | Adapter `email-sendgrid` (forwarding DI) | High | ✅ | `SendGridEmailSender` + `ISendGridEmailSender` (templates) forwardés vers une seule instance, `AddSendGridEmail()` + manifeste. Swap = 1 ligne de DI. Compilés + testés par `tests/Outlet.Registry.Email.Tests`. |
 | 06 | HIJ-491 | Engine — résolution item + registry-deps | Urgent | ⬜ | Use case de résolution récursive + dédoublonnage + détection de cycles → liste ordonnée à installer. (Aujourd'hui seul `ListRegistryItemsUseCase` existe.) |
 | 07 | HIJ-492 | Engine — fetch HTTP + multi-source | Urgent | 🟡 | Port `IRegistryClient` OK ; `HttpRegistryClient` = stub. Reste : abstraction `IRegistrySource`, désérialisation manifeste, fetch fichiers, multi-source. |
 | 08 | HIJ-493 | Engine — réécriture namespace Roslyn | Urgent | 🟡 | Déclarations de namespace **faites**. Reste : réécriture des `using` croisés entre fichiers/items + tests dédiés. |
@@ -65,11 +65,11 @@ Trié par n° de séquence (01→19). Priorité = priorité Linear.
 
 ### Synthèse MVP
 
-- ✅ Fait : **1** (01).
-- 🟡 Partiel : **7** (07, 08, 10, 11, 12, 13, 16, 17 — soit 8 en réalité). → ports/stubs/CI échafaudés.
-- ⬜ À faire : **10** (02, 03, 04, 05, 06, 09, 14, 15, 18, 19).
+- ✅ Fait : **5** (01, **02, 03, 04, 05** — Tranche 1 livrée).
+- 🟡 Partiel : **8** (07, 08, 10, 11, 12, 13, 16, 17). → ports/stubs/CI échafaudés.
+- ⬜ À faire : **6** (06, 09, 14, 15, 18, 19).
 
-Le **contenu du registre (02→05) est à zéro** et c'est la fondation : sans manifeste ni item email, l'engine n'a rien à résoudre/fetcher/installer.
+**Tranche 1 livrée** (2026-06-05) : schéma de manifeste + contenu email complet (contract + 2 adapters), compilés et testés. La fondation contenu/contrat est en place ; l'étape suivante est l'**engine** (06 résolution, 07 fetch, 16 detection) qui consomme ces manifestes.
 
 ---
 
