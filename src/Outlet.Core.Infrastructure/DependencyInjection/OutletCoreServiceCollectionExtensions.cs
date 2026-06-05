@@ -22,6 +22,7 @@ public static class OutletCoreServiceCollectionExtensions
         // Sources are registered from outlet.json once config lands (Linear HIJ-494);
         // with none registered, the catalogue is simply empty.
         services.AddScoped<IRegistryClient, MultiSourceRegistryClient>();
+        services.AddScoped<IMsBuildEvaluator, DotnetMsBuildEvaluator>();
         services.AddScoped<IProjectInspector, MsBuildProjectInspector>();
         services.AddScoped<INamespaceRewriter, RoslynNamespaceRewriter>();
         services.AddScoped<IFileSystem, PhysicalFileSystem>();

@@ -14,14 +14,20 @@ public interface IProjectInspector
 /// <summary>
 /// Evaluated facts about the target environment, gathered before any install:
 /// project layout (mono vs multi-project), Central Package Management state,
-/// and per-project target frameworks.
+/// and per-project frameworks / existing package references.
 /// </summary>
 public sealed record ProjectInspection(
+    string WorkspaceRoot,
+    bool IsMultiProject,
     IReadOnlyList<InspectedProject> Projects,
     bool UsesCentralPackageManagement,
     string? CentralPackagesFilePath);
 
 public sealed record InspectedProject(
     string ProjectFilePath,
-    string TargetFramework,
-    string RootNamespace);
+    IReadOnlyList<string> TargetFrameworks,
+    string RootNamespace,
+    IReadOnlyList<InspectedPackageReference> PackageReferences);
+
+/// <summary>An existing PackageReference. <paramref name="Version"/> is null when governed by CPM (versionless ref).</summary>
+public sealed record InspectedPackageReference(string Id, string? Version);
