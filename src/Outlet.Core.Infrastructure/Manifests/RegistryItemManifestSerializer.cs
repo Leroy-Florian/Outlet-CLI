@@ -50,6 +50,40 @@ public static class RegistryItemManifestSerializer
         => JsonSerializer.Serialize(manifest, Options);
 
     /// <summary>
+    /// Deserializes and validates a registry index document — <c>{ "items": [ &lt;manifest&gt;, … ] }</c> —
+    /// the aggregate a remote registry serves so the engine can list/resolve in one round-trip.
+    /// </summary>
+    public static Result<IReadOnlyList<RegistryItemManifest>> ParseIndex(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+            return Result<IReadOnlyList<RegistryItemManifest>>.Failure("Registry index content is empty.");
+
+        IndexJson? raw;
+        try
+        {
+            raw = JsonSerializer.Deserialize<IndexJson>(json, Options);
+        }
+        catch (JsonException ex)
+        {
+            return Result<IReadOnlyList<RegistryItemManifest>>.Failure($"Registry index is not valid JSON: {ex.Message}");
+        }
+
+        if (raw?.Items is null)
+            return Result<IReadOnlyList<RegistryItemManifest>>.Failure("Registry index is missing an 'items' array.");
+
+        var manifests = new List<RegistryItemManifest>();
+        foreach (var entry in raw.Items)
+        {
+            var validated = Validate(entry);
+            if (validated.IsFailure)
+                return Result<IReadOnlyList<RegistryItemManifest>>.Failure(validated.Error!);
+            manifests.Add(validated.Value!);
+        }
+
+        return Result<IReadOnlyList<RegistryItemManifest>>.Success(manifests);
+    }
+
+    /// <summary>
     /// Maps a validated manifest onto the Domain aggregate. Re-checks the Domain
     /// invariants (kebab-case id, single-word concern, contract-has-no-NuGet, …)
     /// and surfaces any violation as a failed <see cref="Result{T}"/>.
@@ -151,5 +185,10 @@ public static class RegistryItemManifestSerializer
     {
         public string? Path { get; init; }
         public string? Target { get; init; }
+    }
+
+    private sealed class IndexJson
+    {
+        public List<ManifestJson>? Items { get; init; }
     }
 }
