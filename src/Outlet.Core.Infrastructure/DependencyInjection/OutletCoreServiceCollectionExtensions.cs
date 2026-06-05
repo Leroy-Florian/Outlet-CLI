@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Outlet.Core.Application.Ports;
+using Outlet.Core.Infrastructure.Configuration;
 using Outlet.Core.Infrastructure.Io;
 using Outlet.Core.Infrastructure.NuGet;
 using Outlet.Core.Infrastructure.Projects;
@@ -27,6 +28,7 @@ public static class OutletCoreServiceCollectionExtensions
         services.AddScoped<INamespaceRewriter, RoslynNamespaceRewriter>();
         services.AddScoped<IFileSystem, PhysicalFileSystem>();
         services.AddScoped<INuGetEditor, ProjectNuGetEditor>();
+        services.AddScoped<IOutletConfigStore, JsonOutletConfigStore>();
 
         return services;
     }
