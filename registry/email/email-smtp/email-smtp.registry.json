@@ -7,9 +7,7 @@
   "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
   "registryDependencies": ["email-abstractions"],
   "nugetDependencies": [
-    { "id": "MailKit", "version": "4.16.0" },
-    { "id": "Microsoft.Extensions.Options", "version": "8.0.0" },
-    { "id": "Microsoft.Extensions.DependencyInjection.Abstractions", "version": "8.0.0" }
+    { "id": "MailKit", "version": "4.16.0" }
   ],
   "files": [
     { "path": "SmtpEmailOptions.cs", "target": "adapter" },

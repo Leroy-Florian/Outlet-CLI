@@ -36,3 +36,11 @@ Le port générique `IEmailSender` est identique pour les deux adapters → swap
 de DI. `email-sendgrid` illustre le pattern « spécifique à côté du générique » :
 `ISendGridEmailSender` (templates dynamiques) implémenté par la même instance, forwardée
 vers les deux interfaces.
+
+## Convention `nugetDependencies`
+
+Un item déclare uniquement les packages **qu'il introduit** (la lib provider : MailKit,
+SendGrid…). L'infrastructure DI/Options (`Microsoft.Extensions.DependencyInjection`,
+`Microsoft.Extensions.Options`) est **fournie par l'hôte** : on appelle `AddXxx(...)` sur
+*votre* `IServiceCollection`, vous l'avez donc déjà. Les pinner à un plancher provoquerait
+un downgrade (NU1605) chez les hôtes qui en ont une version plus récente.

@@ -19,10 +19,13 @@ public static class OutletCoreServiceCollectionExtensions
     {
         services.AddSingleton<HttpClient>(_ => new HttpClient());
 
-        // The aggregate client fans out across the configured IRegistrySource(s).
-        // Sources are registered from outlet.json once config lands (Linear HIJ-494);
-        // with none registered, the catalogue is simply empty.
-        services.AddScoped<IRegistryClient, MultiSourceRegistryClient>();
+        // Registry sources are read from the project's outlet.json (per working
+        // directory), then the client fans out across them.
+        services.AddScoped<IRegistrySourceProvider>(sp => new ConfiguredRegistrySourceProvider(
+            sp.GetRequiredService<IOutletConfigStore>(),
+            sp.GetRequiredService<HttpClient>(),
+            Directory.GetCurrentDirectory()));
+        services.AddScoped<IRegistryClient, ConfiguredRegistryClient>();
         services.AddScoped<IMsBuildEvaluator, DotnetMsBuildEvaluator>();
         services.AddScoped<IProjectInspector, MsBuildProjectInspector>();
         services.AddScoped<INamespaceRewriter, RoslynNamespaceRewriter>();

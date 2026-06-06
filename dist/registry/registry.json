@@ -53,14 +53,6 @@
         {
           "id": "SendGrid",
           "version": "9.29.3"
-        },
-        {
-          "id": "Microsoft.Extensions.Options",
-          "version": "8.0.0"
-        },
-        {
-          "id": "Microsoft.Extensions.DependencyInjection.Abstractions",
-          "version": "8.0.0"
         }
       ],
       "files": [
@@ -100,14 +92,6 @@
         {
           "id": "MailKit",
           "version": "4.16.0"
-        },
-        {
-          "id": "Microsoft.Extensions.Options",
-          "version": "8.0.0"
-        },
-        {
-          "id": "Microsoft.Extensions.DependencyInjection.Abstractions",
-          "version": "8.0.0"
         }
       ],
       "files": [
