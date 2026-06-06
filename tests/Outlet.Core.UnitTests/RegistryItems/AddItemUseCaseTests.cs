@@ -133,9 +133,35 @@ public sealed class AddItemUseCaseTests
             type,
             [file],
             [.. registryDependencies.Select(RegistryItemId.From)],
-            [.. packages.Select(p => PackageDependency.From(p.Id, p.Version))]).Value!;
+            [.. packages.Select(p => PackageDependency.From(p.Id, p.Version))],
+            ["net8.0", "net9.0", "net10.0"]).Value!;
 
         _registry.Seed(item);
         _registry.SeedFileContent(RegistryItemId.From(id), file, $"namespace Outlet.Registry.Email;\npublic sealed class Marker;\n");
+    }
+
+    [Fact]
+    public async Task Should_RefuseInstall_When_ItemIsIncompatibleWithProjectTfm()
+    {
+        var inspector = new FakeProjectInspector().WithProject(Path.Combine(ProjectDirectory, "App.csproj"), "MyApp", "net6.0");
+        var useCase = new AddItemUseCase(_registry, inspector, new FakeNamespaceRewriter(), _fileSystem, _nuGet, _config);
+
+        var result = await useCase.HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp"));
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("net6.0");
+        _fileSystem.Files.Should().BeEmpty("an incompatible item must be refused before any file is written");
+    }
+
+    [Fact]
+    public async Task Should_Install_When_ItemIsCompatibleWithProjectTfm()
+    {
+        var inspector = new FakeProjectInspector().WithProject(Path.Combine(ProjectDirectory, "App.csproj"), "MyApp", "net10.0");
+        var useCase = new AddItemUseCase(_registry, inspector, new FakeNamespaceRewriter(), _fileSystem, _nuGet, _config);
+
+        var result = await useCase.HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp"));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.InstalledItems.Should().Equal("email-abstractions", "email-smtp");
     }
 }

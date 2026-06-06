@@ -39,7 +39,14 @@ cancellation). **Each adapter runs the same suite** against its own double
 
 Mark live tests with `[Trait("Category", "Live")]`.
 
-## TFM matrix
+## TFM matrix (HIJ-509)
 
-Building/testing the registry across `net8.0/net9.0/net10.0` is owned by **HIJ-509** (it adds
-`<TargetFrameworks>` to the harness + the SDK install matrix to the PR lane).
+The registry sources are compiled against **every** declared `targetFramework`
+(`net8.0`/`net9.0`/`net10.0`) by the multi-targeted `Outlet.Registry.Email.Compat`
+project — so the manifest's compatibility claim is *verified at build*, not asserted.
+It is part of the solution, so the PR lane's `dotnet build` covers it.
+
+On the install side, `outlet add` runs a **TFM pre-check**
+(`TargetFrameworkCompatibility`): before writing anything it compares each item's
+`targetFrameworks` with the target project's evaluated `TargetFramework(s)` and refuses,
+with a clear message, an item the project's framework cannot compile.
