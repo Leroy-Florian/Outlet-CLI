@@ -55,7 +55,9 @@ var result = await emailSender.SendAsync(message);
 ```
 
 See the runnable demo: [`samples/SwapDemo`](samples/SwapDemo) ·
-[how to run](samples/README.md).
+[how to run](samples/README.md). Or the interactive **playground** ("Swagger UI for infra
+ports"): [`playground/`](playground/README.md) — pick an adapter, fill its options, send,
+and watch the swap behind one `IEmailSender`.
 
 ## What's in the registry today
 

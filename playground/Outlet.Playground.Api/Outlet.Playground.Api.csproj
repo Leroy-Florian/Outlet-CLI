@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Outlet.Playground.Api</RootNamespace>
+    <!-- The playground intentionally builds a fresh ServiceCollection/provider per
+         request, to register the chosen adapter in isolation (exactly the swap it demos). -->
+    <NoWarn>$(NoWarn);ASP0000</NoWarn>
+  </PropertyGroup>
+
+  <!--
+    The playground consumes the adapters exactly like a real app: it compiles the
+    registry email sources and registers them via DI. (In a real project these would
+    be copied in by `outlet add`; here we compile from registry/ as the source of truth.)
+  -->
+  <ItemGroup>
+    <Compile Include="../../registry/email/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" />
+    <PackageReference Include="SendGrid" />
+  </ItemGroup>
+
+</Project>

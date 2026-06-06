@@ -19,4 +19,7 @@
   <Folder Name="/tools/">
     <Project Path="tools/Outlet.Registry.Builder/Outlet.Registry.Builder.csproj" />
   </Folder>
+  <Folder Name="/playground/">
+    <Project Path="playground/Outlet.Playground.Api/Outlet.Playground.Api.csproj" />
+  </Folder>
 </Solution>

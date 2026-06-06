@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "packages/outlet-hateoas",
-    "packages/outlet-effect-react"
+    "packages/outlet-effect-react",
+    "playground/web"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
