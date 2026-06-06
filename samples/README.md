@@ -1,7 +1,44 @@
-# samples/ — démos
+# samples/ — démos Outlet
 
-Démo cible v1 : une app exemple où le swap SMTP ↔ SendGrid se résume à changer
-**une ligne de DI** (`AddSmtpEmail()` ↔ `AddSendGridEmail()`) derrière le même
-`IEmailSender`.
+## SwapDemo — swap SMTP ↔ SendGrid en une ligne de DI
 
-Vide tant que le contenu email du registre n'existe pas (Linear « Outlet — MVP »).
+Une console minimale qui résout le port générique `IEmailSender` et envoie un message.
+Le **seul** changement pour passer d'un provider à l'autre est la ligne
+`AddSmtpEmail(...)` ↔ `AddSendGridEmail(...)` ; tout le reste du code est identique.
+
+```bash
+# SMTP (par défaut)
+dotnet run --project samples/SwapDemo -- smtp
+
+# SendGrid — la même appli, un autre adapter
+dotnet run --project samples/SwapDemo -- sendgrid
+```
+
+Sortie type (sans serveur/clé réels, la livraison échoue proprement — le port et le
+swap sont quand même démontrés) :
+
+```
+Provider     : smtp
+Active adapter: SmtpEmailSender  (behind IEmailSender)
+Not delivered (expected without a real server/credentials):
+  Connection refused ...
+```
+
+### Livrer pour de vrai
+
+- **SMTP** : pointez vers un serveur (ex. [smtp4dev](https://github.com/rnwood/smtp4dev) en local) :
+  ```bash
+  SMTP_HOST=localhost SMTP_PORT=2525 dotnet run --project samples/SwapDemo -- smtp
+  ```
+- **SendGrid** :
+  ```bash
+  SENDGRID_API_KEY=SG.xxxx dotnet run --project samples/SwapDemo -- sendgrid
+  ```
+
+### Le point à retenir
+
+Le code applicatif ne dépend que de `IEmailSender` (le **port générique**). Les adapters
+(`SmtpEmailSender`, `SendGridEmailSender`) sont interchangeables derrière ce port — c'est
+ce que garantit le design d'Outlet. Dans un vrai projet, ces fichiers seraient **copiés
+chez vous** par `outlet add email-smtp email-sendgrid` (vous les possédez et pouvez les
+éditer) ; ici ils sont compilés depuis `registry/email/` pour garder une source unique.

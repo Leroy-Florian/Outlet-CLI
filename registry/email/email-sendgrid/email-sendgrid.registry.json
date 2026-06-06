@@ -1,0 +1,18 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "email-sendgrid",
+  "type": "outlet:adapter",
+  "concern": "email",
+  "description": "SendGrid adapter for IEmailSender (+ provider-specific dynamic templates).",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["email-abstractions"],
+  "nugetDependencies": [
+    { "id": "SendGrid", "version": "9.29.3" }
+  ],
+  "files": [
+    { "path": "ISendGridEmailSender.cs", "target": "adapter" },
+    { "path": "SendGridEmailOptions.cs", "target": "adapter" },
+    { "path": "SendGridEmailSender.cs", "target": "adapter" },
+    { "path": "SendGridEmailServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

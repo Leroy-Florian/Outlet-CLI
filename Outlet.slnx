@@ -9,6 +9,17 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Outlet.Core.UnitTests/Outlet.Core.UnitTests.csproj" />
+    <Project Path="tests/Outlet.Core.Infrastructure.UnitTests/Outlet.Core.Infrastructure.UnitTests.csproj" />
+    <Project Path="tests/Outlet.Registry.Email.Tests/Outlet.Registry.Email.Tests.csproj" />
     <Project Path="tests/Outlet.ArchitectureTests/Outlet.ArchitectureTests.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/SwapDemo/SwapDemo.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Outlet.Registry.Builder/Outlet.Registry.Builder.csproj" />
+  </Folder>
+  <Folder Name="/playground/">
+    <Project Path="playground/Outlet.Playground.Api/Outlet.Playground.Api.csproj" />
   </Folder>
 </Solution>

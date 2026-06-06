@@ -17,6 +17,12 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.8" />
   </ItemGroup>
 
+  <ItemGroup Label="Registry Item Provider Dependencies">
+    <!-- Floor versions consumed by registry adapters; the build/test harness pins them so the manifests never lie. -->
+    <PackageVersion Include="MailKit" Version="4.16.0" />
+    <PackageVersion Include="SendGrid" Version="9.29.3" />
+  </ItemGroup>
+
   <ItemGroup Label="Test Dependencies">
     <!-- Test Framework -->
     <PackageVersion Include="xunit" Version="2.9.3" />
