@@ -33,12 +33,13 @@ public sealed record OutletTargets(TargetRoute Contract, TargetRoute Adapter);
 /// <summary>Where a routed item lands: the destination project file and root namespace.</summary>
 public sealed record TargetRoute(string Project, string Namespace);
 
-/// <summary>Lockfile entry: an installed item, its resolved version, written files and NuGet packages.</summary>
+/// <summary>Lockfile entry: an installed item, its resolved version, written files, NuGet packages and registry dependencies.</summary>
 public sealed record InstalledItem(
     string Name,
     string Version,
     IReadOnlyList<string> Files,
-    IReadOnlyList<InstalledPackage> Packages);
+    IReadOnlyList<InstalledPackage> Packages,
+    IReadOnlyList<string> Dependencies);
 
 /// <summary>A NuGet package an installed item added, at the floor version applied.</summary>
 public sealed record InstalledPackage(string Id, string Version);

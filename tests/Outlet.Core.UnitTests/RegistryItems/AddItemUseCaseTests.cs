@@ -62,7 +62,7 @@ public sealed class AddItemUseCaseTests
     {
         var seeded = OutletConfig.CreateDefault("App.csproj", "MyApp") with
         {
-            Installed = [new InstalledItem("email-abstractions", "0.0.0", [], [])],
+            Installed = [new InstalledItem("email-abstractions", "0.0.0", [], [], [])],
         };
         _config.Seed(seeded);
 

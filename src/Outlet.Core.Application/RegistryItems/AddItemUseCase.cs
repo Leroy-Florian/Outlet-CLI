@@ -97,7 +97,12 @@ public sealed class AddItemUseCase(
                 packages.Add(new InstalledPackage(dependency.PackageId, dependency.MinimumVersion));
             }
 
-            lockEntries.Add(new InstalledItem(item.Id.Value, "0.0.0", itemFiles, packages));
+            lockEntries.Add(new InstalledItem(
+                item.Id.Value,
+                "0.0.0",
+                itemFiles,
+                packages,
+                [.. item.RegistryDependencies.Select(dependency => dependency.Value)]));
             installedItems.Add(item.Id.Value);
         }
 

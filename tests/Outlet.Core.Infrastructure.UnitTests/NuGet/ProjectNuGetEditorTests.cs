@@ -108,6 +108,44 @@ public sealed class ProjectNuGetEditorTests
         Count(CsprojPath, "PackageReference", "MailKit").Should().Be(1);
     }
 
+    [Fact]
+    public async Task Should_RemoveReference_When_NotCpm()
+    {
+        await Seed(CsprojPath, EmptyCsproj);
+
+        var removed = await _editor.RemovePackageAsync(new NuGetRemoveRequest(CsprojPath, "Existing", false, null));
+
+        removed.Should().BeTrue();
+        Find(CsprojPath, "PackageReference", "Existing").Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Should_RemoveCentralVersionAndReference_When_Cpm()
+    {
+        await Seed(CsprojPath, """
+            <Project Sdk="Microsoft.NET.Sdk">
+              <ItemGroup><PackageReference Include="Existing" /></ItemGroup>
+            </Project>
+            """);
+        await Seed(CentralPath, CentralProps);
+
+        var removed = await _editor.RemovePackageAsync(new NuGetRemoveRequest(CsprojPath, "Existing", true, CentralPath));
+
+        removed.Should().BeTrue();
+        Find(CentralPath, "PackageVersion", "Existing").Should().BeNull();
+        Find(CsprojPath, "PackageReference", "Existing").Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Should_ReturnFalse_When_PackageAbsent()
+    {
+        await Seed(CsprojPath, EmptyCsproj);
+
+        var removed = await _editor.RemovePackageAsync(new NuGetRemoveRequest(CsprojPath, "NotThere", false, null));
+
+        removed.Should().BeFalse();
+    }
+
     private NuGetEditRequest Request(string id, string version, bool cpm = false)
         => new(CsprojPath, PackageDependency.From(id, version), cpm, cpm ? CentralPath : null);
 

@@ -33,6 +33,9 @@ outlet add email-smtp
 
 # 4. List what a registry offers
 outlet list
+
+# 5. Remove an item (deletes its files, cleans unused packages, updates the lockfile)
+outlet remove email-smtp
 ```
 
 > Not published to NuGet.org yet? Install from a local pack:

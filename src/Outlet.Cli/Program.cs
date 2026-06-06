@@ -134,8 +134,40 @@ listCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediat
         });
 }, cancellationToken));
 
+// outlet remove <item>
+var removeItemArgument = new Argument<string>("item")
+{
+    Description = "Installed registry item to remove (e.g. email-smtp).",
+};
+var removeCommand = new Command("remove", "Remove an installed item: delete its files and clean unused NuGet packages.");
+removeCommand.Arguments.Add(removeItemArgument);
+removeCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var command = new RemoveItemCommand(Environment.CurrentDirectory, parseResult.GetValue(removeItemArgument)!);
+    var result = await mediator.ExecuteAsync<RemoveItemCommand, RemovalReport>(command, token);
+
+    return result.Match(
+        onSuccess: report =>
+        {
+            Console.WriteLine($"removed {report.RemovedItem}");
+            foreach (var file in report.DeletedFiles)
+                Console.WriteLine($"  - {file}");
+            foreach (var package in report.RemovedPackages)
+                Console.WriteLine($"  cleaned PackageReference {package}");
+            foreach (var warning in report.Warnings)
+                Console.Error.WriteLine($"warning: {warning}");
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
+}, cancellationToken));
+
 rootCommand.Subcommands.Add(initCommand);
 rootCommand.Subcommands.Add(addCommand);
+rootCommand.Subcommands.Add(removeCommand);
 rootCommand.Subcommands.Add(listCommand);
 
 return await rootCommand.Parse(args).InvokeAsync();

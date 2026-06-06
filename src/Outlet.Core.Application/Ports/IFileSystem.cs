@@ -11,4 +11,7 @@ public interface IFileSystem
     Task WriteAllTextAsync(string path, string content, CancellationToken cancellationToken = default);
     bool FileExists(string path);
     void CreateDirectory(string path);
+
+    /// <summary>Deletes the file if it exists; a no-op otherwise.</summary>
+    void DeleteFile(string path);
 }

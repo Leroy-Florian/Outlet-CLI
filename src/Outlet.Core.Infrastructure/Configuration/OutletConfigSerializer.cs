@@ -74,7 +74,8 @@ public static class OutletConfigSerializer
                 item.Name,
                 item.Version,
                 [.. item.Files ?? []],
-                [.. (item.Packages ?? []).Select(p => new InstalledPackage(p.Id ?? "", p.Version ?? ""))]));
+                [.. (item.Packages ?? []).Select(p => new InstalledPackage(p.Id ?? "", p.Version ?? ""))],
+                [.. item.Dependencies ?? []]));
         }
 
         return Result<OutletConfig>.Success(new OutletConfig(
@@ -122,6 +123,7 @@ public static class OutletConfigSerializer
         public string? Version { get; init; }
         public List<string>? Files { get; init; }
         public List<PackageJson>? Packages { get; init; }
+        public List<string>? Dependencies { get; init; }
     }
 
     private sealed class PackageJson

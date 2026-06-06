@@ -6,9 +6,11 @@ namespace Outlet.Core.UnitTests.Fakes;
 public sealed class FakeNuGetEditor : INuGetEditor
 {
     private readonly List<NuGetEditRequest> _requests = [];
+    private readonly List<NuGetRemoveRequest> _removeRequests = [];
     private NuGetEditResult _result = new(NuGetEditOutcome.Added);
 
     public IReadOnlyList<NuGetEditRequest> Requests => _requests;
+    public IReadOnlyList<NuGetRemoveRequest> RemoveRequests => _removeRequests;
 
     public FakeNuGetEditor ReturningConflict(string warning)
     {
@@ -20,5 +22,11 @@ public sealed class FakeNuGetEditor : INuGetEditor
     {
         _requests.Add(request);
         return Task.FromResult(_result);
+    }
+
+    public Task<bool> RemovePackageAsync(NuGetRemoveRequest request, CancellationToken cancellationToken = default)
+    {
+        _removeRequests.Add(request);
+        return Task.FromResult(true);
     }
 }
