@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Outlet.Core.Domain.RegistryItems;
@@ -21,6 +22,7 @@ public static class RegistryItemManifestSerializer
         ReadCommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true,
         WriteIndented = true,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
@@ -48,6 +50,10 @@ public static class RegistryItemManifestSerializer
     /// <summary>Serializes a manifest back to its canonical, indented JSON form.</summary>
     public static string Serialize(RegistryItemManifest manifest)
         => JsonSerializer.Serialize(manifest, Options);
+
+    /// <summary>Serializes the aggregate registry index — <c>{ "items": [ … ] }</c> — served to clients.</summary>
+    public static string SerializeIndex(IReadOnlyList<RegistryItemManifest> manifests)
+        => JsonSerializer.Serialize(new RegistryIndexDocument(manifests), Options);
 
     /// <summary>
     /// Deserializes and validates a registry index document — <c>{ "items": [ &lt;manifest&gt;, … ] }</c> —
@@ -191,4 +197,6 @@ public static class RegistryItemManifestSerializer
     {
         public List<ManifestJson>? Items { get; init; }
     }
+
+    private sealed record RegistryIndexDocument(IReadOnlyList<RegistryItemManifest> Items);
 }

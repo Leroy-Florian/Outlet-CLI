@@ -16,4 +16,7 @@
   <Folder Name="/samples/">
     <Project Path="samples/SwapDemo/SwapDemo.csproj" />
   </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Outlet.Registry.Builder/Outlet.Registry.Builder.csproj" />
+  </Folder>
 </Solution>

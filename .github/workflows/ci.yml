@@ -28,6 +28,15 @@ jobs:
       - name: Test
         run: dotnet test Outlet.slnx -c Release --no-build --filter "Category!=Live"
 
+      # Régénère le registre publié (dist/registry/) : valide chaque manifeste,
+      # vérifie que les fichiers déclarés existent (le manifeste ne ment jamais),
+      # et échoue si dist/ committé diverge du contenu de registry/.
+      - name: Generate registry manifest
+        run: dotnet run --project tools/Outlet.Registry.Builder -c Release --no-build
+
+      - name: Verify dist/ is up to date
+        run: git diff --exit-code -- dist/registry
+
   frontend:
     name: Frontend — lint, test & build
     runs-on: ubuntu-latest
