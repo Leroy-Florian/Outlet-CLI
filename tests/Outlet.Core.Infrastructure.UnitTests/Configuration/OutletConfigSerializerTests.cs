@@ -16,7 +16,7 @@ public sealed class OutletConfigSerializerTests
             {
               "name": "email-smtp",
               "version": "1.0.0",
-              "files": ["Email/SmtpEmailSender.cs"],
+              "files": [{ "path": "Email/SmtpEmailSender.cs", "hash": "ABC123" }],
               "packages": [ { "id": "MailKit", "version": "4.16.0" } ]
             }
           ]

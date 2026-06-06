@@ -38,11 +38,11 @@ public sealed class RemoveItemUseCase(
         var deletedFiles = new List<string>();
         foreach (var file in target.Files)
         {
-            var path = Path.Combine(command.ProjectDirectory, file);
+            var path = Path.Combine(command.ProjectDirectory, file.Path);
             if (fileSystem.FileExists(path))
             {
                 fileSystem.DeleteFile(path);
-                deletedFiles.Add(file);
+                deletedFiles.Add(file.Path);
             }
         }
 

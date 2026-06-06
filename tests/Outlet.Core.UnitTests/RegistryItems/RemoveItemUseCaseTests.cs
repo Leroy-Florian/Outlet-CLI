@@ -16,14 +16,14 @@ public sealed class RemoveItemUseCaseTests
     private RemoveItemUseCase BuildUseCase() => new(_inspector, _fileSystem, _nuGet, _config);
 
     private static InstalledItem Item(string name, string file, string[] packages, string[] dependencies)
-        => new(name, "0.0.0", [file], [.. packages.Select(p => new InstalledPackage(p, "1.0.0"))], dependencies);
+        => new(name, "0.0.0", [new InstalledFile(file, "hash")], [.. packages.Select(p => new InstalledPackage(p, "1.0.0"))], dependencies);
 
     private void SeedInstalled(params InstalledItem[] items)
     {
         _config.Seed(OutletConfig.CreateDefault("App.csproj", "MyApp") with { Installed = [.. items] });
         foreach (var item in items)
             foreach (var file in item.Files)
-                _fileSystem.Seed(Path.Combine(ProjectDirectory, file), "// owned");
+                _fileSystem.Seed(Path.Combine(ProjectDirectory, file.Path), "// owned");
     }
 
     [Fact]

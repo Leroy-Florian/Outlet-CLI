@@ -53,7 +53,7 @@ public sealed class AddItemUseCaseTests
 
         _config.Saved!.Installed.Select(i => i.Name).Should().Equal("email-abstractions", "email-smtp");
         var smtp = _config.Saved.Installed.Single(i => i.Name == "email-smtp");
-        smtp.Files.Should().Contain("SmtpEmailSender.cs");
+        smtp.Files.Select(f => f.Path).Should().Contain("SmtpEmailSender.cs");
         smtp.Packages.Should().ContainSingle().Which.Id.Should().Be("MailKit");
     }
 
