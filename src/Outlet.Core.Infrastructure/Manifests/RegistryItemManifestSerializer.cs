@@ -106,7 +106,8 @@ public static class RegistryItemManifestSerializer
                 type,
                 [.. manifest.Files.Select(f => f.Path)],
                 [.. manifest.RegistryDependencies.Select(RegistryItemId.From)],
-                [.. manifest.NugetDependencies.Select(d => PackageDependency.From(d.Id, d.Version))]);
+                [.. manifest.NugetDependencies.Select(d => PackageDependency.From(d.Id, d.Version))],
+                [.. manifest.TargetFrameworks]);
         }
         catch (ArgumentException ex)
         {

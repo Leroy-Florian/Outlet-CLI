@@ -31,7 +31,7 @@ public sealed class SendGridEmailSender(IOptions<SendGridEmailOptions> options) 
 
     private async Task<EmailResult> SendCoreAsync(SgMail.SendGridMessage message, CancellationToken cancellationToken)
     {
-        var client = new SendGridClient(_options.ApiKey);
+        var client = new SendGridClient(BuildClientOptions());
         try
         {
             var response = await client.SendEmailAsync(message, cancellationToken);
@@ -44,13 +44,27 @@ public sealed class SendGridEmailSender(IOptions<SendGridEmailOptions> options) 
                 return EmailResult.Success(messageId);
             }
 
+            // Surface throttling (429/Retry-After) and other provider errors as a typed
+            // failure — never an exception for an expected delivery outcome.
+            var retryAfter = response.Headers.TryGetValues("Retry-After", out var values)
+                ? values.FirstOrDefault()
+                : null;
+            var retryHint = retryAfter is null ? string.Empty : $" (Retry-After: {retryAfter})";
             var body = await response.Body.ReadAsStringAsync(cancellationToken);
-            return EmailResult.Failure($"SendGrid returned {(int)response.StatusCode}: {body}");
+            return EmailResult.Failure($"SendGrid returned {(int)response.StatusCode}{retryHint}: {body}");
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             return EmailResult.Failure(ex.Message);
         }
+    }
+
+    private SendGridClientOptions BuildClientOptions()
+    {
+        var clientOptions = new SendGridClientOptions { ApiKey = _options.ApiKey };
+        if (!string.IsNullOrWhiteSpace(_options.Host))
+            clientOptions.Host = _options.Host;
+        return clientOptions;
     }
 
     private static SgMail.SendGridMessage BuildMessage(EmailMessage message)

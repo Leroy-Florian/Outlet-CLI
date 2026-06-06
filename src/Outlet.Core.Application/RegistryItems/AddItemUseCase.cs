@@ -36,6 +36,13 @@ public sealed class AddItemUseCase(
         var inspection = await projectInspector.InspectAsync(command.ProjectDirectory, cancellationToken);
 
         var alreadyInstalled = config.Installed.Select(i => i.Name).ToHashSet(StringComparer.Ordinal);
+
+        // Pre-check TFM compatibility for the whole install set BEFORE writing anything,
+        // so an incompatible item is refused cleanly instead of half-installed.
+        var incompatibility = CheckCompatibility(resolution.Value!, alreadyInstalled, config, command.ProjectDirectory, inspection);
+        if (incompatibility is not null)
+            return Result<InstallationReport>.Failure(incompatibility);
+
         var installedItems = new List<string>();
         var writtenFiles = new List<string>();
         var warnings = new List<string>();
@@ -101,6 +108,35 @@ public sealed class AddItemUseCase(
         }
 
         return Result<InstallationReport>.Success(new InstallationReport(installedItems, writtenFiles, warnings));
+    }
+
+    private static string? CheckCompatibility(
+        IReadOnlyList<RegistryItem> items,
+        HashSet<string> alreadyInstalled,
+        OutletConfig config,
+        string projectDirectory,
+        ProjectInspection inspection)
+    {
+        var projectsByPath = new Dictionary<string, InspectedProject>(StringComparer.Ordinal);
+        foreach (var project in inspection.Projects)
+            projectsByPath[Path.GetFullPath(project.ProjectFilePath)] = project;
+
+        foreach (var item in items)
+        {
+            if (alreadyInstalled.Contains(item.Id.Value))
+                continue;
+
+            var route = item.Type == RegistryItemType.Contract ? config.Targets.Contract : config.Targets.Adapter;
+            var projectFilePath = Path.GetFullPath(Path.Combine(projectDirectory, route.Project));
+            if (!projectsByPath.TryGetValue(projectFilePath, out var project))
+                continue; // target project not discovered — cannot verify, do not block
+
+            var reason = TargetFrameworkCompatibility.Check(item.Id.Value, item.TargetFrameworks, project.TargetFrameworks);
+            if (reason is not null)
+                return reason;
+        }
+
+        return null;
     }
 
     // Registry sources use the canonical root namespace Outlet.Registry.<Concern>
