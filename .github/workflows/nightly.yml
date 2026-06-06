@@ -1,0 +1,30 @@
+name: Nightly (live adapters)
+
+# Non-blocking lane for level-C tests against real provider sandboxes.
+# Secrets are exposed ONLY here, never on PRs (especially fork PRs).
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  live:
+    name: Live adapter tests (sandbox)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build (Release)
+        run: dotnet build Outlet.slnx -c Release
+
+      # Runs only tests marked [Trait("Category","Live")]. Non-blocking: a flaky
+      # provider must not break the tree. Add a sandbox key as SENDGRID_SANDBOX_API_KEY.
+      - name: Live tests
+        continue-on-error: true
+        env:
+          SENDGRID_SANDBOX_API_KEY: ${{ secrets.SENDGRID_SANDBOX_API_KEY }}
+        run: dotnet test Outlet.slnx -c Release --no-build --filter "Category=Live"
