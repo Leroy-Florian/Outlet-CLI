@@ -44,3 +44,6 @@ coverage/
 # target a directory whose parent is not itself excluded (hence dist/* not dist/).
 dist/*
 !dist/registry/
+
+# Local dotnet tool pack output
+/nupkg/

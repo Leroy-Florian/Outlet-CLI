@@ -22,8 +22,8 @@ your project — you keep the code.
 ## Quickstart
 
 ```bash
-# 1. Install the CLI (dotnet tool)
-dotnet tool install -g outlet
+# 1. Install the CLI as a global dotnet tool
+dotnet tool install -g Outlet.Cli      # then invoke it simply as: outlet
 
 # 2. Initialize outlet.json in your project (detects your project + namespace)
 outlet init
@@ -34,6 +34,12 @@ outlet add email-smtp
 # 4. List what a registry offers
 outlet list
 ```
+
+> Not published to NuGet.org yet? Install from a local pack:
+> ```bash
+> dotnet pack src/Outlet.Cli -c Release -o ./nupkg
+> dotnet tool install -g Outlet.Cli --add-source ./nupkg
+> ```
 
 Then wire it up — and swap providers with a single line:
 
