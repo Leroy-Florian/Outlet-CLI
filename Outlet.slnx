@@ -6,12 +6,14 @@
     <Project Path="src/Outlet.Core.Application/Outlet.Core.Application.csproj" />
     <Project Path="src/Outlet.Core.Infrastructure/Outlet.Core.Infrastructure.csproj" />
     <Project Path="src/Outlet.Identity.Domain/Outlet.Identity.Domain.csproj" />
+    <Project Path="src/Outlet.Cloud.Domain/Outlet.Cloud.Domain.csproj" />
     <Project Path="src/Outlet.Cli/Outlet.Cli.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Outlet.Core.UnitTests/Outlet.Core.UnitTests.csproj" />
     <Project Path="tests/Outlet.Core.Infrastructure.UnitTests/Outlet.Core.Infrastructure.UnitTests.csproj" />
     <Project Path="tests/Outlet.Identity.Domain.UnitTests/Outlet.Identity.Domain.UnitTests.csproj" />
+    <Project Path="tests/Outlet.Cloud.Domain.UnitTests/Outlet.Cloud.Domain.UnitTests.csproj" />
     <Project Path="tests/Outlet.Registry.Email.Tests/Outlet.Registry.Email.Tests.csproj" />
     <Project Path="tests/Outlet.Registry.Email.Compat/Outlet.Registry.Email.Compat.csproj" />
     <Project Path="tests/Outlet.ArchitectureTests/Outlet.ArchitectureTests.csproj" />

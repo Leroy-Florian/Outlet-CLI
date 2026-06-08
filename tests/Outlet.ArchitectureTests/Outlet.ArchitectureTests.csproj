@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\src\Outlet.Core.Domain\Outlet.Core.Domain.csproj" />
     <ProjectReference Include="..\..\src\Outlet.Core.Infrastructure\Outlet.Core.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Outlet.Identity.Domain\Outlet.Identity.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Outlet.Cloud.Domain\Outlet.Cloud.Domain.csproj" />
     <ProjectReference Include="..\..\src\Kernel.Shared\Outlet.Kernel.Shared\Outlet.Kernel.Shared.csproj" />
   </ItemGroup>
 
