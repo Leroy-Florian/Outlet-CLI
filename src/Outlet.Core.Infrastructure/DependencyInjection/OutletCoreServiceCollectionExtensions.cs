@@ -28,6 +28,7 @@ public static class OutletCoreServiceCollectionExtensions
         services.AddScoped<IRegistryClient, ConfiguredRegistryClient>();
         services.AddScoped<IMsBuildEvaluator, DotnetMsBuildEvaluator>();
         services.AddScoped<IProjectInspector, MsBuildProjectInspector>();
+        services.AddScoped<IPackageRestorer, DotnetPackageRestorer>();
         services.AddScoped<INamespaceRewriter, RoslynNamespaceRewriter>();
         services.AddScoped<IFileSystem, PhysicalFileSystem>();
         services.AddScoped<INuGetEditor, ProjectNuGetEditor>();

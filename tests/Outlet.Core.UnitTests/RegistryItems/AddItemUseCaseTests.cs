@@ -13,6 +13,7 @@ public sealed class AddItemUseCaseTests
     private readonly FakeProjectInspector _inspector = new();
     private readonly FakeFileSystem _fileSystem = new();
     private readonly FakeNuGetEditor _nuGet = new();
+    private readonly FakePackageRestorer _restorer = new();
     private readonly FakeOutletConfigStore _config = new();
 
     public AddItemUseCaseTests()
@@ -22,7 +23,7 @@ public sealed class AddItemUseCaseTests
     }
 
     private AddItemUseCase BuildUseCase()
-        => new(_registry, _inspector, new FakeNamespaceRewriter(), _fileSystem, _nuGet, _config);
+        => new(_registry, _inspector, new FakeNamespaceRewriter(), _fileSystem, _nuGet, _restorer, _config);
 
     [Fact]
     public async Task Should_InstallDependenciesFirst_AndWriteRewrittenFiles()
@@ -94,10 +95,69 @@ public sealed class AddItemUseCaseTests
     }
 
     [Fact]
+    public async Task Should_RestoreTargetProject_AfterAddingPackages()
+    {
+        var result = await BuildUseCase().HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp"));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.Restored.Should().BeTrue();
+        _restorer.Requests.Should().ContainSingle()
+            .Which.ProjectFilePath.Should().Be(Path.Combine(ProjectDirectory, "App.csproj"));
+    }
+
+    [Fact]
+    public async Task Should_NotRestore_When_NoRestoreFlagIsSet()
+    {
+        var result = await BuildUseCase().HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp", Restore: false));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.Restored.Should().BeFalse();
+        _restorer.Requests.Should().BeEmpty();
+        _fileSystem.Files.Should().ContainKey("/repo/SmtpEmailSender.cs");
+    }
+
+    [Fact]
+    public async Task Should_NotRestore_When_ItemHasNoPackages()
+    {
+        var result = await BuildUseCase().HandleAsync(new AddItemCommand(ProjectDirectory, "email-abstractions"));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.Restored.Should().BeFalse();
+        _restorer.Requests.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Should_SurfaceRestoreWarnings_When_RestoreSucceedsWithDiagnostics()
+    {
+        _restorer.SucceedingWith("NU1701: package restored using a different framework");
+
+        var result = await BuildUseCase().HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp"));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.Warnings.Should().Contain("NU1701: package restored using a different framework");
+    }
+
+    [Fact]
+    public async Task Should_RollbackEverything_When_RestoreFails()
+    {
+        _restorer.Failing("NU1107: Version conflict detected for Newtonsoft.Json");
+
+        var result = await BuildUseCase().HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp"));
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("NU1107").And.Contain("Rolled back");
+
+        _fileSystem.Files.Should().NotContainKey("/repo/SmtpEmailSender.cs", "written files are deleted on rollback");
+        _fileSystem.Files.Should().NotContainKey("/repo/IEmailSender.cs");
+        _nuGet.RemoveRequests.Should().ContainSingle().Which.PackageId.Should().Be("MailKit");
+        _config.Saved!.Installed.Should().BeEmpty("the lockfile is never written when the install is rolled back");
+    }
+
+    [Fact]
     public async Task Should_Fail_When_ConfigIsMissing()
     {
         var emptyConfig = new FakeOutletConfigStore();
-        var useCase = new AddItemUseCase(_registry, _inspector, new FakeNamespaceRewriter(), _fileSystem, _nuGet, emptyConfig);
+        var useCase = new AddItemUseCase(_registry, _inspector, new FakeNamespaceRewriter(), _fileSystem, _nuGet, _restorer, emptyConfig);
 
         var result = await useCase.HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp"));
 
@@ -144,7 +204,7 @@ public sealed class AddItemUseCaseTests
     public async Task Should_RefuseInstall_When_ItemIsIncompatibleWithProjectTfm()
     {
         var inspector = new FakeProjectInspector().WithProject(Path.Combine(ProjectDirectory, "App.csproj"), "MyApp", "net6.0");
-        var useCase = new AddItemUseCase(_registry, inspector, new FakeNamespaceRewriter(), _fileSystem, _nuGet, _config);
+        var useCase = new AddItemUseCase(_registry, inspector, new FakeNamespaceRewriter(), _fileSystem, _nuGet, _restorer, _config);
 
         var result = await useCase.HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp"));
 
@@ -157,7 +217,7 @@ public sealed class AddItemUseCaseTests
     public async Task Should_Install_When_ItemIsCompatibleWithProjectTfm()
     {
         var inspector = new FakeProjectInspector().WithProject(Path.Combine(ProjectDirectory, "App.csproj"), "MyApp", "net10.0");
-        var useCase = new AddItemUseCase(_registry, inspector, new FakeNamespaceRewriter(), _fileSystem, _nuGet, _config);
+        var useCase = new AddItemUseCase(_registry, inspector, new FakeNamespaceRewriter(), _fileSystem, _nuGet, _restorer, _config);
 
         var result = await useCase.HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp"));
 
