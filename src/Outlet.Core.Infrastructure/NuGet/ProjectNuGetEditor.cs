@@ -30,6 +30,35 @@ public sealed class ProjectNuGetEditor(IFileSystem fileSystem) : INuGetEditor
         return await EnsureVersionedReferenceAsync(request.ProjectFilePath, id, version, cancellationToken);
     }
 
+    public async Task<bool> RemovePackageAsync(NuGetRemoveRequest request, CancellationToken cancellationToken = default)
+    {
+        var removed = await RemoveItemAsync(request.ProjectFilePath, "PackageReference", request.PackageId, cancellationToken);
+
+        if (request.UsesCentralPackageManagement && !string.IsNullOrWhiteSpace(request.CentralPackagesFilePath))
+            removed |= await RemoveItemAsync(request.CentralPackagesFilePath!, "PackageVersion", request.PackageId, cancellationToken);
+
+        return removed;
+    }
+
+    private async Task<bool> RemoveItemAsync(string path, string elementName, string id, CancellationToken cancellationToken)
+    {
+        if (!fileSystem.FileExists(path))
+            return false;
+
+        var document = await LoadAsync(path, cancellationToken);
+        var element = FindItem(document, elementName, id);
+        if (element is null)
+            return false;
+
+        var parent = element.Parent;
+        element.Remove();
+        if (parent is not null && !parent.Elements().Any())
+            parent.Remove();
+
+        await SaveAsync(path, document, cancellationToken);
+        return true;
+    }
+
     private async Task<NuGetEditResult> EnsureCentralVersionAsync(string centralFilePath, string id, string version, CancellationToken cancellationToken)
     {
         var document = await LoadAsync(centralFilePath, cancellationToken);

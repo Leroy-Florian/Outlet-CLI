@@ -25,4 +25,6 @@ public sealed class FakeFileSystem : IFileSystem
     public bool FileExists(string path) => _files.ContainsKey(path);
 
     public void CreateDirectory(string path) { }
+
+    public void DeleteFile(string path) => _files.Remove(path);
 }

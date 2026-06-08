@@ -14,6 +14,13 @@ namespace Outlet.Core.Application.Ports;
 public interface INuGetEditor
 {
     Task<NuGetEditResult> AddPackageAsync(NuGetEditRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Removes a direct package reference: the <c>PackageReference</c> from the csproj and,
+    /// under CPM, the <c>PackageVersion</c> from the central file. Returns whether anything
+    /// was removed. Callers decide when a package is no longer used.
+    /// </summary>
+    Task<bool> RemovePackageAsync(NuGetRemoveRequest request, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -35,3 +42,10 @@ public enum NuGetEditOutcome
 
 /// <summary>Outcome of an edit; <paramref name="Warning"/> is set only on <see cref="NuGetEditOutcome.Conflict"/>.</summary>
 public sealed record NuGetEditResult(NuGetEditOutcome Outcome, string? Warning = null);
+
+/// <summary>Which package to remove from which project, with the CPM context for the central file.</summary>
+public sealed record NuGetRemoveRequest(
+    string ProjectFilePath,
+    string PackageId,
+    bool UsesCentralPackageManagement,
+    string? CentralPackagesFilePath);
