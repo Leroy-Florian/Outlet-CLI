@@ -17,13 +17,16 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." &
 log() { echo "[session-start] $*" >&2; }
 
 # Persist tool path + quiet flags for the whole session (when the harness provides
-# an env file). Exporting here too covers this hook's own restore step.
-export PATH="$DOTNET_DIR:$PATH"
+# an env file). Exporting here too covers this hook's own restore step. DOTNET_ROOT
+# lets global tools (e.g. dotnet-ef) find the runtime under the non-standard ~/.dotnet.
+export PATH="$DOTNET_DIR:$DOTNET_DIR/tools:$PATH"
+export DOTNET_ROOT="$DOTNET_DIR"
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_NOLOGO=1
 if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
   {
-    echo "export PATH=\"$DOTNET_DIR:\$PATH\""
+    echo "export PATH=\"$DOTNET_DIR:$DOTNET_DIR/tools:\$PATH\""
+    echo "export DOTNET_ROOT=\"$DOTNET_DIR\""
     echo "export DOTNET_CLI_TELEMETRY_OPTOUT=1"
     echo "export DOTNET_NOLOGO=1"
   } >> "$CLAUDE_ENV_FILE"
