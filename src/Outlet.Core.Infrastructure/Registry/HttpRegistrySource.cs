@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using Outlet.Core.Domain.RegistryItems;
 using Outlet.Core.Infrastructure.Manifests;
 
@@ -11,8 +12,12 @@ namespace Outlet.Core.Infrastructure.Registry;
 /// <c>{ "items": [ … ] }</c> document) and each file at
 /// <c>{baseUri}/{itemName}/{filePath}</c>. JSON parsing stays in the manifest
 /// serializer; this adapter only does transport.
+///
+/// <paramref name="authorization"/> is attached per-request (never mutating the
+/// shared <see cref="HttpClient"/>) so several sources can use distinct credentials.
+/// Null = anonymous (public registry).
 /// </summary>
-public sealed class HttpRegistrySource(HttpClient httpClient, Uri baseUri) : IRegistrySource
+public sealed class HttpRegistrySource(HttpClient httpClient, Uri baseUri, AuthenticationHeaderValue? authorization = null) : IRegistrySource
 {
     private readonly Uri _baseUri = EnsureTrailingSlash(baseUri);
 
@@ -53,7 +58,8 @@ public sealed class HttpRegistrySource(HttpClient httpClient, Uri baseUri) : IRe
 
     private async Task<string?> GetStringOrNullAsync(Uri uri, CancellationToken cancellationToken)
     {
-        using var response = await httpClient.GetAsync(uri, cancellationToken);
+        using var request = new HttpRequestMessage(HttpMethod.Get, uri) { Headers = { Authorization = authorization } };
+        using var response = await httpClient.SendAsync(request, cancellationToken);
         if (response.StatusCode == HttpStatusCode.NotFound)
             return null;
 
