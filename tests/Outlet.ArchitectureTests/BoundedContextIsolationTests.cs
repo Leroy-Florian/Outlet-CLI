@@ -1,62 +1,50 @@
+using System.Reflection;
 using NetArchTest.Rules;
 
 namespace Outlet.ArchitectureTests;
 
 /// <summary>
 /// Each bounded context owns its own model. Contexts communicate by id (and, later,
-/// domain events / application orchestration), never by importing another context's
-/// types. These tests keep the boundaries honest: the registry engine (Core),
-/// identity/access (Identity) and cloud/organizations (Cloud) must not leak into
-/// one another at the Domain layer.
+/// domain events / composition-root orchestration), never by importing another
+/// context's types. These tests keep the boundaries honest across BOTH the Domain
+/// and Application layers — in particular, issuing a scoped token must not turn into
+/// an Identity→Cloud dependency: scopes cross the boundary as plain strings.
 /// </summary>
 public sealed class BoundedContextIsolationTests : ArchitectureTestBase
 {
+    private static readonly Assembly[] IdentityContext = [IdentityDomainAssembly, IdentityApplicationAssembly];
+    private static readonly Assembly[] CloudContext = [CloudDomainAssembly, CloudApplicationAssembly];
+    private static readonly Assembly[] CoreContext = [DomainAssembly, ApplicationAssembly, InfrastructureAssembly];
+
     [Fact]
     public void Identity_ShouldNot_DependOn_OtherContexts()
     {
-        var result = Types.InAssembly(IdentityDomainAssembly)
-            .ShouldNot()
-            .HaveDependencyOnAny(
-                CloudDomainAssembly.GetName().Name!,
-                DomainAssembly.GetName().Name!,
-                ApplicationAssembly.GetName().Name!,
-                InfrastructureAssembly.GetName().Name!)
-            .GetResult();
-
-        Assert.True(result.IsSuccessful,
-            $"Identity context must not depend on Cloud or Core:{Environment.NewLine}" +
-            string.Join(Environment.NewLine, result.FailingTypeNames ?? []));
+        AssertNoDependency(IdentityContext, [.. CloudContext, .. CoreContext], "Identity", "Cloud or Core");
     }
 
     [Fact]
     public void Cloud_ShouldNot_DependOn_OtherContexts()
     {
-        var result = Types.InAssembly(CloudDomainAssembly)
-            .ShouldNot()
-            .HaveDependencyOnAny(
-                IdentityDomainAssembly.GetName().Name!,
-                DomainAssembly.GetName().Name!,
-                ApplicationAssembly.GetName().Name!,
-                InfrastructureAssembly.GetName().Name!)
-            .GetResult();
-
-        Assert.True(result.IsSuccessful,
-            $"Cloud context must not depend on Identity or Core:{Environment.NewLine}" +
-            string.Join(Environment.NewLine, result.FailingTypeNames ?? []));
+        AssertNoDependency(CloudContext, [.. IdentityContext, .. CoreContext], "Cloud", "Identity or Core");
     }
 
     [Fact]
     public void CoreEngine_ShouldNot_DependOn_CloudOrIdentity()
     {
-        var result = Types.InAssembly(DomainAssembly)
+        AssertNoDependency(CoreContext, [.. IdentityContext, .. CloudContext], "Core", "Identity or Cloud");
+    }
+
+    private static void AssertNoDependency(Assembly[] context, Assembly[] forbidden, string contextName, string forbiddenName)
+    {
+        string[] forbiddenNames = [.. forbidden.Select(a => a.GetName().Name!)];
+
+        var result = Types.InAssemblies(context)
             .ShouldNot()
-            .HaveDependencyOnAny(
-                IdentityDomainAssembly.GetName().Name!,
-                CloudDomainAssembly.GetName().Name!)
+            .HaveDependencyOnAny(forbiddenNames)
             .GetResult();
 
         Assert.True(result.IsSuccessful,
-            $"The registry engine (Core) must not depend on Identity or Cloud:{Environment.NewLine}" +
+            $"The {contextName} context must not depend on {forbiddenName}:{Environment.NewLine}" +
             string.Join(Environment.NewLine, result.FailingTypeNames ?? []));
     }
 }
