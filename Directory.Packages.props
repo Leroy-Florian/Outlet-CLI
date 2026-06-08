@@ -46,5 +46,8 @@
 
     <!-- Hermetic relational persistence tests (in-memory SQLite) -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.8" />
+
+    <!-- In-process web host for API integration tests -->
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.8" />
   </ItemGroup>
 </Project>

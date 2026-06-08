@@ -11,6 +11,7 @@
     <Project Path="src/Outlet.Cloud.Domain/Outlet.Cloud.Domain.csproj" />
     <Project Path="src/Outlet.Cloud.Application/Outlet.Cloud.Application.csproj" />
     <Project Path="src/Outlet.Cloud.Infrastructure/Outlet.Cloud.Infrastructure.csproj" />
+    <Project Path="src/Outlet.Cloud.Web/Outlet.Cloud.Web.csproj" />
     <Project Path="src/Outlet.Cli/Outlet.Cli.csproj" />
   </Folder>
   <Folder Name="/tests/">
@@ -22,6 +23,7 @@
     <Project Path="tests/Outlet.Cloud.Domain.UnitTests/Outlet.Cloud.Domain.UnitTests.csproj" />
     <Project Path="tests/Outlet.Cloud.Application.UnitTests/Outlet.Cloud.Application.UnitTests.csproj" />
     <Project Path="tests/Outlet.Cloud.Infrastructure.UnitTests/Outlet.Cloud.Infrastructure.UnitTests.csproj" />
+    <Project Path="tests/Outlet.Cloud.Web.IntegrationTests/Outlet.Cloud.Web.IntegrationTests.csproj" />
     <Project Path="tests/Outlet.Registry.Email.Tests/Outlet.Registry.Email.Tests.csproj" />
     <Project Path="tests/Outlet.Registry.Email.Compat/Outlet.Registry.Email.Compat.csproj" />
     <Project Path="tests/Outlet.ArchitectureTests/Outlet.ArchitectureTests.csproj" />

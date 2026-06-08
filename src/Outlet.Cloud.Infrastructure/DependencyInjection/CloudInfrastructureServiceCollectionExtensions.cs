@@ -8,10 +8,16 @@ namespace Outlet.Cloud.Infrastructure.DependencyInjection;
 /// <summary>Composition entry point for the Cloud context's persistence adapters.</summary>
 public static class CloudInfrastructureServiceCollectionExtensions
 {
-    /// <summary>Registers the Cloud <see cref="CloudDbContext"/> (PostgreSQL) and its repositories.</summary>
-    public static IServiceCollection AddOutletCloudInfrastructure(this IServiceCollection services, string connectionString)
+    /// <summary>
+    /// Registers the Cloud <see cref="CloudDbContext"/> and its repositories. The database
+    /// provider is supplied by <paramref name="configureDatabase"/> (PostgreSQL in the host,
+    /// SQLite in tests).
+    /// </summary>
+    public static IServiceCollection AddOutletCloudInfrastructure(
+        this IServiceCollection services,
+        Action<DbContextOptionsBuilder> configureDatabase)
     {
-        services.AddDbContext<CloudDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddDbContext<CloudDbContext>(configureDatabase);
         services.AddScoped<IOrganizationRepository, EfOrganizationRepository>();
 
         return services;

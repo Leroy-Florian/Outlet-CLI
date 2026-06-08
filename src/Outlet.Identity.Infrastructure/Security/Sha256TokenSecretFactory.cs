@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Text;
 using Outlet.Identity.Application.Ports;
 using Outlet.Identity.Domain.AccessTokens;
 
@@ -21,9 +20,6 @@ public sealed class Sha256TokenSecretFactory : ITokenSecretFactory
         var randomBytes = RandomNumberGenerator.GetBytes(32);
         var secret = Prefix + Convert.ToHexStringLower(randomBytes);
 
-        var digest = SHA256.HashData(Encoding.UTF8.GetBytes(secret));
-        var hash = TokenHash.From(Convert.ToHexStringLower(digest));
-
-        return new GeneratedTokenSecret(id, secret, hash);
+        return new GeneratedTokenSecret(id, secret, TokenHashing.ComputeHash(secret));
     }
 }
