@@ -15,6 +15,5 @@ public interface IRegistryClient
     /// <summary>Fetches a single item by id, or null when no registry declares it.</summary>
     Task<RegistryItem?> GetItemAsync(RegistryItemId id, CancellationToken cancellationToken = default);
 
-    /// <summary>Downloads the raw content of one file of an item.</summary>
     Task<string> GetFileContentAsync(RegistryItemId id, string filePath, CancellationToken cancellationToken = default);
 }

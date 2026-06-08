@@ -7,7 +7,6 @@ namespace Outlet.Core.Application.Ports;
 /// </summary>
 public interface IProjectInspector
 {
-    /// <summary>Inspects the project/solution rooted at <paramref name="rootPath"/>.</summary>
     Task<ProjectInspection> InspectAsync(string rootPath, CancellationToken cancellationToken = default);
 }
 

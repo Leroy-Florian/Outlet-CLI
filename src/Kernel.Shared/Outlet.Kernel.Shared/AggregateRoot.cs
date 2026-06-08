@@ -44,10 +44,6 @@ public abstract class AggregateRoot<TId> : Entity<TId>, IAggregateRoot
     {
     }
 
-    /// <summary>
-    /// Exposes domain events as read-only collection.
-    /// External code can read events but cannot modify the list.
-    /// </summary>
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     /// <summary>

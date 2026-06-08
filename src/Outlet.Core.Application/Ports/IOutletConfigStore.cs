@@ -9,7 +9,6 @@ namespace Outlet.Core.Application.Ports;
 /// </summary>
 public interface IOutletConfigStore
 {
-    /// <summary>True when <c>outlet.json</c> exists in <paramref name="projectDirectory"/>.</summary>
     bool Exists(string projectDirectory);
 
     /// <summary>Loads and validates the config, or returns a failed result on a malformed file.</summary>
