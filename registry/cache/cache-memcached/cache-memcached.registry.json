@@ -1,0 +1,17 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "cache-memcached",
+  "type": "outlet:adapter",
+  "concern": "cache",
+  "description": "Memcached adapter for ICacheStore, backed by EnyimMemcachedCore.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["cache-abstractions"],
+  "nugetDependencies": [
+    { "id": "EnyimMemcachedCore", "version": "3.5.1" }
+  ],
+  "files": [
+    { "path": "MemcachedCacheOptions.cs", "target": "adapter" },
+    { "path": "MemcachedCacheStore.cs", "target": "adapter" },
+    { "path": "MemcachedCacheServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

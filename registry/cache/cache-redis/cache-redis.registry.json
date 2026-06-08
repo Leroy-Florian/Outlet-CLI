@@ -1,0 +1,18 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "cache-redis",
+  "type": "outlet:adapter",
+  "concern": "cache",
+  "description": "Redis adapter for ICacheStore (+ provider-specific atomic counters), backed by StackExchange.Redis.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["cache-abstractions"],
+  "nugetDependencies": [
+    { "id": "StackExchange.Redis", "version": "2.13.17" }
+  ],
+  "files": [
+    { "path": "IRedisCacheStore.cs", "target": "adapter" },
+    { "path": "RedisCacheOptions.cs", "target": "adapter" },
+    { "path": "RedisCacheStore.cs", "target": "adapter" },
+    { "path": "RedisCacheServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

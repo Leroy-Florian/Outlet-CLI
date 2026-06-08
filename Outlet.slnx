@@ -12,10 +12,13 @@
     <Project Path="tests/Outlet.Core.Infrastructure.UnitTests/Outlet.Core.Infrastructure.UnitTests.csproj" />
     <Project Path="tests/Outlet.Registry.Email.Tests/Outlet.Registry.Email.Tests.csproj" />
     <Project Path="tests/Outlet.Registry.Email.Compat/Outlet.Registry.Email.Compat.csproj" />
+    <Project Path="tests/Outlet.Registry.Cache.Tests/Outlet.Registry.Cache.Tests.csproj" />
+    <Project Path="tests/Outlet.Registry.Cache.Compat/Outlet.Registry.Cache.Compat.csproj" />
     <Project Path="tests/Outlet.ArchitectureTests/Outlet.ArchitectureTests.csproj" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/SwapDemo/SwapDemo.csproj" />
+    <Project Path="samples/CacheSwapDemo/CacheSwapDemo.csproj" />
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/Outlet.Registry.Builder/Outlet.Registry.Builder.csproj" />

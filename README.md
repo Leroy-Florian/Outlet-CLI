@@ -76,6 +76,19 @@ Concern **email** (`registry/email/`):
 | `email-smtp` | adapter | MailKit | `AddSmtpEmail(...)` |
 | `email-sendgrid` | adapter | SendGrid | `AddSendGridEmail(...)` |
 
+Concern **cache** (`registry/cache/`):
+
+| Item | Type | Provider | DI |
+|---|---|---|---|
+| `cache-abstractions` | contract | — (zero dependency) | — |
+| `cache-memory` | adapter | Microsoft.Extensions.Caching.Memory | `AddInMemoryCache(...)` |
+| `cache-redis` | adapter | StackExchange.Redis | `AddRedisCache(...)` |
+| `cache-memcached` | adapter | EnyimMemcachedCore | `AddMemcachedCache(...)` |
+
+The generic `ICacheStore` port is identical across all three, so swapping provider is a
+one-line change. `cache-redis` shows the "specific beside generic" pattern: `IRedisCacheStore`
+(atomic counters) implemented by the same instance, forwarded to both interfaces.
+
 ## How it works
 
 The `outlet` CLI is a thin front-end over a reusable core engine:
@@ -97,7 +110,8 @@ registry/<concern>/<item>/   real, compilable, tested code (source of truth)
 registry/.../*.registry.json  explicit per-item manifest (validated against the JSON schema)
 src/Outlet.Core.{Domain,Application,Infrastructure}/   the engine (hexagonal + DDD)
 src/Outlet.Cli/              the `outlet` dotnet tool
-samples/SwapDemo/            the one-line swap demo
+samples/SwapDemo/            the one-line email swap demo
+samples/CacheSwapDemo/       the one-line cache swap demo
 tests/                       unit, infrastructure, registry and architecture tests
 ```
 
