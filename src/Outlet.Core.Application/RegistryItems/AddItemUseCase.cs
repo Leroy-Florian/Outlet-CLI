@@ -172,7 +172,10 @@ public sealed class AddItemUseCase(
                     ? string.Join("; ", restore.Diagnostics)
                     : "see 'dotnet restore' output";
                 return $"'{itemName}': NuGet could not resolve a compatible package graph ({detail}). " +
-                    "Rolled back the install — your project was left unchanged.";
+                    "Rolled back the install — your project was left unchanged. " +
+                    "Resolve the version conflict (align the conflicting package's version in your project, " +
+                    "or remove the existing reference), then run 'outlet add' again — " +
+                    "or pass '--no-restore' to copy the files without restoring.";
             }
         }
 
