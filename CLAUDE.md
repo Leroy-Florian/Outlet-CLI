@@ -161,6 +161,12 @@ La planification détaillée est dans **Linear** (team Hijoxx) :
 - Tout item registre doit compiler + être testé (le manifeste ne doit jamais mentir).
 - **Zéro dette** : pas de « noté pour plus tard ». Un finding est corrigé dans la session ou explicitement différé avec ticket. Un refactor inachevé est une régression, pas une étape.
 
+## Workflow de PR
+
+- **Créer des PRs de façon proactive** dès que c'est utile — ne pas attendre une demande explicite.
+- **Découper au maximum** : préférer plusieurs petites PRs faciles à suivre et à review plutôt qu'une grosse. 1 session = idéalement plusieurs petites PRs.
+- **Chaque PR est indépendante et idempotente** : mergeable seule, dans n'importe quel ordre, sans dépendre d'une autre PR de la session (pas de PRs empilées). Si deux changements ne sont pas séparables proprement, ils vont dans la même PR.
+
 ## Commandes utiles
 
 ```bash
