@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <!-- The registry sources use their canonical placeholder root namespace; keep it intact. -->
+    <RootNamespace>Outlet.Registry.Sms.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    Compile the registry item sources directly (the source of truth) so they are
+    proven to build + are tested here — the manifest must never lie. Multi-TFM
+    verification of the declared targetFrameworks is owned by the Compat project.
+  -->
+  <ItemGroup>
+    <Compile Include="../../registry/sms/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.SimpleNotificationService" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="FluentAssertions" />
+  </ItemGroup>
+
+</Project>

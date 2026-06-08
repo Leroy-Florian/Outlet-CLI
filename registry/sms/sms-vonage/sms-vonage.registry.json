@@ -1,0 +1,15 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "sms-vonage",
+  "type": "outlet:adapter",
+  "concern": "sms",
+  "description": "Vonage (Nexmo) adapter for ISmsSender, thin REST over HttpClient.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["sms-abstractions"],
+  "nugetDependencies": [],
+  "files": [
+    { "path": "VonageSmsOptions.cs", "target": "adapter" },
+    { "path": "VonageSmsSender.cs", "target": "adapter" },
+    { "path": "VonageSmsServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

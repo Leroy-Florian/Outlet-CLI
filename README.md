@@ -76,6 +76,19 @@ Concern **email** (`registry/email/`):
 | `email-smtp` | adapter | MailKit | `AddSmtpEmail(...)` |
 | `email-sendgrid` | adapter | SendGrid | `AddSendGridEmail(...)` |
 
+Concern **sms** (`registry/sms/`):
+
+| Item | Type | Provider | DI |
+|---|---|---|---|
+| `sms-abstractions` | contract | — (zero dependency) | — |
+| `sms-twilio` | adapter | Twilio (thin REST) | `AddTwilioSms(...)` |
+| `sms-vonage` | adapter | Vonage / Nexmo (thin REST) | `AddVonageSms(...)` |
+| `sms-aws-sns` | adapter | Amazon SNS (AWS SDK) | `AddAwsSnsSms(...)` |
+
+The generic `ISmsSender` port is identical across all three adapters → swapping provider is a
+one-line DI change. `sms-twilio` also shows the "specific beside the generic" pattern via
+`ITwilioSmsSender` (sending through a Messaging Service).
+
 ## How it works
 
 The `outlet` CLI is a thin front-end over a reusable core engine:

@@ -1,0 +1,16 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "sms-twilio",
+  "type": "outlet:adapter",
+  "concern": "sms",
+  "description": "Twilio adapter for ISmsSender (thin REST, + provider-specific Messaging Service sends).",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["sms-abstractions"],
+  "nugetDependencies": [],
+  "files": [
+    { "path": "ITwilioSmsSender.cs", "target": "adapter" },
+    { "path": "TwilioSmsOptions.cs", "target": "adapter" },
+    { "path": "TwilioSmsSender.cs", "target": "adapter" },
+    { "path": "TwilioSmsServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}
