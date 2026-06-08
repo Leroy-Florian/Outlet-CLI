@@ -165,9 +165,77 @@ removeCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (medi
         });
 }, cancellationToken));
 
+// outlet diff <item>
+var diffItemArgument = new Argument<string>("item")
+{
+    Description = "Installed item to compare with its current registry version.",
+};
+var diffCommand = new Command("diff", "Show how an installed item differs from its current registry version.");
+diffCommand.Arguments.Add(diffItemArgument);
+diffCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var command = new DiffItemCommand(Environment.CurrentDirectory, parseResult.GetValue(diffItemArgument)!);
+    var result = await mediator.ExecuteAsync<DiffItemCommand, ItemDiffReport>(command, token);
+
+    return result.Match(
+        onSuccess: report =>
+        {
+            if (!report.HasChanges)
+            {
+                Console.WriteLine($"{report.ItemName} is up to date.");
+                return 0;
+            }
+
+            Console.WriteLine($"{report.ItemName}:");
+            foreach (var file in report.Files.Where(f => f.Status != nameof(FileChangeStatus.Unchanged)))
+                Console.WriteLine($"  {file.Status,-16} {file.Path}");
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
+}, cancellationToken));
+
+// outlet update <item>
+var updateItemArgument = new Argument<string>("item")
+{
+    Description = "Installed item to update to its current registry version.",
+};
+var updateCommand = new Command("update", "Update an installed item, preserving local edits (conflicts written as <file>.outlet-new).");
+updateCommand.Arguments.Add(updateItemArgument);
+updateCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var command = new UpdateItemCommand(Environment.CurrentDirectory, parseResult.GetValue(updateItemArgument)!);
+    var result = await mediator.ExecuteAsync<UpdateItemCommand, UpdateReport>(command, token);
+
+    return result.Match(
+        onSuccess: report =>
+        {
+            foreach (var file in report.Updated)
+                Console.WriteLine($"  updated {file}");
+            foreach (var conflict in report.Conflicts)
+                Console.WriteLine($"  conflict {conflict} (see {conflict}.outlet-new)");
+            foreach (var warning in report.Warnings)
+                Console.Error.WriteLine($"warning: {warning}");
+
+            if (report.Updated.Count == 0 && report.Conflicts.Count == 0)
+                Console.WriteLine($"{report.ItemName} is already up to date.");
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
+}, cancellationToken));
+
 rootCommand.Subcommands.Add(initCommand);
 rootCommand.Subcommands.Add(addCommand);
 rootCommand.Subcommands.Add(removeCommand);
+rootCommand.Subcommands.Add(diffCommand);
+rootCommand.Subcommands.Add(updateCommand);
 rootCommand.Subcommands.Add(listCommand);
 
 return await rootCommand.Parse(args).InvokeAsync();

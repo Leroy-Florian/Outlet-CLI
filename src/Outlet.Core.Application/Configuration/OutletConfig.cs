@@ -37,9 +37,12 @@ public sealed record TargetRoute(string Project, string Namespace);
 public sealed record InstalledItem(
     string Name,
     string Version,
-    IReadOnlyList<string> Files,
+    IReadOnlyList<InstalledFile> Files,
     IReadOnlyList<InstalledPackage> Packages,
     IReadOnlyList<string> Dependencies);
+
+/// <summary>A written file: its project-relative <paramref name="Path"/> and the content hash as originally written (to detect local edits on update/diff).</summary>
+public sealed record InstalledFile(string Path, string Hash);
 
 /// <summary>A NuGet package an installed item added, at the floor version applied.</summary>
 public sealed record InstalledPackage(string Id, string Version);

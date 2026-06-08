@@ -56,10 +56,10 @@ public sealed class AddItemUseCase(
             var route = item.Type == RegistryItemType.Contract ? config.Targets.Contract : config.Targets.Adapter;
             var projectFilePath = Path.Combine(command.ProjectDirectory, route.Project);
             var destinationDirectory = Path.GetDirectoryName(projectFilePath) ?? command.ProjectDirectory;
-            var sourceRoot = TargetNamespace.From(RegistryRootNamespace(item.Concern));
+            var sourceRoot = TargetNamespace.From(RegistryNamespaces.RootFor(item.Concern));
             var targetNamespace = TargetNamespace.From(route.Namespace);
 
-            var itemFiles = new List<string>();
+            var itemFiles = new List<InstalledFile>();
             foreach (var file in item.Files)
             {
                 var destinationPath = Path.Combine(destinationDirectory, file);
@@ -76,7 +76,7 @@ public sealed class AddItemUseCase(
                 await fileSystem.WriteAllTextAsync(destinationPath, rewritten, cancellationToken);
 
                 var relative = Path.GetRelativePath(command.ProjectDirectory, destinationPath);
-                itemFiles.Add(relative);
+                itemFiles.Add(new InstalledFile(relative, ContentHash.Of(rewritten)));
                 writtenFiles.Add(relative);
             }
 
@@ -143,9 +143,4 @@ public sealed class AddItemUseCase(
 
         return null;
     }
-
-    // Registry sources use the canonical root namespace Outlet.Registry.<Concern>
-    // (e.g. Outlet.Registry.Email); the rewriter remaps it to the user's target.
-    private static string RegistryRootNamespace(ConcernName concern)
-        => $"Outlet.Registry.{char.ToUpperInvariant(concern.Value[0])}{concern.Value[1..]}";
 }
