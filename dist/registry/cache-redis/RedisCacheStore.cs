@@ -11,7 +11,7 @@ namespace Outlet.Registry.Cache;
 /// connection multiplexer is established lazily on first use so registration never
 /// touches the network.
 /// </summary>
-public sealed class RedisCacheStore : IRedisCacheStore, IAsyncDisposable
+public sealed class RedisCacheStore : IRedisCacheStore, IDisposable, IAsyncDisposable
 {
     private readonly RedisCacheOptions _options;
     private readonly Lazy<Task<ConnectionMultiplexer>> _connection;
@@ -40,7 +40,7 @@ public sealed class RedisCacheStore : IRedisCacheStore, IAsyncDisposable
         cancellationToken.ThrowIfCancellationRequested();
 
         var database = await GetDatabaseAsync();
-        await database.StringSetAsync(Qualify(key), value, (options ?? CacheEntryOptions.None).TimeToLive);
+        await database.StringSetAsync(Qualify(key), value, (options ?? CacheEntryOptions.None).TimeToLive, keepTtl: false);
     }
 
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
@@ -59,10 +59,19 @@ public sealed class RedisCacheStore : IRedisCacheStore, IAsyncDisposable
         return await database.StringIncrementAsync(Qualify(key), by);
     }
 
+    // Both sync and async disposal are supported so the adapter is forgiving however the
+    // host disposes its container. Only a successfully-established multiplexer is disposed;
+    // one that never connected has nothing live to release.
+    public void Dispose()
+    {
+        if (_connection.IsValueCreated && _connection.Value.IsCompletedSuccessfully)
+            _connection.Value.Result.Dispose();
+    }
+
     public async ValueTask DisposeAsync()
     {
-        if (_connection.IsValueCreated)
-            await (await _connection.Value).DisposeAsync();
+        if (_connection.IsValueCreated && _connection.Value.IsCompletedSuccessfully)
+            await _connection.Value.Result.DisposeAsync();
     }
 
     private async Task<IDatabase> GetDatabaseAsync() => (await _connection.Value).GetDatabase();
