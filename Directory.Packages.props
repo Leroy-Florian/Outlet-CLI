@@ -22,7 +22,6 @@
     <PackageVersion Include="MailKit" Version="4.16.0" />
     <PackageVersion Include="SendGrid" Version="9.29.3" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
-    <PackageVersion Include="Dapper" Version="2.1.35" />
   </ItemGroup>
 
   <ItemGroup Label="Test Dependencies">
