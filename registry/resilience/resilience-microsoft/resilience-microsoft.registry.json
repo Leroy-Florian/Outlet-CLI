@@ -1,0 +1,16 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "resilience-microsoft",
+  "type": "outlet:adapter",
+  "concern": "resilience",
+  "description": "Microsoft.Extensions.Resilience adapter for IResilienceExecutor (DI-native pipeline registry + telemetry).",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["resilience-abstractions"],
+  "nugetDependencies": [
+    { "id": "Microsoft.Extensions.Resilience", "version": "9.0.0" }
+  ],
+  "files": [
+    { "path": "MicrosoftResilienceExecutor.cs", "target": "adapter" },
+    { "path": "MicrosoftResilienceServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

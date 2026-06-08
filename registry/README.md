@@ -37,6 +37,25 @@ de DI. `email-sendgrid` illustre le pattern « spécifique à côté du généri
 `ISendGridEmailSender` (templates dynamiques) implémenté par la même instance, forwardée
 vers les deux interfaces.
 
+## Contenu actuel — concern `resilience`
+
+| Item | Type | Provider | DI |
+|---|---|---|---|
+| `resilience-abstractions` | contract | — (zéro dépendance) | — |
+| `resilience-polly` | adapter | Polly v8 | `AddPollyResilience(...)` |
+| `resilience-microsoft` | adapter | Microsoft.Extensions.Resilience | `AddMicrosoftResilience(...)` |
+| `resilience-builtin` | adapter | — (zéro dépendance, fait main) | `AddBuiltInResilience(...)` |
+
+Le port générique `IResilienceExecutor` enveloppe une opération arbitraire avec les stratégies
+configurées (retry / timeout / circuit breaker) — il est **composé par-dessus** un autre port
+(ex. `IEmailSender`), jamais embarqué dans son adapter (principe #9). Les trois adapters lient
+les **mêmes** `ResilienceOptions` et mappent l'ouverture du circuit vers le **même** type
+`ResilienceRejectedException` → swap en une ligne, swappabilité **testée** par la suite de
+conformance de port. `resilience-polly` illustre le « spécifique à côté du générique » :
+`IPollyResilienceExecutor` (accès au `ResiliencePipeline` brut) implémenté par la même instance.
+`resilience-builtin` incarne l'ownership : retry + timeout + circuit breaker écrits main, **zéro
+package**.
+
 ## Convention `nugetDependencies`
 
 Un item déclare uniquement les packages **qu'il introduit** (la lib provider : MailKit,
