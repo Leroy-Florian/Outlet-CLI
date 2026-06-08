@@ -1,0 +1,18 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "outbox-dapper",
+  "type": "outlet:adapter",
+  "concern": "outbox",
+  "description": "Dapper adapter for IOutboxStore — appends on your ambient connection + transaction.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["outbox-abstractions"],
+  "nugetDependencies": [
+    { "id": "Dapper", "version": "2.1.35" }
+  ],
+  "files": [
+    { "path": "IOutboxDbSession.cs", "target": "adapter" },
+    { "path": "OutboxDapperOptions.cs", "target": "adapter" },
+    { "path": "OutboxDapperStore.cs", "target": "adapter" },
+    { "path": "OutboxDapperServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

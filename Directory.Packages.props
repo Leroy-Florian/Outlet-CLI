@@ -21,6 +21,8 @@
     <!-- Floor versions consumed by registry adapters; the build/test harness pins them so the manifests never lie. -->
     <PackageVersion Include="MailKit" Version="4.16.0" />
     <PackageVersion Include="SendGrid" Version="9.29.3" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageVersion Include="Dapper" Version="2.1.35" />
   </ItemGroup>
 
   <ItemGroup Label="Test Dependencies">
@@ -32,6 +34,10 @@
     <!-- Test Utilities -->
     <PackageVersion Include="FluentAssertions" Version="8.10.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+
+    <!-- Hermetic SQL backend for outbox adapter conformance (real SQL, in-memory, no network). -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="9.0.0" />
 
     <!-- Architecture Tests -->
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />

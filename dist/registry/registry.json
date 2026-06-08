@@ -109,6 +109,108 @@
         }
       ],
       "isContract": false
+    },
+    {
+      "name": "outbox-abstractions",
+      "type": "outlet:contract",
+      "concern": "outbox",
+      "description": "Generic transactional-outbox port (IOutboxStore) and message model — zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "IOutboxStore.cs",
+          "target": "contract"
+        },
+        {
+          "path": "OutboxMessage.cs",
+          "target": "contract"
+        }
+      ],
+      "isContract": true
+    },
+    {
+      "name": "outbox-dapper",
+      "type": "outlet:adapter",
+      "concern": "outbox",
+      "description": "Dapper adapter for IOutboxStore — appends on your ambient connection + transaction.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "outbox-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Dapper",
+          "version": "2.1.35"
+        }
+      ],
+      "files": [
+        {
+          "path": "IOutboxDbSession.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "OutboxDapperOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "OutboxDapperStore.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "OutboxDapperServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "outbox-efcore",
+      "type": "outlet:adapter",
+      "concern": "outbox",
+      "description": "EF Core adapter for IOutboxStore — appends within your DbContext's unit of work.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "outbox-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Microsoft.EntityFrameworkCore",
+          "version": "9.0.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "IOutboxDbContext.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "OutboxMessageConfiguration.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "OutboxEfCoreStore.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "OutboxEfCoreServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
     }
   ]
 }

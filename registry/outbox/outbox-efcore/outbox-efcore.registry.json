@@ -1,0 +1,18 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "outbox-efcore",
+  "type": "outlet:adapter",
+  "concern": "outbox",
+  "description": "EF Core adapter for IOutboxStore — appends within your DbContext's unit of work.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["outbox-abstractions"],
+  "nugetDependencies": [
+    { "id": "Microsoft.EntityFrameworkCore", "version": "9.0.0" }
+  ],
+  "files": [
+    { "path": "IOutboxDbContext.cs", "target": "adapter" },
+    { "path": "OutboxMessageConfiguration.cs", "target": "adapter" },
+    { "path": "OutboxEfCoreStore.cs", "target": "adapter" },
+    { "path": "OutboxEfCoreServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}
