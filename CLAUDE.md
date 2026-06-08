@@ -16,7 +16,7 @@ Le **squelette compilable est en place** (2026-06-05) :
 - `Outlet.Kernel.Shared` : building blocks DDD + Mediator + Result (porté de WOW, adapté).
 - `Outlet.Core.{Domain,Application,Infrastructure}` : langage du domaine minimal (agrégat `RegistryItem`, VOs, 5 ports, 1 use case `ListRegistryItemsUseCase`) + stubs d'adapters.
 - `Outlet.Cli` : dotnet tool `outlet` (`init`/`add` = stubs, `list` fonctionne).
-- Tests : 94 verts dont **36 tests d'architecture** (NetArchTest + scans textuels) qui verrouillent toutes les conventions ci-dessous.
+- Tests : 95 verts dont **37 tests d'architecture** (NetArchTest + scans textuels) qui verrouillent toutes les conventions ci-dessous.
 - Frontend : packages npm `@outlet/hateoas` et `@outlet/effect-react` (copies locales portées de WOW — une extraction en lib publiée est envisagée).
 
 **Aucun contenu de registre n'existe encore** (pas d'item email). Le cadrage complet vit dans Linear (voir Roadmap).
@@ -114,6 +114,7 @@ tests/Outlet.ArchitectureTests/     ← LE gate : toute convention est testée
 - **Primary constructors obligatoires hors Domain** (`PrimaryConstructorConventionTests`). Opt-out rare : commentaire `// non-primary: <raison>` au-dessus du ctor. Ctors privés/protégés (factories) exemptés.
 - **CPM** : toute version de package vit dans `Directory.Packages.props`, jamais dans un csproj.
 - Interfaces préfixées `I`, naming vérifié par `NamingConventionTests`.
+- **Doc XML = le pourquoi, jamais le nom** (`XmlSummaryConventionTests`). Un `<summary>` est **facultatif** (jamais exigé sur un type, une méthode ou une property) ; quand il existe, il doit expliquer l'**intention/contrainte/arbitrage** que le nom ne porte pas. Un `<summary>` qui ne fait que paraphraser l'identifiant (tous ses mots significatifs sont déjà dans le nom) est rejeté : on le supprime plutôt que de l'écrire. Le test scanne le texte source (la doc XML n'est pas dans l'IL) et reste conservateur (seules les paraphrases quasi-pures échouent).
 
 ## Stratégie de tests
 
