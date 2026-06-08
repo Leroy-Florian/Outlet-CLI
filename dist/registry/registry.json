@@ -109,6 +109,176 @@
         }
       ],
       "isContract": false
+    },
+    {
+      "name": "storage-abstractions",
+      "type": "outlet:contract",
+      "concern": "storage",
+      "description": "Generic object/blob storage port (IObjectStorage) and DTOs — zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "IObjectStorage.cs",
+          "target": "contract"
+        },
+        {
+          "path": "StorageObject.cs",
+          "target": "contract"
+        },
+        {
+          "path": "StorageObjectInfo.cs",
+          "target": "contract"
+        },
+        {
+          "path": "PutObjectOptions.cs",
+          "target": "contract"
+        }
+      ],
+      "isContract": true
+    },
+    {
+      "name": "storage-azure-blob",
+      "type": "outlet:adapter",
+      "concern": "storage",
+      "description": "Azure Blob Storage adapter for IObjectStorage (+ provider-specific SAS URIs), backed by Azure.Storage.Blobs.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "storage-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Azure.Storage.Blobs",
+          "version": "12.29.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "IAzureBlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AzureBlobObjectStorageOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AzureBlobObjectStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AzureBlobObjectStorageServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "storage-filesystem",
+      "type": "outlet:adapter",
+      "concern": "storage",
+      "description": "Local-filesystem adapter for IObjectStorage — content under a root directory, metadata in a sidecar tree. Zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "storage-abstractions"
+      ],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "FileSystemObjectStorageOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "FileSystemObjectStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "FileSystemObjectStorageServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "storage-in-memory",
+      "type": "outlet:adapter",
+      "concern": "storage",
+      "description": "In-memory adapter for IObjectStorage — thread-safe, zero external dependency (tests, local dev, ephemeral caches).",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "storage-abstractions"
+      ],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "InMemoryObjectStorageOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "InMemoryObjectStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "InMemoryObjectStorageServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "storage-s3",
+      "type": "outlet:adapter",
+      "concern": "storage",
+      "description": "AWS S3 adapter for IObjectStorage (+ provider-specific presigned URLs), backed by AWSSDK.S3.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "storage-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "AWSSDK.S3",
+          "version": "4.0.24.1"
+        }
+      ],
+      "files": [
+        {
+          "path": "IS3ObjectStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "S3ObjectStorageOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "S3ObjectStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "S3ObjectStorageServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
     }
   ]
 }

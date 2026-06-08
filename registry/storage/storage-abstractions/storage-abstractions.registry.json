@@ -1,0 +1,16 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "storage-abstractions",
+  "type": "outlet:contract",
+  "concern": "storage",
+  "description": "Generic object/blob storage port (IObjectStorage) and DTOs — zero external dependency.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": [],
+  "nugetDependencies": [],
+  "files": [
+    { "path": "IObjectStorage.cs", "target": "contract" },
+    { "path": "StorageObject.cs", "target": "contract" },
+    { "path": "StorageObjectInfo.cs", "target": "contract" },
+    { "path": "PutObjectOptions.cs", "target": "contract" }
+  ]
+}

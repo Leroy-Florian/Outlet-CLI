@@ -37,6 +37,32 @@ de DI. `email-sendgrid` illustre le pattern « spécifique à côté du généri
 `ISendGridEmailSender` (templates dynamiques) implémenté par la même instance, forwardée
 vers les deux interfaces.
 
+## Contenu actuel — concern `storage`
+
+Stockage d'objets/blobs derrière un port générique unique `IObjectStorage`
+(`PutAsync` / `GetAsync` / `ExistsAsync` / `DeleteAsync` / `ListAsync`).
+
+| Item | Type | Provider | DI |
+|---|---|---|---|
+| `storage-abstractions` | contract | — (zéro dépendance) | — |
+| `storage-in-memory` | adapter | — (zéro dépendance) | `AddInMemoryObjectStorage(...)` |
+| `storage-filesystem` | adapter | — (système de fichiers, zéro dépendance) | `AddFileSystemObjectStorage(...)` |
+| `storage-s3` | adapter | AWSSDK.S3 | `AddS3ObjectStorage(...)` |
+| `storage-azure-blob` | adapter | Azure.Storage.Blobs | `AddAzureBlobStorage(...)` |
+
+Le port générique est identique pour les quatre adapters → swap en **une ligne** de DI.
+`storage-s3` et `storage-azure-blob` illustrent le pattern « spécifique à côté du générique » :
+`IS3ObjectStorage` (URL présignée) et `IAzureBlobStorage` (SAS URI), chacun implémenté par la
+même instance, forwardée vers les deux interfaces.
+
+Conventions du port (identiques entre adapters) : une **clé** est un identifiant opaque,
+sensible à la casse, de type chemin (`invoices/2026/03.pdf`) ; l'**absence n'est pas une erreur**
+(`GetAsync` → `null`, `DeleteAsync` → `false`) ; les vraies fautes d'I/O remontent en exception.
+
+Tests : `storage-in-memory` et `storage-filesystem` rejouent toute la suite de conformité de port
+de façon **hermétique** (lane PR) ; `storage-s3` et `storage-azure-blob` la rejouent contre un vrai
+endpoint (MinIO / Azurite) dans la **lane Live nightly** (skippée si l'endpoint n'est pas configuré).
+
 ## Convention `nugetDependencies`
 
 Un item déclare uniquement les packages **qu'il introduit** (la lib provider : MailKit,
