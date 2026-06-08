@@ -39,7 +39,7 @@ vers les deux interfaces.
 
 ## Contenu actuel — concern `storage`
 
-Stockage d'objets/blobs derrière un port générique unique `IObjectStorage`
+Stockage d'objets/blobs derrière un port générique unique `IBlobStorage`
 (`PutAsync` / `GetAsync` / `ExistsAsync` / `DeleteAsync` / `ListAsync`).
 
 | Item | Type | Provider | DI |

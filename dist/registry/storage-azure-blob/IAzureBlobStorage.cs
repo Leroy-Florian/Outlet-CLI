@@ -1,11 +1,11 @@
 namespace Outlet.Registry.Storage;
 
 /// <summary>
-/// Provider-specific companion to <see cref="IObjectStorage"/>. It lives BESIDE the generic
+/// Provider-specific companion to <see cref="IBlobStorage"/>. It lives BESIDE the generic
 /// port (never inside it) and is implemented by the very same adapter instance, so generic
 /// code stays swappable while Azure-only features (SAS URIs) remain reachable when you opt in.
 /// </summary>
-public interface IAzureBlobStorage : IObjectStorage
+public interface IAzureBlobStorage : IBlobStorage
 {
     /// <summary>
     /// Builds a time-limited, read-only SAS URI for <paramref name="key"/> — share it so a client

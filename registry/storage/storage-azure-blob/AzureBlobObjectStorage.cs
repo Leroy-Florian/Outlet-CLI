@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 namespace Outlet.Registry.Storage;
 
 /// <summary>
-/// Azure Blob Storage adapter implementing both the generic <see cref="IObjectStorage"/> and
+/// Azure Blob Storage adapter implementing both the generic <see cref="IBlobStorage"/> and
 /// the provider-specific <see cref="IAzureBlobStorage"/> from one class — registered once and
 /// forwarded to both interfaces (see AddAzureBlobStorage). Thin by design: resilience is
 /// composed over the port, never embedded here.

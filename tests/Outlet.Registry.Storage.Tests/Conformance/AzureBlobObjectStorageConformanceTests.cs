@@ -12,11 +12,11 @@ namespace Outlet.Registry.Storage.Tests.Conformance;
 [Trait("Category", "Live")]
 public sealed class AzureBlobObjectStorageConformanceTests : ObjectStorageConformanceTests
 {
-    protected override Task<IObjectStorageHarness?> CreateOrSkipAsync()
+    protected override Task<IBlobStorageHarness?> CreateOrSkipAsync()
     {
         var connectionString = Environment.GetEnvironmentVariable("OUTLET_AZURE_TEST_CONNECTION_STRING");
         if (string.IsNullOrWhiteSpace(connectionString))
-            return Task.FromResult<IObjectStorageHarness?>(null);
+            return Task.FromResult<IBlobStorageHarness?>(null);
 
         var container = "outlet-conformance-" + Guid.NewGuid().ToString("N")[..12];
         var storage = new AzureBlobObjectStorage(Options.Create(new AzureBlobObjectStorageOptions
@@ -26,12 +26,12 @@ public sealed class AzureBlobObjectStorageConformanceTests : ObjectStorageConfor
             CreateContainerIfNotExists = true,
         }));
 
-        return Task.FromResult<IObjectStorageHarness?>(new Harness(storage, connectionString, container));
+        return Task.FromResult<IBlobStorageHarness?>(new Harness(storage, connectionString, container));
     }
 
-    private sealed class Harness(AzureBlobObjectStorage storage, string connectionString, string container) : IObjectStorageHarness
+    private sealed class Harness(AzureBlobObjectStorage storage, string connectionString, string container) : IBlobStorageHarness
     {
-        public IObjectStorage Storage => storage;
+        public IBlobStorage Storage => storage;
 
         public async ValueTask DisposeAsync()
             => await new BlobContainerClient(connectionString, container).DeleteIfExistsAsync();

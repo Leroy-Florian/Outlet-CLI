@@ -15,7 +15,7 @@ namespace Outlet.Registry.Storage;
 /// <item>Genuine I/O faults (network, permissions) propagate as exceptions, as is idiomatic for storage.</item>
 /// </list>
 /// </remarks>
-public interface IObjectStorage
+public interface IBlobStorage
 {
     /// <summary>Stores <paramref name="content"/> under <paramref name="key"/>, overwriting any existing object.</summary>
     Task PutAsync(string key, Stream content, PutObjectOptions? options = null, CancellationToken cancellationToken = default);

@@ -3,14 +3,14 @@ using Outlet.Registry.Storage;
 
 namespace Outlet.Registry.Storage.Tests.Conformance;
 
-/// <summary>A configured <see cref="IObjectStorage"/> wired to its backing store for one test.</summary>
-public interface IObjectStorageHarness : IAsyncDisposable
+/// <summary>A configured <see cref="IBlobStorage"/> wired to its backing store for one test.</summary>
+public interface IBlobStorageHarness : IAsyncDisposable
 {
-    IObjectStorage Storage { get; }
+    IBlobStorage Storage { get; }
 }
 
 /// <summary>
-/// Reusable PORT conformance suite — "every IObjectStorage must behave this way". Each adapter
+/// Reusable PORT conformance suite — "every IBlobStorage must behave this way". Each adapter
 /// runs it against its own backing store (in-memory, a temp directory, MinIO, Azurite…), so
 /// swappability is TESTED, not asserted.
 /// </summary>
@@ -21,7 +21,7 @@ public abstract class ObjectStorageConformanceTests
     /// cloud emulator whose endpoint env var is not set in this run). Hermetic adapters never
     /// return null; cloud adapters return null when their Live infrastructure is absent.
     /// </summary>
-    protected abstract Task<IObjectStorageHarness?> CreateOrSkipAsync();
+    protected abstract Task<IBlobStorageHarness?> CreateOrSkipAsync();
 
     [Fact]
     public async Task Should_StoreAndRetrieve_When_ObjectIsPut()

@@ -13,7 +13,7 @@ public static class AzureBlobObjectStorageServiceCollectionExtensions
 
         // ONE concrete instance, forwarded to both the generic and the provider-specific port.
         services.AddSingleton<AzureBlobObjectStorage>();
-        services.AddSingleton<IObjectStorage>(sp => sp.GetRequiredService<AzureBlobObjectStorage>());
+        services.AddSingleton<IBlobStorage>(sp => sp.GetRequiredService<AzureBlobObjectStorage>());
         services.AddSingleton<IAzureBlobStorage>(sp => sp.GetRequiredService<AzureBlobObjectStorage>());
 
         return services;

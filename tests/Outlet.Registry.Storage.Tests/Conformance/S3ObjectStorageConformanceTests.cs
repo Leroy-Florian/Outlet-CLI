@@ -13,7 +13,7 @@ namespace Outlet.Registry.Storage.Tests.Conformance;
 [Trait("Category", "Live")]
 public sealed class S3ObjectStorageConformanceTests : ObjectStorageConformanceTests
 {
-    protected override async Task<IObjectStorageHarness?> CreateOrSkipAsync()
+    protected override async Task<IBlobStorageHarness?> CreateOrSkipAsync()
     {
         var serviceUrl = Environment.GetEnvironmentVariable("OUTLET_S3_TEST_SERVICE_URL");
         if (string.IsNullOrWhiteSpace(serviceUrl))
@@ -38,9 +38,9 @@ public sealed class S3ObjectStorageConformanceTests : ObjectStorageConformanceTe
         return new Harness(storage, admin, bucket);
     }
 
-    private sealed class Harness(S3ObjectStorage storage, IAmazonS3 admin, string bucket) : IObjectStorageHarness
+    private sealed class Harness(S3ObjectStorage storage, IAmazonS3 admin, string bucket) : IBlobStorageHarness
     {
-        public IObjectStorage Storage => storage;
+        public IBlobStorage Storage => storage;
 
         public async ValueTask DisposeAsync()
         {

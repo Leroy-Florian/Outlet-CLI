@@ -10,7 +10,7 @@ public static class FileSystemObjectStorageServiceCollectionExtensions
         Action<FileSystemObjectStorageOptions> configure)
     {
         services.Configure(configure);
-        services.AddSingleton<IObjectStorage, FileSystemObjectStorage>();
+        services.AddSingleton<IBlobStorage, FileSystemObjectStorage>();
         return services;
     }
 }

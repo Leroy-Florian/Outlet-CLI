@@ -2,7 +2,7 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Outlet.Registry.Storage;
 
-// Outlet storage swap demo — same code, swappable provider behind the generic IObjectStorage port.
+// Outlet storage swap demo — same code, swappable provider behind the generic IBlobStorage port.
 // Run:  dotnet run --project samples/StorageSwapDemo -- memory
 //       dotnet run --project samples/StorageSwapDemo -- filesystem
 //       dotnet run --project samples/StorageSwapDemo -- s3        (needs an S3-compatible endpoint)
@@ -14,7 +14,7 @@ var services = new ServiceCollection();
 
 // ── THE SWAP IS THIS ONE LINE ───────────────────────────────────────────────
 // Switch the backend by changing the single AddXxxObjectStorage(...) registration.
-// Everything below (resolving IObjectStorage, writing and reading the object) stays identical.
+// Everything below (resolving IBlobStorage, writing and reading the object) stays identical.
 switch (provider)
 {
     case "filesystem":
@@ -49,10 +49,10 @@ switch (provider)
 // ────────────────────────────────────────────────────────────────────────────
 
 using var serviceProvider = services.BuildServiceProvider();
-var storage = serviceProvider.GetRequiredService<IObjectStorage>();
+var storage = serviceProvider.GetRequiredService<IBlobStorage>();
 
 Console.WriteLine($"Provider      : {provider}");
-Console.WriteLine($"Active adapter: {storage.GetType().Name}  (behind IObjectStorage)");
+Console.WriteLine($"Active adapter: {storage.GetType().Name}  (behind IBlobStorage)");
 
 const string key = "greetings/hello.txt";
 var payload = Encoding.UTF8.GetBytes("Swapping storage providers is a one-line change.");

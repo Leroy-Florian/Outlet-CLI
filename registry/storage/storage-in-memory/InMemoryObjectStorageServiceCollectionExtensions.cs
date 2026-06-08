@@ -10,7 +10,7 @@ public static class InMemoryObjectStorageServiceCollectionExtensions
         Action<InMemoryObjectStorageOptions>? configure = null)
     {
         services.Configure(configure ?? (_ => { }));
-        services.AddSingleton<IObjectStorage, InMemoryObjectStorage>();
+        services.AddSingleton<IBlobStorage, InMemoryObjectStorage>();
         return services;
     }
 }

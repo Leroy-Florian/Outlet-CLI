@@ -1,7 +1,7 @@
 namespace Outlet.Registry.Storage;
 
 /// <summary>
-/// Optional write metadata for <see cref="IObjectStorage.PutAsync"/>. Everything here is
+/// Optional write metadata for <see cref="IBlobStorage.PutAsync"/>. Everything here is
 /// the common ~80% case; for provider-only knobs (storage class, encryption headers…),
 /// use the adapter's companion interface or edit your owned copy.
 /// </summary>

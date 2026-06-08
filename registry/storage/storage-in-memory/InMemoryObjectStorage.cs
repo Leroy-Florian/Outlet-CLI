@@ -5,11 +5,11 @@ using Microsoft.Extensions.Options;
 namespace Outlet.Registry.Storage;
 
 /// <summary>
-/// In-memory adapter for <see cref="IObjectStorage"/> — a thread-safe dictionary of byte
+/// In-memory adapter for <see cref="IBlobStorage"/> — a thread-safe dictionary of byte
 /// payloads. Ideal for tests, local development and ephemeral caches; nothing is persisted
 /// beyond the process. Thin by design: resilience is composed over the port, never embedded.
 /// </summary>
-public sealed class InMemoryObjectStorage : IObjectStorage
+public sealed class InMemoryObjectStorage : IBlobStorage
 {
     private readonly ConcurrentDictionary<string, Entry> _objects;
     private readonly StringComparison _keyComparison;

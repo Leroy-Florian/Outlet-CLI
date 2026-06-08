@@ -13,7 +13,7 @@ public sealed class StorageDependencyInjectionTests
 
         using var provider = services.BuildServiceProvider();
 
-        provider.GetService<IObjectStorage>().Should().BeOfType<InMemoryObjectStorage>();
+        provider.GetService<IBlobStorage>().Should().BeOfType<InMemoryObjectStorage>();
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public sealed class StorageDependencyInjectionTests
 
         using var provider = services.BuildServiceProvider();
 
-        provider.GetService<IObjectStorage>().Should().BeOfType<FileSystemObjectStorage>();
+        provider.GetService<IBlobStorage>().Should().BeOfType<FileSystemObjectStorage>();
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public sealed class StorageDependencyInjectionTests
         });
 
         using var provider = services.BuildServiceProvider();
-        var generic = provider.GetRequiredService<IObjectStorage>();
+        var generic = provider.GetRequiredService<IBlobStorage>();
         var specific = provider.GetRequiredService<IS3ObjectStorage>();
 
         generic.Should().BeOfType<S3ObjectStorage>();
@@ -59,7 +59,7 @@ public sealed class StorageDependencyInjectionTests
         });
 
         using var provider = services.BuildServiceProvider();
-        var generic = provider.GetRequiredService<IObjectStorage>();
+        var generic = provider.GetRequiredService<IBlobStorage>();
         var specific = provider.GetRequiredService<IAzureBlobStorage>();
 
         generic.Should().BeOfType<AzureBlobObjectStorage>();
@@ -69,11 +69,11 @@ public sealed class StorageDependencyInjectionTests
     [Fact]
     public void Should_LetAdaptersSwapBehindOnePort_When_OnlyTheDiCallChanges()
     {
-        IObjectStorage Resolve(Action<IServiceCollection> register)
+        IBlobStorage Resolve(Action<IServiceCollection> register)
         {
             var services = new ServiceCollection();
             register(services);
-            return services.BuildServiceProvider().GetRequiredService<IObjectStorage>();
+            return services.BuildServiceProvider().GetRequiredService<IBlobStorage>();
         }
 
         Resolve(s => s.AddInMemoryObjectStorage()).Should().BeOfType<InMemoryObjectStorage>();

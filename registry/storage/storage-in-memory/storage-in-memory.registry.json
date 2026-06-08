@@ -3,7 +3,7 @@
   "name": "storage-in-memory",
   "type": "outlet:adapter",
   "concern": "storage",
-  "description": "In-memory adapter for IObjectStorage — thread-safe, zero external dependency (tests, local dev, ephemeral caches).",
+  "description": "In-memory adapter for IBlobStorage — thread-safe, zero external dependency (tests, local dev, ephemeral caches).",
   "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
   "registryDependencies": ["storage-abstractions"],
   "nugetDependencies": [],

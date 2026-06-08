@@ -114,7 +114,7 @@
       "name": "storage-abstractions",
       "type": "outlet:contract",
       "concern": "storage",
-      "description": "Generic object/blob storage port (IObjectStorage) and DTOs — zero external dependency.",
+      "description": "Generic object/blob storage port (IBlobStorage) and DTOs — zero external dependency.",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
@@ -124,7 +124,7 @@
       "nugetDependencies": [],
       "files": [
         {
-          "path": "IObjectStorage.cs",
+          "path": "IBlobStorage.cs",
           "target": "contract"
         },
         {
@@ -146,7 +146,7 @@
       "name": "storage-azure-blob",
       "type": "outlet:adapter",
       "concern": "storage",
-      "description": "Azure Blob Storage adapter for IObjectStorage (+ provider-specific SAS URIs), backed by Azure.Storage.Blobs.",
+      "description": "Azure Blob Storage adapter for IBlobStorage (+ provider-specific SAS URIs), backed by Azure.Storage.Blobs.",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
@@ -185,7 +185,7 @@
       "name": "storage-filesystem",
       "type": "outlet:adapter",
       "concern": "storage",
-      "description": "Local-filesystem adapter for IObjectStorage — content under a root directory, metadata in a sidecar tree. Zero external dependency.",
+      "description": "Local-filesystem adapter for IBlobStorage — content under a root directory, metadata in a sidecar tree. Zero external dependency.",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
@@ -215,7 +215,7 @@
       "name": "storage-in-memory",
       "type": "outlet:adapter",
       "concern": "storage",
-      "description": "In-memory adapter for IObjectStorage — thread-safe, zero external dependency (tests, local dev, ephemeral caches).",
+      "description": "In-memory adapter for IBlobStorage — thread-safe, zero external dependency (tests, local dev, ephemeral caches).",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
@@ -245,7 +245,7 @@
       "name": "storage-s3",
       "type": "outlet:adapter",
       "concern": "storage",
-      "description": "AWS S3 adapter for IObjectStorage (+ provider-specific presigned URLs), backed by AWSSDK.S3.",
+      "description": "AWS S3 adapter for IBlobStorage (+ provider-specific presigned URLs), backed by AWSSDK.S3.",
       "targetFrameworks": [
         "net8.0",
         "net9.0",

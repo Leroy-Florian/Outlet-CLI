@@ -13,7 +13,7 @@ public static class S3ObjectStorageServiceCollectionExtensions
 
         // ONE concrete instance, forwarded to both the generic and the provider-specific port.
         services.AddSingleton<S3ObjectStorage>();
-        services.AddSingleton<IObjectStorage>(sp => sp.GetRequiredService<S3ObjectStorage>());
+        services.AddSingleton<IBlobStorage>(sp => sp.GetRequiredService<S3ObjectStorage>());
         services.AddSingleton<IS3ObjectStorage>(sp => sp.GetRequiredService<S3ObjectStorage>());
 
         return services;

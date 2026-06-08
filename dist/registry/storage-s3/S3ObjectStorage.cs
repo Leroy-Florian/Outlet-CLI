@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 namespace Outlet.Registry.Storage;
 
 /// <summary>
-/// AWS S3 adapter implementing both the generic <see cref="IObjectStorage"/> and the
+/// AWS S3 adapter implementing both the generic <see cref="IBlobStorage"/> and the
 /// provider-specific <see cref="IS3ObjectStorage"/> from one class — registered once and
 /// forwarded to both interfaces (see AddS3ObjectStorage). Thin by design: resilience is
 /// composed over the port, never embedded here.

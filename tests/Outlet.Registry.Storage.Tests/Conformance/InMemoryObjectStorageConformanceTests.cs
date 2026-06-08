@@ -6,15 +6,15 @@ namespace Outlet.Registry.Storage.Tests.Conformance;
 /// <summary>In-memory adapter run against its own dictionary (fully hermetic).</summary>
 public sealed class InMemoryObjectStorageConformanceTests : ObjectStorageConformanceTests
 {
-    protected override Task<IObjectStorageHarness?> CreateOrSkipAsync()
+    protected override Task<IBlobStorageHarness?> CreateOrSkipAsync()
     {
         var storage = new InMemoryObjectStorage(Options.Create(new InMemoryObjectStorageOptions()));
-        return Task.FromResult<IObjectStorageHarness?>(new Harness(storage));
+        return Task.FromResult<IBlobStorageHarness?>(new Harness(storage));
     }
 
-    private sealed class Harness(IObjectStorage storage) : IObjectStorageHarness
+    private sealed class Harness(IBlobStorage storage) : IBlobStorageHarness
     {
-        public IObjectStorage Storage => storage;
+        public IBlobStorage Storage => storage;
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
 }

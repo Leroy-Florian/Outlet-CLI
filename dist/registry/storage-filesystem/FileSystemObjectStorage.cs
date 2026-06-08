@@ -5,12 +5,12 @@ using Microsoft.Extensions.Options;
 namespace Outlet.Registry.Storage;
 
 /// <summary>
-/// Local-filesystem adapter for <see cref="IObjectStorage"/>. Keys map to paths under a
+/// Local-filesystem adapter for <see cref="IBlobStorage"/>. Keys map to paths under a
 /// configured root; content type and caller metadata are persisted in a sibling sidecar
 /// tree (<c>.outlet-meta/</c>) so the object payload stays byte-for-byte identical. Thin by
 /// design: resilience is composed over the port, never embedded here.
 /// </summary>
-public sealed class FileSystemObjectStorage(IOptions<FileSystemObjectStorageOptions> options) : IObjectStorage
+public sealed class FileSystemObjectStorage(IOptions<FileSystemObjectStorageOptions> options) : IBlobStorage
 {
     private const string MetaDirectory = ".outlet-meta";
     private readonly string _root = Path.GetFullPath(
