@@ -1,0 +1,17 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "llm-google",
+  "type": "outlet:adapter",
+  "concern": "llm",
+  "description": "Google Gemini adapter for IChatCompletion, backed by the Mscc.GenerativeAI client.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["llm-abstractions"],
+  "nugetDependencies": [
+    { "id": "Mscc.GenerativeAI", "version": "3.1.0" }
+  ],
+  "files": [
+    { "path": "GoogleChatCompletionOptions.cs", "target": "adapter" },
+    { "path": "GoogleChatCompletion.cs", "target": "adapter" },
+    { "path": "GoogleChatCompletionServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

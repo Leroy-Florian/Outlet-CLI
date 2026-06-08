@@ -109,6 +109,159 @@
         }
       ],
       "isContract": false
+    },
+    {
+      "name": "llm-abstractions",
+      "type": "outlet:contract",
+      "concern": "llm",
+      "description": "Generic chat-completion port (IChatCompletion) and DTOs — zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "IChatCompletion.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ChatRole.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ChatMessage.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ChatRequest.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ChatUsage.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ChatResult.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ChatStreamChunk.cs",
+          "target": "contract"
+        }
+      ],
+      "isContract": true
+    },
+    {
+      "name": "llm-anthropic",
+      "type": "outlet:adapter",
+      "concern": "llm",
+      "description": "Anthropic (Claude) adapter for IChatCompletion, backed by the Anthropic.SDK client.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "llm-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Anthropic.SDK",
+          "version": "5.10.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "AnthropicChatCompletionOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AnthropicChatCompletion.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AnthropicChatCompletionServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "llm-google",
+      "type": "outlet:adapter",
+      "concern": "llm",
+      "description": "Google Gemini adapter for IChatCompletion, backed by the Mscc.GenerativeAI client.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "llm-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Mscc.GenerativeAI",
+          "version": "3.1.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "GoogleChatCompletionOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "GoogleChatCompletion.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "GoogleChatCompletionServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "llm-openai",
+      "type": "outlet:adapter",
+      "concern": "llm",
+      "description": "OpenAI adapter for IChatCompletion (+ provider-specific JSON mode), backed by the official OpenAI SDK.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "llm-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "OpenAI",
+          "version": "2.11.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "IOpenAiChatCompletion.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "OpenAiChatCompletionOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "OpenAiChatCompletion.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "OpenAiChatCompletionServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
     }
   ]
 }
