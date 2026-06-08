@@ -12,9 +12,9 @@ Idée centrale : pour chaque **préoccupation**, on expose un **port générique
 
 ## État actuel
 
-Le **squelette compilable est en place** (2026-06-05) :
+Le **squelette compilable est en place** :
 - `Outlet.Kernel.Shared` : building blocks DDD + Mediator + Result (porté de WOW, adapté).
-- `Outlet.Core.{Domain,Application,Infrastructure}` : langage du domaine minimal (agrégat `RegistryItem`, VOs, 5 ports, 1 use case `ListRegistryItemsUseCase`) + stubs d'adapters.
+- `Outlet.Core.{Domain,Application,Infrastructure}` : langage du domaine (agrégat `RegistryItem`, VOs, ports + use cases côté Application) et adapters concrets (HTTP, Roslyn, MSBuild, NuGet, FS) côté Infrastructure.
 - `Outlet.Cli` : dotnet tool `outlet` — `init`, `list`, `add`, `remove`, `diff`, `update` fonctionnent. `add` fait la chaîne complète : résolution des dépendances → fetch → réécriture de namespace (Roslyn) → écriture au projet routé → ajout des `PackageReference` (CPM-aware) → **`dotnet restore`** (les transitifs du provider sont matérialisés et un conflit de versions est détecté). Conflit de restore → **rollback atomique** (fichiers écrits supprimés, refs ajoutées retirées, lockfile non sauvegardé) ; opt-out via `--no-restore`.
 - Frontend : packages npm `@outlet/hateoas` et `@outlet/effect-react` (copies locales portées de WOW — une extraction en lib publiée est envisagée).
 
