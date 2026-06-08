@@ -8,8 +8,8 @@
   "registryDependencies": ["storage-abstractions"],
   "nugetDependencies": [],
   "files": [
-    { "path": "FileSystemObjectStorageOptions.cs", "target": "adapter" },
-    { "path": "FileSystemObjectStorage.cs", "target": "adapter" },
-    { "path": "FileSystemObjectStorageServiceCollectionExtensions.cs", "target": "adapter" }
+    { "path": "FileSystemBlobStorageOptions.cs", "target": "adapter" },
+    { "path": "FileSystemBlobStorage.cs", "target": "adapter" },
+    { "path": "FileSystemBlobStorageServiceCollectionExtensions.cs", "target": "adapter" }
   ]
 }

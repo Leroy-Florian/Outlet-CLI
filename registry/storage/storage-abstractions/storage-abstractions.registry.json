@@ -9,8 +9,8 @@
   "nugetDependencies": [],
   "files": [
     { "path": "IBlobStorage.cs", "target": "contract" },
-    { "path": "StorageObject.cs", "target": "contract" },
-    { "path": "StorageObjectInfo.cs", "target": "contract" },
-    { "path": "PutObjectOptions.cs", "target": "contract" }
+    { "path": "Blob.cs", "target": "contract" },
+    { "path": "BlobInfo.cs", "target": "contract" },
+    { "path": "PutBlobOptions.cs", "target": "contract" }
   ]
 }

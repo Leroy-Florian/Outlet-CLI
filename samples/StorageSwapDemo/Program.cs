@@ -13,18 +13,18 @@ var provider = args.FirstOrDefault() ?? "memory";
 var services = new ServiceCollection();
 
 // ── THE SWAP IS THIS ONE LINE ───────────────────────────────────────────────
-// Switch the backend by changing the single AddXxxObjectStorage(...) registration.
+// Switch the backend by changing the single AddXxxBlobStorage(...) registration.
 // Everything below (resolving IBlobStorage, writing and reading the object) stays identical.
 switch (provider)
 {
     case "filesystem":
-        services.AddFileSystemObjectStorage(o =>
+        services.AddFileSystemBlobStorage(o =>
             o.RootPath = Environment.GetEnvironmentVariable("STORAGE_ROOT")
                 ?? Path.Combine(Path.GetTempPath(), "outlet-storage-demo"));
         break;
 
     case "s3":
-        services.AddS3ObjectStorage(o =>
+        services.AddS3BlobStorage(o =>
         {
             o.BucketName = Environment.GetEnvironmentVariable("S3_BUCKET") ?? "outlet-demo";
             o.ServiceUrl = Environment.GetEnvironmentVariable("S3_SERVICE_URL");
@@ -43,7 +43,7 @@ switch (provider)
         break;
 
     default:
-        services.AddInMemoryObjectStorage();
+        services.AddInMemoryBlobStorage();
         break;
 }
 // ────────────────────────────────────────────────────────────────────────────
@@ -59,7 +59,7 @@ var payload = Encoding.UTF8.GetBytes("Swapping storage providers is a one-line c
 
 try
 {
-    await storage.PutAsync(key, new MemoryStream(payload), new PutObjectOptions { ContentType = "text/plain" });
+    await storage.PutAsync(key, new MemoryStream(payload), new PutBlobOptions { ContentType = "text/plain" });
 
     await using var fetched = await storage.GetAsync(key);
     if (fetched is null)

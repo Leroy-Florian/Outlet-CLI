@@ -18,14 +18,14 @@ namespace Outlet.Registry.Storage;
 public interface IBlobStorage
 {
     /// <summary>Stores <paramref name="content"/> under <paramref name="key"/>, overwriting any existing object.</summary>
-    Task PutAsync(string key, Stream content, PutObjectOptions? options = null, CancellationToken cancellationToken = default);
+    Task PutAsync(string key, Stream content, PutBlobOptions? options = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Fetches the object at <paramref name="key"/>, or <c>null</c> when it does not exist.
-    /// The returned <see cref="StorageObject"/> owns a stream the caller must dispose
+    /// The returned <see cref="Blob"/> owns a stream the caller must dispose
     /// (<c>await using</c>).
     /// </summary>
-    Task<StorageObject?> GetAsync(string key, CancellationToken cancellationToken = default);
+    Task<Blob?> GetAsync(string key, CancellationToken cancellationToken = default);
 
     /// <summary>Returns whether an object exists at <paramref name="key"/>.</summary>
     Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default);
@@ -34,5 +34,5 @@ public interface IBlobStorage
     Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default);
 
     /// <summary>Lists object metadata, optionally restricted to keys starting with <paramref name="prefix"/>.</summary>
-    IAsyncEnumerable<StorageObjectInfo> ListAsync(string? prefix = null, CancellationToken cancellationToken = default);
+    IAsyncEnumerable<BlobInfo> ListAsync(string? prefix = null, CancellationToken cancellationToken = default);
 }

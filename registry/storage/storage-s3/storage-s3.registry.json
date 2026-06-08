@@ -10,9 +10,9 @@
     { "id": "AWSSDK.S3", "version": "4.0.24.1" }
   ],
   "files": [
-    { "path": "IS3ObjectStorage.cs", "target": "adapter" },
-    { "path": "S3ObjectStorageOptions.cs", "target": "adapter" },
-    { "path": "S3ObjectStorage.cs", "target": "adapter" },
-    { "path": "S3ObjectStorageServiceCollectionExtensions.cs", "target": "adapter" }
+    { "path": "IS3BlobStorage.cs", "target": "adapter" },
+    { "path": "S3BlobStorageOptions.cs", "target": "adapter" },
+    { "path": "S3BlobStorage.cs", "target": "adapter" },
+    { "path": "S3BlobStorageServiceCollectionExtensions.cs", "target": "adapter" }
   ]
 }

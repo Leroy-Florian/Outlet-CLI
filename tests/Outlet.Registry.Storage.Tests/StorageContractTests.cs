@@ -8,7 +8,7 @@ public sealed class StorageContractTests
     [Fact]
     public void Should_DefaultMetadataToEmpty_When_OnlyKeyIsSet()
     {
-        var info = new StorageObjectInfo { Key = "k" };
+        var info = new BlobInfo { Key = "k" };
 
         info.Size.Should().Be(0);
         info.ContentType.Should().BeNull();
@@ -20,17 +20,17 @@ public sealed class StorageContractTests
     [Fact]
     public void Should_DefaultPutOptionsToEmptyMetadata()
     {
-        var options = new PutObjectOptions();
+        var options = new PutBlobOptions();
 
         options.ContentType.Should().BeNull();
         options.Metadata.Should().BeEmpty();
     }
 
     [Fact]
-    public async Task Should_DisposeContentStream_When_StorageObjectIsDisposed()
+    public async Task Should_DisposeContentStream_When_BlobIsDisposed()
     {
         var stream = new MemoryStream(Encoding.UTF8.GetBytes("payload"));
-        var storageObject = new StorageObject(new StorageObjectInfo { Key = "k" }, stream);
+        var storageObject = new Blob(new BlobInfo { Key = "k" }, stream);
 
         await storageObject.DisposeAsync();
 
@@ -40,8 +40,8 @@ public sealed class StorageContractTests
     [Fact]
     public void Should_ExposeInfoAndContent()
     {
-        var info = new StorageObjectInfo { Key = "report.csv", Size = 3, ContentType = "text/csv" };
-        using var storageObject = new StorageObject(info, new MemoryStream([1, 2, 3]));
+        var info = new BlobInfo { Key = "report.csv", Size = 3, ContentType = "text/csv" };
+        using var storageObject = new Blob(info, new MemoryStream([1, 2, 3]));
 
         storageObject.Info.Should().BeSameAs(info);
         storageObject.Content.Length.Should().Be(3);

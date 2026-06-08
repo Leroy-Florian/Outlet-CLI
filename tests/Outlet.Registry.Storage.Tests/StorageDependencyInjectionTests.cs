@@ -6,32 +6,32 @@ namespace Outlet.Registry.Storage.Tests;
 public sealed class StorageDependencyInjectionTests
 {
     [Fact]
-    public void Should_ResolveInMemoryStorage_When_AddInMemoryObjectStorageIsCalled()
+    public void Should_ResolveInMemoryStorage_When_AddInMemoryBlobStorageIsCalled()
     {
         var services = new ServiceCollection();
-        services.AddInMemoryObjectStorage();
+        services.AddInMemoryBlobStorage();
 
         using var provider = services.BuildServiceProvider();
 
-        provider.GetService<IBlobStorage>().Should().BeOfType<InMemoryObjectStorage>();
+        provider.GetService<IBlobStorage>().Should().BeOfType<InMemoryBlobStorage>();
     }
 
     [Fact]
-    public void Should_ResolveFileSystemStorage_When_AddFileSystemObjectStorageIsCalled()
+    public void Should_ResolveFileSystemStorage_When_AddFileSystemBlobStorageIsCalled()
     {
         var services = new ServiceCollection();
-        services.AddFileSystemObjectStorage(o => o.RootPath = Path.GetTempPath());
+        services.AddFileSystemBlobStorage(o => o.RootPath = Path.GetTempPath());
 
         using var provider = services.BuildServiceProvider();
 
-        provider.GetService<IBlobStorage>().Should().BeOfType<FileSystemObjectStorage>();
+        provider.GetService<IBlobStorage>().Should().BeOfType<FileSystemBlobStorage>();
     }
 
     [Fact]
-    public void Should_ForwardGenericAndSpecificToSameInstance_When_AddS3ObjectStorageIsCalled()
+    public void Should_ForwardGenericAndSpecificToSameInstance_When_AddS3BlobStorageIsCalled()
     {
         var services = new ServiceCollection();
-        services.AddS3ObjectStorage(o =>
+        services.AddS3BlobStorage(o =>
         {
             o.BucketName = "test-bucket";
             o.ServiceUrl = "http://localhost:9000";
@@ -42,9 +42,9 @@ public sealed class StorageDependencyInjectionTests
 
         using var provider = services.BuildServiceProvider();
         var generic = provider.GetRequiredService<IBlobStorage>();
-        var specific = provider.GetRequiredService<IS3ObjectStorage>();
+        var specific = provider.GetRequiredService<IS3BlobStorage>();
 
-        generic.Should().BeOfType<S3ObjectStorage>();
+        generic.Should().BeOfType<S3BlobStorage>();
         specific.Should().BeSameAs(generic);
     }
 
@@ -62,7 +62,7 @@ public sealed class StorageDependencyInjectionTests
         var generic = provider.GetRequiredService<IBlobStorage>();
         var specific = provider.GetRequiredService<IAzureBlobStorage>();
 
-        generic.Should().BeOfType<AzureBlobObjectStorage>();
+        generic.Should().BeOfType<AzureBlobStorage>();
         specific.Should().BeSameAs(generic);
     }
 
@@ -76,17 +76,17 @@ public sealed class StorageDependencyInjectionTests
             return services.BuildServiceProvider().GetRequiredService<IBlobStorage>();
         }
 
-        Resolve(s => s.AddInMemoryObjectStorage()).Should().BeOfType<InMemoryObjectStorage>();
-        Resolve(s => s.AddFileSystemObjectStorage(o => o.RootPath = Path.GetTempPath())).Should().BeOfType<FileSystemObjectStorage>();
-        Resolve(s => s.AddS3ObjectStorage(o =>
+        Resolve(s => s.AddInMemoryBlobStorage()).Should().BeOfType<InMemoryBlobStorage>();
+        Resolve(s => s.AddFileSystemBlobStorage(o => o.RootPath = Path.GetTempPath())).Should().BeOfType<FileSystemBlobStorage>();
+        Resolve(s => s.AddS3BlobStorage(o =>
         {
             o.BucketName = "b";
             o.ServiceUrl = "http://localhost:9000";
-        })).Should().BeOfType<S3ObjectStorage>();
+        })).Should().BeOfType<S3BlobStorage>();
         Resolve(s => s.AddAzureBlobStorage(o =>
         {
             o.ConnectionString = "UseDevelopmentStorage=true";
             o.ContainerName = "c";
-        })).Should().BeOfType<AzureBlobObjectStorage>();
+        })).Should().BeOfType<AzureBlobStorage>();
     }
 }

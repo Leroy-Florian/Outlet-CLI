@@ -13,13 +13,13 @@ public sealed class StorageAdapterProductionReadinessTests
     [Fact]
     public async Task InMemory_Should_HandleManyConcurrentPuts_WithoutLossOrCorruption()
     {
-        var storage = new InMemoryObjectStorage(Options.Create(new InMemoryObjectStorageOptions()));
+        var storage = new InMemoryBlobStorage(Options.Create(new InMemoryBlobStorageOptions()));
 
         const int count = 200;
         await Task.WhenAll(Enumerable.Range(0, count).Select(i =>
             storage.PutAsync($"key-{i}", new MemoryStream(BitConverter.GetBytes(i)))));
 
-        var stored = new List<StorageObjectInfo>();
+        var stored = new List<BlobInfo>();
         await foreach (var info in storage.ListAsync())
             stored.Add(info);
 
@@ -30,7 +30,7 @@ public sealed class StorageAdapterProductionReadinessTests
     public async Task FileSystem_Should_HandleManyConcurrentPuts_WithoutLossOrCorruption()
     {
         await using var temp = new TempDirectory();
-        var storage = new FileSystemObjectStorage(Options.Create(new FileSystemObjectStorageOptions { RootPath = temp.Path }));
+        var storage = new FileSystemBlobStorage(Options.Create(new FileSystemBlobStorageOptions { RootPath = temp.Path }));
 
         const int count = 100;
         await Task.WhenAll(Enumerable.Range(0, count).Select(i =>
@@ -47,7 +47,7 @@ public sealed class StorageAdapterProductionReadinessTests
     public async Task FileSystem_Should_RoundTripLargePayload_WithoutBuffering()
     {
         await using var temp = new TempDirectory();
-        var storage = new FileSystemObjectStorage(Options.Create(new FileSystemObjectStorageOptions { RootPath = temp.Path }));
+        var storage = new FileSystemBlobStorage(Options.Create(new FileSystemBlobStorageOptions { RootPath = temp.Path }));
 
         var payload = new byte[5 * 1024 * 1024];
         Random.Shared.NextBytes(payload);
@@ -67,7 +67,7 @@ public sealed class StorageAdapterProductionReadinessTests
     public async Task FileSystem_Should_RejectPathTraversalKeys(string maliciousKey)
     {
         await using var temp = new TempDirectory();
-        var storage = new FileSystemObjectStorage(Options.Create(new FileSystemObjectStorageOptions { RootPath = temp.Path }));
+        var storage = new FileSystemBlobStorage(Options.Create(new FileSystemBlobStorageOptions { RootPath = temp.Path }));
 
         var act = async () => await storage.PutAsync(maliciousKey, new MemoryStream([1]));
 

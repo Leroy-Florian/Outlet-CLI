@@ -11,8 +11,8 @@
   ],
   "files": [
     { "path": "IAzureBlobStorage.cs", "target": "adapter" },
-    { "path": "AzureBlobObjectStorageOptions.cs", "target": "adapter" },
-    { "path": "AzureBlobObjectStorage.cs", "target": "adapter" },
-    { "path": "AzureBlobObjectStorageServiceCollectionExtensions.cs", "target": "adapter" }
+    { "path": "AzureBlobStorageOptions.cs", "target": "adapter" },
+    { "path": "AzureBlobStorage.cs", "target": "adapter" },
+    { "path": "AzureBlobStorageServiceCollectionExtensions.cs", "target": "adapter" }
   ]
 }

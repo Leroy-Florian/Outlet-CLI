@@ -128,15 +128,15 @@
           "target": "contract"
         },
         {
-          "path": "StorageObject.cs",
+          "path": "Blob.cs",
           "target": "contract"
         },
         {
-          "path": "StorageObjectInfo.cs",
+          "path": "BlobInfo.cs",
           "target": "contract"
         },
         {
-          "path": "PutObjectOptions.cs",
+          "path": "PutBlobOptions.cs",
           "target": "contract"
         }
       ],
@@ -167,15 +167,15 @@
           "target": "adapter"
         },
         {
-          "path": "AzureBlobObjectStorageOptions.cs",
+          "path": "AzureBlobStorageOptions.cs",
           "target": "adapter"
         },
         {
-          "path": "AzureBlobObjectStorage.cs",
+          "path": "AzureBlobStorage.cs",
           "target": "adapter"
         },
         {
-          "path": "AzureBlobObjectStorageServiceCollectionExtensions.cs",
+          "path": "AzureBlobStorageServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],
@@ -197,15 +197,15 @@
       "nugetDependencies": [],
       "files": [
         {
-          "path": "FileSystemObjectStorageOptions.cs",
+          "path": "FileSystemBlobStorageOptions.cs",
           "target": "adapter"
         },
         {
-          "path": "FileSystemObjectStorage.cs",
+          "path": "FileSystemBlobStorage.cs",
           "target": "adapter"
         },
         {
-          "path": "FileSystemObjectStorageServiceCollectionExtensions.cs",
+          "path": "FileSystemBlobStorageServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],
@@ -227,15 +227,15 @@
       "nugetDependencies": [],
       "files": [
         {
-          "path": "InMemoryObjectStorageOptions.cs",
+          "path": "InMemoryBlobStorageOptions.cs",
           "target": "adapter"
         },
         {
-          "path": "InMemoryObjectStorage.cs",
+          "path": "InMemoryBlobStorage.cs",
           "target": "adapter"
         },
         {
-          "path": "InMemoryObjectStorageServiceCollectionExtensions.cs",
+          "path": "InMemoryBlobStorageServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],
@@ -262,19 +262,19 @@
       ],
       "files": [
         {
-          "path": "IS3ObjectStorage.cs",
+          "path": "IS3BlobStorage.cs",
           "target": "adapter"
         },
         {
-          "path": "S3ObjectStorageOptions.cs",
+          "path": "S3BlobStorageOptions.cs",
           "target": "adapter"
         },
         {
-          "path": "S3ObjectStorage.cs",
+          "path": "S3BlobStorage.cs",
           "target": "adapter"
         },
         {
-          "path": "S3ObjectStorageServiceCollectionExtensions.cs",
+          "path": "S3BlobStorageServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],

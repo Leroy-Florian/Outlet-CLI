@@ -45,14 +45,14 @@ Stockage d'objets/blobs derrière un port générique unique `IBlobStorage`
 | Item | Type | Provider | DI |
 |---|---|---|---|
 | `storage-abstractions` | contract | — (zéro dépendance) | — |
-| `storage-in-memory` | adapter | — (zéro dépendance) | `AddInMemoryObjectStorage(...)` |
-| `storage-filesystem` | adapter | — (système de fichiers, zéro dépendance) | `AddFileSystemObjectStorage(...)` |
-| `storage-s3` | adapter | AWSSDK.S3 | `AddS3ObjectStorage(...)` |
+| `storage-in-memory` | adapter | — (zéro dépendance) | `AddInMemoryBlobStorage(...)` |
+| `storage-filesystem` | adapter | — (système de fichiers, zéro dépendance) | `AddFileSystemBlobStorage(...)` |
+| `storage-s3` | adapter | AWSSDK.S3 | `AddS3BlobStorage(...)` |
 | `storage-azure-blob` | adapter | Azure.Storage.Blobs | `AddAzureBlobStorage(...)` |
 
 Le port générique est identique pour les quatre adapters → swap en **une ligne** de DI.
 `storage-s3` et `storage-azure-blob` illustrent le pattern « spécifique à côté du générique » :
-`IS3ObjectStorage` (URL présignée) et `IAzureBlobStorage` (SAS URI), chacun implémenté par la
+`IS3BlobStorage` (URL présignée) et `IAzureBlobStorage` (SAS URI), chacun implémenté par la
 même instance, forwardée vers les deux interfaces.
 
 Conventions du port (identiques entre adapters) : une **clé** est un identifiant opaque,

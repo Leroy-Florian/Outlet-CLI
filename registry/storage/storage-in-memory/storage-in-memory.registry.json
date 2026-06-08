@@ -8,8 +8,8 @@
   "registryDependencies": ["storage-abstractions"],
   "nugetDependencies": [],
   "files": [
-    { "path": "InMemoryObjectStorageOptions.cs", "target": "adapter" },
-    { "path": "InMemoryObjectStorage.cs", "target": "adapter" },
-    { "path": "InMemoryObjectStorageServiceCollectionExtensions.cs", "target": "adapter" }
+    { "path": "InMemoryBlobStorageOptions.cs", "target": "adapter" },
+    { "path": "InMemoryBlobStorage.cs", "target": "adapter" },
+    { "path": "InMemoryBlobStorageServiceCollectionExtensions.cs", "target": "adapter" }
   ]
 }
