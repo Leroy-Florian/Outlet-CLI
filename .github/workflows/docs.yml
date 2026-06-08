@@ -1,0 +1,63 @@
+name: Docs
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# Least-privilege defaults; the build job needs only read.
+permissions:
+  contents: read
+
+# Allow a single in-flight Pages deployment; never cancel one mid-flight.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build docs (VitePress)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # lastUpdated reads git history
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run docs:build
+
+      - name: Setup Pages
+        if: github.ref == 'refs/heads/master'
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/.vitepress/dist
+
+  # Deploy only from master; pull requests stop at the build step above.
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

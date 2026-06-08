@@ -13,6 +13,7 @@ export default tseslint.config(
       '**/bin/**',
       '**/obj/**',
       '**/*.d.ts',
+      '**/.vitepress/cache/**',
     ],
   },
   js.configs.recommended,
