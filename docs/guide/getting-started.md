@@ -1,9 +1,14 @@
 # Getting started
 
-::: warning Work in progress
-Outlet is at an early stage. The compilable skeleton is in place: `outlet list` works,
-while `outlet init` and `outlet add` are currently stubs. The first registry content
-(the email item) is still being built. This page will grow with the v1 slice.
+::: warning Early but functional
+The installation engine and the CLI are implemented and tested end to end:
+`init`, `add`, `list`, `remove`, `diff` and `update` all work. The first registry
+concern — **email** (`email-abstractions`, `email-smtp`, `email-sendgrid`) — is real,
+compiled and tested.
+
+What is **not done yet** is distribution: the `outlet` tool is not published on NuGet
+yet, and no public registry is hosted. Until then you run the CLI from source and point
+it at your own registry source.
 :::
 
 ## Requirements
@@ -14,28 +19,39 @@ while `outlet init` and `outlet add` are currently stubs. The first registry con
 
 ## Run the CLI from source
 
-Until the global tool is published, you can run the CLI straight from the repository:
+Until the global tool is published, run the CLI straight from the repository:
 
 ```bash
-# List the available registry items
+# List the items available across the configured registries
 dotnet run --project src/Outlet.Cli -- list
+
+# Initialize outlet.json from the detected project/solution
+dotnet run --project src/Outlet.Cli -- init
+
+# Copy an item (and its dependencies) into the project
+dotnet run --project src/Outlet.Cli -- add email-smtp
 ```
 
-The other commands are scaffolded and will be filled in as the v1 slice lands:
+Other commands that already work:
 
 ```bash
-outlet init   # set up outlet.json in your project (stub)
-outlet add    # copy a registry item into your project (stub)
+outlet remove <item>   # delete an installed item's files, clean unused NuGet packages
+outlet diff <item>     # show how your local copy differs from the registry version
+outlet update <item>   # update an item, preserving local edits (conflicts → <file>.outlet-new)
 ```
 
 ## The mental model
 
-1. You pick a **concern** (v1: email).
-2. You `add` the **contract** (the generic port + DTOs) — zero external dependencies.
-3. You `add` an **adapter** for the provider you want (for example SMTP or SendGrid).
+1. You pick a **concern** (today: email).
+2. `init` writes `outlet.json` (routing + lockfile) from your detected project.
+3. `add` the **contract** (the generic port + DTOs) — zero external dependencies — then an
+   **adapter** for the provider you want (for example `email-smtp` or `email-sendgrid`).
+   Outlet resolves dependencies, rewrites namespaces with Roslyn, writes the files at the
+   routed target, and adds the NuGet packages (CPM-aware).
 4. You wire it up with the adapter's `AddXxx()` extension in your composition root.
-5. To switch providers later, you add a different adapter and change one `AddXxx()` line —
-   the port stays the same.
+5. To switch providers later, `add` a different adapter and change one `AddXxx()` line —
+   the port stays the same. Because you own the code, `diff`/`update` keep your local
+   edits when a new registry version lands.
 
 ## Build everything locally
 
