@@ -12,8 +12,8 @@ namespace Outlet.ArchitectureTests;
 /// </summary>
 public sealed class BoundedContextIsolationTests : ArchitectureTestBase
 {
-    private static readonly Assembly[] IdentityContext = [IdentityDomainAssembly, IdentityApplicationAssembly];
-    private static readonly Assembly[] CloudContext = [CloudDomainAssembly, CloudApplicationAssembly];
+    private static readonly Assembly[] IdentityContext = [IdentityDomainAssembly, IdentityApplicationAssembly, IdentityInfrastructureAssembly];
+    private static readonly Assembly[] CloudContext = [CloudDomainAssembly, CloudApplicationAssembly, CloudInfrastructureAssembly];
     private static readonly Assembly[] CoreContext = [DomainAssembly, ApplicationAssembly, InfrastructureAssembly];
 
     [Fact]

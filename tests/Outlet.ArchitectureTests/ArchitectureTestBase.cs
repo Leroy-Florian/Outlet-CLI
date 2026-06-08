@@ -39,9 +39,15 @@ public abstract class ArchitectureTestBase
     protected static readonly Assembly CloudApplicationAssembly =
         typeof(Outlet.Cloud.Application.AssemblyReference).Assembly;
 
+    protected static readonly Assembly IdentityInfrastructureAssembly =
+        typeof(Outlet.Identity.Infrastructure.AssemblyReference).Assembly;
+
+    protected static readonly Assembly CloudInfrastructureAssembly =
+        typeof(Outlet.Cloud.Infrastructure.AssemblyReference).Assembly;
+
     protected static readonly Assembly[] AllDomainAssemblies = [DomainAssembly, IdentityDomainAssembly, CloudDomainAssembly];
     protected static readonly Assembly[] AllApplicationAssemblies = [ApplicationAssembly, IdentityApplicationAssembly, CloudApplicationAssembly];
-    protected static readonly Assembly[] AllInfrastructureAssemblies = [InfrastructureAssembly];
+    protected static readonly Assembly[] AllInfrastructureAssemblies = [InfrastructureAssembly, IdentityInfrastructureAssembly, CloudInfrastructureAssembly];
 
     #region Given - Assembly Selection
 

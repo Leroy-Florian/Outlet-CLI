@@ -75,6 +75,28 @@ public sealed class PersonalAccessToken : AggregateRoot<PersonalAccessTokenId>
         return Result<PersonalAccessToken>.Success(token);
     }
 
+    /// <summary>
+    /// Rehydrates a token from TRUSTED persistence without raising events or
+    /// re-running issuance guards. Infrastructure-only entry point.
+    /// </summary>
+    public static PersonalAccessToken Restore(
+        PersonalAccessTokenId id,
+        UserId ownerId,
+        string name,
+        TokenHash hash,
+        IEnumerable<TokenScope> scopes,
+        DateTime createdAtUtc,
+        DateTime? expiresAtUtc,
+        DateTime? revokedAtUtc)
+    {
+        var token = new PersonalAccessToken(id, ownerId, name, hash, scopes, createdAtUtc, expiresAtUtc)
+        {
+            RevokedAtUtc = revokedAtUtc,
+        };
+
+        return token;
+    }
+
     /// <summary>True when the token is neither revoked nor expired at <paramref name="nowUtc"/>.</summary>
     public bool IsValidAt(DateTime nowUtc) =>
         !IsRevoked && (ExpiresAtUtc is null || ExpiresAtUtc > nowUtc);

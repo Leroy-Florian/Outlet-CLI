@@ -32,4 +32,7 @@ public sealed class User : AggregateRoot<UserId>
 
         return Result<User>.Success(user);
     }
+
+    /// <summary>Rehydrates a user from TRUSTED persistence without raising events. Infrastructure-only entry point.</summary>
+    public static User Restore(UserId id, EmailAddress email, string displayName) => new(id, email, displayName);
 }

@@ -42,6 +42,23 @@ public sealed class Organization : AggregateRoot<OrganizationId>
         return Result<Organization>.Success(organization);
     }
 
+    /// <summary>
+    /// Rehydrates an organization from TRUSTED persistence without raising creation
+    /// events or re-running creation guards. Infrastructure-only entry point.
+    /// </summary>
+    public static Organization Restore(
+        OrganizationId id,
+        OrganizationSlug slug,
+        OrganizationName name,
+        IEnumerable<(MemberUserId UserId, OrganizationRole Role)> members)
+    {
+        var organization = new Organization(id, slug, name);
+        foreach (var (userId, role) in members)
+            organization._memberships.Add(new Membership(userId, role));
+
+        return organization;
+    }
+
     public Result AddMember(MemberUserId userId, OrganizationRole role)
     {
         if (Find(userId) is not null)

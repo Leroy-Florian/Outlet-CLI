@@ -23,8 +23,10 @@
     <ProjectReference Include="..\..\src\Outlet.Core.Infrastructure\Outlet.Core.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Outlet.Identity.Domain\Outlet.Identity.Domain.csproj" />
     <ProjectReference Include="..\..\src\Outlet.Identity.Application\Outlet.Identity.Application.csproj" />
+    <ProjectReference Include="..\..\src\Outlet.Identity.Infrastructure\Outlet.Identity.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Outlet.Cloud.Domain\Outlet.Cloud.Domain.csproj" />
     <ProjectReference Include="..\..\src\Outlet.Cloud.Application\Outlet.Cloud.Application.csproj" />
+    <ProjectReference Include="..\..\src\Outlet.Cloud.Infrastructure\Outlet.Cloud.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Kernel.Shared\Outlet.Kernel.Shared\Outlet.Kernel.Shared.csproj" />
   </ItemGroup>
 
