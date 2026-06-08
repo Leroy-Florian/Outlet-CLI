@@ -7,9 +7,12 @@ namespace Outlet.ArchitectureTests;
 public abstract class ArchitectureTestBase
 {
     // ==========================================================================
-    // Outlet is (for now) a SINGLE bounded context: the registry/install engine.
-    // If a second context ever appears, switch to per-context assembly arrays
-    // like WOW's ArchitectureTestBase and add BoundedContextIsolationTests back.
+    // Outlet now spans more than one bounded context:
+    //   - the registry/install engine (Outlet.Core.*), and
+    //   - identity / access (Outlet.Identity.*) — users + personal access tokens.
+    // The convention gates below run across every context's Domain assembly via
+    // AllDomainAssemblies. A dedicated BoundedContextIsolationTests lands with the
+    // Cloud context (organizations), when cross-context isolation first has teeth.
     // ==========================================================================
 
     protected static readonly Assembly KernelAssembly =
@@ -24,7 +27,10 @@ public abstract class ArchitectureTestBase
     protected static readonly Assembly InfrastructureAssembly =
         typeof(Outlet.Core.Infrastructure.AssemblyReference).Assembly;
 
-    protected static readonly Assembly[] AllDomainAssemblies = [DomainAssembly];
+    protected static readonly Assembly IdentityDomainAssembly =
+        typeof(Outlet.Identity.Domain.AssemblyReference).Assembly;
+
+    protected static readonly Assembly[] AllDomainAssemblies = [DomainAssembly, IdentityDomainAssembly];
     protected static readonly Assembly[] AllApplicationAssemblies = [ApplicationAssembly];
     protected static readonly Assembly[] AllInfrastructureAssemblies = [InfrastructureAssembly];
 
