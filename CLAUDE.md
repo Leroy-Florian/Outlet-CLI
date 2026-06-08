@@ -12,14 +12,15 @@ Idée centrale : pour chaque **préoccupation**, on expose un **port générique
 
 ## État actuel
 
-Le **squelette compilable est en place** (2026-06-05) :
+Le **MVP est livré** (engine d'installation + CLI + premier concern `email`) :
 - `Outlet.Kernel.Shared` : building blocks DDD + Mediator + Result (porté de WOW, adapté).
-- `Outlet.Core.{Domain,Application,Infrastructure}` : langage du domaine minimal (agrégat `RegistryItem`, VOs, 5 ports, 1 use case `ListRegistryItemsUseCase`) + stubs d'adapters.
-- `Outlet.Cli` : dotnet tool `outlet` (`init`/`add` = stubs, `list` fonctionne).
-- Tests : 94 verts dont **36 tests d'architecture** (NetArchTest + scans textuels) qui verrouillent toutes les conventions ci-dessous.
+- `Outlet.Core.{Domain,Application,Infrastructure}` : langage du domaine + **engine d'installation complet** — résolution de dépendances (DFS, cycles, dédoublonnage), fetch HTTP multi-source, réécriture de namespace par Roslyn, détection d'environnement via valeurs MSBuild évaluées, writer NuGet/CPM (version plancher, conflits avertis), lockfile `outlet.json`, compat TFM. **Adapters réels** (plus de stubs).
+- `Outlet.Cli` : dotnet tool `outlet` — `init`, `add`, `list`, `remove`, `diff`, `update` **fonctionnels** (robuste : une faute infra → erreur d'une ligne + exit code non nul).
+- Registre : concern **`email` livré** (`email-abstractions`, `email-smtp`, `email-sendgrid`) — vrai code compilé + testé, prouvé bout-en-bout (`outlet add email-sendgrid` → projet généré qui compile et tourne).
+- Tests : suite verte (unitaire + intégration hermétique + conformité de port + production-readiness) dont **36 tests d'architecture** (NetArchTest + scans textuels) qui verrouillent toutes les conventions ci-dessous.
 - Frontend : packages npm `@outlet/hateoas` et `@outlet/effect-react` (copies locales portées de WOW — une extraction en lib publiée est envisagée).
 
-**Aucun contenu de registre n'existe encore** (pas d'item email). Le cadrage complet vit dans Linear (voir Roadmap).
+**Reste à faire = distribution** : publier `Outlet.Cli` sur NuGet.org et héberger `dist/registry/` en HTTP (le contenu existe, le déploiement non) ; compléter la lane nightly Live (clé sandbox provider). Le cadrage complet vit dans Linear (voir Roadmap).
 
 ## Principes de design (décisions verrouillées)
 
