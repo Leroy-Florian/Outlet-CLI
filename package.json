@@ -5,12 +5,16 @@
   "workspaces": [
     "packages/outlet-hateoas",
     "packages/outlet-effect-react",
-    "playground/web"
+    "playground/web",
+    "docs"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "docs:dev": "npm run dev -w @outlet/docs",
+    "docs:build": "npm run build -w @outlet/docs",
+    "docs:preview": "npm run preview -w @outlet/docs"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

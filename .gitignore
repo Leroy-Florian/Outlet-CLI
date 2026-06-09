@@ -50,3 +50,7 @@ dist/*
 
 # Playground web build output
 playground/web/dist/
+
+# VitePress docs site
+docs/.vitepress/dist/
+docs/.vitepress/cache/
