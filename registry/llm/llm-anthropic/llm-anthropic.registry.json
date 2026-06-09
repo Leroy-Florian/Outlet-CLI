@@ -1,0 +1,17 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "llm-anthropic",
+  "type": "outlet:adapter",
+  "concern": "llm",
+  "description": "Anthropic (Claude) adapter for IChatCompletion, backed by the Anthropic.SDK client.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["llm-abstractions"],
+  "nugetDependencies": [
+    { "id": "Anthropic.SDK", "version": "5.10.0" }
+  ],
+  "files": [
+    { "path": "AnthropicChatCompletionOptions.cs", "target": "adapter" },
+    { "path": "AnthropicChatCompletion.cs", "target": "adapter" },
+    { "path": "AnthropicChatCompletionServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

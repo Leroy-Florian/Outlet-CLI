@@ -54,3 +54,6 @@ playground/web/dist/
 # VitePress docs site
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+# Test run artifacts (hang dumps, TRX, coverage)
+TestResults/
+*.dmp

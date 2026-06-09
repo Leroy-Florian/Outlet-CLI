@@ -20,6 +20,8 @@
     <Project Path="tests/Outlet.Registry.Storage.Compat/Outlet.Registry.Storage.Compat.csproj" />
     <Project Path="tests/Outlet.Registry.Sms.Tests/Outlet.Registry.Sms.Tests.csproj" />
     <Project Path="tests/Outlet.Registry.Sms.Compat/Outlet.Registry.Sms.Compat.csproj" />
+    <Project Path="tests/Outlet.Registry.Llm.Tests/Outlet.Registry.Llm.Tests.csproj" />
+    <Project Path="tests/Outlet.Registry.Llm.Compat/Outlet.Registry.Llm.Compat.csproj" />
     <Project Path="tests/Outlet.ArchitectureTests/Outlet.ArchitectureTests.csproj" />
   </Folder>
   <Folder Name="/samples/">

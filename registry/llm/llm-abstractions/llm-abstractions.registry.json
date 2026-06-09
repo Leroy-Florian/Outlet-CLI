@@ -1,0 +1,19 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "llm-abstractions",
+  "type": "outlet:contract",
+  "concern": "llm",
+  "description": "Generic chat-completion port (IChatCompletion) and DTOs — zero external dependency.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": [],
+  "nugetDependencies": [],
+  "files": [
+    { "path": "IChatCompletion.cs", "target": "contract" },
+    { "path": "ChatRole.cs", "target": "contract" },
+    { "path": "ChatMessage.cs", "target": "contract" },
+    { "path": "ChatRequest.cs", "target": "contract" },
+    { "path": "ChatUsage.cs", "target": "contract" },
+    { "path": "ChatResult.cs", "target": "contract" },
+    { "path": "ChatStreamChunk.cs", "target": "contract" }
+  ]
+}
