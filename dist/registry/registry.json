@@ -1,6 +1,139 @@
 {
   "items": [
     {
+      "name": "cache-abstractions",
+      "type": "outlet:contract",
+      "concern": "cache",
+      "description": "Generic cache port (ICacheStore) and expiration options — zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "ICacheStore.cs",
+          "target": "contract"
+        },
+        {
+          "path": "CacheEntryOptions.cs",
+          "target": "contract"
+        }
+      ],
+      "isContract": true
+    },
+    {
+      "name": "cache-memcached",
+      "type": "outlet:adapter",
+      "concern": "cache",
+      "description": "Memcached adapter for ICacheStore, backed by EnyimMemcachedCore.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "cache-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "EnyimMemcachedCore",
+          "version": "3.5.1"
+        }
+      ],
+      "files": [
+        {
+          "path": "MemcachedCacheOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "MemcachedCacheStore.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "MemcachedCacheServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "cache-memory",
+      "type": "outlet:adapter",
+      "concern": "cache",
+      "description": "In-process adapter for ICacheStore, backed by IMemoryCache (the hermetic, no-server baseline).",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "cache-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Microsoft.Extensions.Caching.Memory",
+          "version": "10.0.8"
+        }
+      ],
+      "files": [
+        {
+          "path": "InMemoryCacheOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "InMemoryCacheStore.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "InMemoryCacheServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "cache-redis",
+      "type": "outlet:adapter",
+      "concern": "cache",
+      "description": "Redis adapter for ICacheStore (+ provider-specific atomic counters), backed by StackExchange.Redis.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "cache-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "StackExchange.Redis",
+          "version": "2.13.17"
+        }
+      ],
+      "files": [
+        {
+          "path": "IRedisCacheStore.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "RedisCacheOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "RedisCacheStore.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "RedisCacheServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
       "name": "email-abstractions",
       "type": "outlet:contract",
       "concern": "email",
@@ -258,6 +391,431 @@
         },
         {
           "path": "OpenAiChatCompletionServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "resilience-abstractions",
+      "type": "outlet:contract",
+      "concern": "resilience",
+      "description": "Generic resilience port (IResilienceExecutor) + options and rejection type — zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "IResilienceExecutor.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ResilienceBackoff.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ResilienceOptions.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ResilienceRejectedException.cs",
+          "target": "contract"
+        }
+      ],
+      "isContract": true
+    },
+    {
+      "name": "resilience-builtin",
+      "type": "outlet:adapter",
+      "concern": "resilience",
+      "description": "Zero-dependency, hand-written adapter for IResilienceExecutor (retry + timeout + circuit breaker, no provider package).",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "resilience-abstractions"
+      ],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "BuiltInCircuitBreaker.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "BuiltInResilienceExecutor.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "BuiltInResilienceServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "resilience-microsoft",
+      "type": "outlet:adapter",
+      "concern": "resilience",
+      "description": "Microsoft.Extensions.Resilience adapter for IResilienceExecutor (DI-native pipeline registry + telemetry).",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "resilience-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Microsoft.Extensions.Resilience",
+          "version": "9.0.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "MicrosoftResilienceExecutor.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "MicrosoftResilienceServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "resilience-polly",
+      "type": "outlet:adapter",
+      "concern": "resilience",
+      "description": "Polly v8 adapter for IResilienceExecutor (+ provider-specific access to the raw ResiliencePipeline).",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "resilience-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Polly",
+          "version": "8.5.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "IPollyResilienceExecutor.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "PollyResilienceExecutor.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "PollyResilienceServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "sms-abstractions",
+      "type": "outlet:contract",
+      "concern": "sms",
+      "description": "Generic SMS port (ISmsSender) and DTOs — zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "ISmsSender.cs",
+          "target": "contract"
+        },
+        {
+          "path": "SmsMessage.cs",
+          "target": "contract"
+        },
+        {
+          "path": "SmsResult.cs",
+          "target": "contract"
+        }
+      ],
+      "isContract": true
+    },
+    {
+      "name": "sms-aws-sns",
+      "type": "outlet:adapter",
+      "concern": "sms",
+      "description": "Amazon SNS adapter for ISmsSender, backed by the AWS SDK.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "sms-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "AWSSDK.SimpleNotificationService",
+          "version": "4.0.3.1"
+        }
+      ],
+      "files": [
+        {
+          "path": "AwsSnsSmsOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AwsSnsSmsSender.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AwsSnsSmsServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "sms-twilio",
+      "type": "outlet:adapter",
+      "concern": "sms",
+      "description": "Twilio adapter for ISmsSender (thin REST, + provider-specific Messaging Service sends).",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "sms-abstractions"
+      ],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "ITwilioSmsSender.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "TwilioSmsOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "TwilioSmsSender.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "TwilioSmsServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "sms-vonage",
+      "type": "outlet:adapter",
+      "concern": "sms",
+      "description": "Vonage (Nexmo) adapter for ISmsSender, thin REST over HttpClient.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "sms-abstractions"
+      ],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "VonageSmsOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "VonageSmsSender.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "VonageSmsServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "storage-abstractions",
+      "type": "outlet:contract",
+      "concern": "storage",
+      "description": "Generic object/blob storage port (IBlobStorage) and DTOs — zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "IBlobStorage.cs",
+          "target": "contract"
+        },
+        {
+          "path": "Blob.cs",
+          "target": "contract"
+        },
+        {
+          "path": "BlobInfo.cs",
+          "target": "contract"
+        },
+        {
+          "path": "PutBlobOptions.cs",
+          "target": "contract"
+        }
+      ],
+      "isContract": true
+    },
+    {
+      "name": "storage-azure-blob",
+      "type": "outlet:adapter",
+      "concern": "storage",
+      "description": "Azure Blob Storage adapter for IBlobStorage (+ provider-specific SAS URIs), backed by Azure.Storage.Blobs.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "storage-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Azure.Storage.Blobs",
+          "version": "12.29.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "IAzureBlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AzureBlobStorageOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AzureBlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AzureBlobStorageServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "storage-filesystem",
+      "type": "outlet:adapter",
+      "concern": "storage",
+      "description": "Local-filesystem adapter for IBlobStorage — content under a root directory, metadata in a sidecar tree. Zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "storage-abstractions"
+      ],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "FileSystemBlobStorageOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "FileSystemBlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "FileSystemBlobStorageServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "storage-in-memory",
+      "type": "outlet:adapter",
+      "concern": "storage",
+      "description": "In-memory adapter for IBlobStorage — thread-safe, zero external dependency (tests, local dev, ephemeral caches).",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "storage-abstractions"
+      ],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "InMemoryBlobStorageOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "InMemoryBlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "InMemoryBlobStorageServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "storage-s3",
+      "type": "outlet:adapter",
+      "concern": "storage",
+      "description": "AWS S3 adapter for IBlobStorage (+ provider-specific presigned URLs), backed by AWSSDK.S3.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "storage-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "AWSSDK.S3",
+          "version": "4.0.24.1"
+        }
+      ],
+      "files": [
+        {
+          "path": "IS3BlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "S3BlobStorageOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "S3BlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "S3BlobStorageServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],
