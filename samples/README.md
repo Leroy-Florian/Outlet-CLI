@@ -42,3 +42,31 @@ Le code applicatif ne dépend que de `IEmailSender` (le **port générique**). L
 ce que garantit le design d'Outlet. Dans un vrai projet, ces fichiers seraient **copiés
 chez vous** par `outlet add email-smtp email-sendgrid` (vous les possédez et pouvez les
 éditer) ; ici ils sont compilés depuis `registry/email/` pour garder une source unique.
+
+## CacheSwapDemo — swap In-Memory ↔ Redis ↔ Memcached en une ligne de DI
+
+Même histoire pour le cache : une console qui résout le port générique `ICacheStore`,
+écrit une clé puis la relit. Le **seul** changement entre providers est la ligne
+`AddInMemoryCache()` ↔ `AddRedisCache(...)` ↔ `AddMemcachedCache(...)`.
+
+```bash
+# In-memory (par défaut) — aucun serveur requis, tourne tel quel
+dotnet run --project samples/CacheSwapDemo -- memory
+
+# Redis / Memcached — la même appli, un autre adapter
+dotnet run --project samples/CacheSwapDemo -- redis
+dotnet run --project samples/CacheSwapDemo -- memcached
+```
+
+Sortie type (provider `memory`, hermétique) :
+
+```
+Provider      : memory
+Active adapter: InMemoryCacheStore  (behind ICacheStore)
+Cached + read back ✅  "Swapping cache providers is a one-line change."
+```
+
+Pour Redis/Memcached réels, surchargez l'endpoint (`REDIS_CONFIGURATION`,
+`MEMCACHED_HOST`/`MEMCACHED_PORT`) ou démarrez un serveur local ; sans serveur, l'accès
+échoue proprement et le message l'explique. Comme pour l'email, dans un vrai projet ces
+fichiers seraient copiés chez vous par `outlet add cache-memory cache-redis cache-memcached`.

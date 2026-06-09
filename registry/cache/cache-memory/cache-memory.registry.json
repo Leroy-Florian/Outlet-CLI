@@ -1,0 +1,17 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "cache-memory",
+  "type": "outlet:adapter",
+  "concern": "cache",
+  "description": "In-process adapter for ICacheStore, backed by IMemoryCache (the hermetic, no-server baseline).",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["cache-abstractions"],
+  "nugetDependencies": [
+    { "id": "Microsoft.Extensions.Caching.Memory", "version": "10.0.8" }
+  ],
+  "files": [
+    { "path": "InMemoryCacheOptions.cs", "target": "adapter" },
+    { "path": "InMemoryCacheStore.cs", "target": "adapter" },
+    { "path": "InMemoryCacheServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

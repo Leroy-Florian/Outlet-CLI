@@ -23,6 +23,11 @@
     <PackageVersion Include="SendGrid" Version="9.29.3" />
     <PackageVersion Include="Polly" Version="8.5.0" />
     <PackageVersion Include="Microsoft.Extensions.Resilience" Version="9.0.0" />
+
+    <!-- cache concern -->
+    <PackageVersion Include="StackExchange.Redis" Version="2.13.17" />
+    <PackageVersion Include="EnyimMemcachedCore" Version="3.5.1" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.8" />
   </ItemGroup>
 
   <ItemGroup Label="Test Dependencies">

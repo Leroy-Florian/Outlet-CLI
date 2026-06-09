@@ -1,0 +1,14 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "cache-abstractions",
+  "type": "outlet:contract",
+  "concern": "cache",
+  "description": "Generic cache port (ICacheStore) and expiration options — zero external dependency.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": [],
+  "nugetDependencies": [],
+  "files": [
+    { "path": "ICacheStore.cs", "target": "contract" },
+    { "path": "CacheEntryOptions.cs", "target": "contract" }
+  ]
+}

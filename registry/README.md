@@ -55,6 +55,26 @@ conformance de port. `resilience-polly` illustre le « spécifique à côté du 
 `IPollyResilienceExecutor` (accès au `ResiliencePipeline` brut) implémenté par la même instance.
 `resilience-builtin` incarne l'ownership : retry + timeout + circuit breaker écrits main, **zéro
 package**.
+## Contenu actuel — concern `cache`
+
+| Item | Type | Provider | DI |
+|---|---|---|---|
+| `cache-abstractions` | contract | — (zéro dépendance) | — |
+| `cache-memory` | adapter | Microsoft.Extensions.Caching.Memory | `AddInMemoryCache(...)` |
+| `cache-redis` | adapter | StackExchange.Redis | `AddRedisCache(...)` |
+| `cache-memcached` | adapter | EnyimMemcachedCore | `AddMemcachedCache(...)` |
+
+Le port générique `ICacheStore` (octets opaques + `CacheEntryOptions` à TTL absolu — la seule
+politique d'expiration que **tous** les backends honorent à l'identique) est commun aux trois
+adapters → swap en **une ligne** de DI. La (dé)sérialisation reste une préoccupation séparée,
+composée par-dessus le port, jamais embarquée dedans (comme la résilience). `cache-redis`
+illustre le pattern « spécifique à côté du générique » : `IRedisCacheStore` (compteurs atomiques
+`INCR`) implémenté par la même instance, forwardée vers les deux interfaces.
+
+`cache-memory` est la **base hermétique** (aucun serveur) qui rejoue la suite de conformité de
+port dans la lane PR ; les comportements réels de `cache-redis`/`cache-memcached` sont vérifiés
+contre un vrai serveur dans la lane planifiée (`Category=Live`, endpoints surchargeables via
+`OUTLET_REDIS` / `OUTLET_MEMCACHED`).
 
 ## Convention `nugetDependencies`
 

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Outlet.Samples.CacheSwapDemo</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    In a real project, `outlet add cache-memory cache-redis cache-memcached` copies these
+    files into your repo (you own and edit them). The sample compiles them straight from
+    the registry sources to keep a single source of truth in this monorepo.
+  -->
+  <ItemGroup>
+    <Compile Include="../../registry/cache/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" />
+    <PackageReference Include="EnyimMemcachedCore" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+</Project>

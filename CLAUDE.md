@@ -166,7 +166,6 @@ La planification détaillée est dans **Linear** (team Hijoxx) :
 
 - Ne pas introduire de dépendance runtime à Outlet dans le code des items.
 - Ne pas polluer un port générique avec une spécificité provider.
-- Ne pas élargir le scope au-delà de l'email tant que la tranche v1 n'est pas propre et livrable.
 - Tout item registre doit compiler + être testé (le manifeste ne doit jamais mentir).
 - **Zéro dette** : pas de « noté pour plus tard ». Un finding est corrigé dans la session ou explicitement différé avec ticket. Un refactor inachevé est une régression, pas une étape.
 
