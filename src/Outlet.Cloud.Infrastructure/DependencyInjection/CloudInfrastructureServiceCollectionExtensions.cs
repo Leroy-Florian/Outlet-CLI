@@ -19,6 +19,7 @@ public static class CloudInfrastructureServiceCollectionExtensions
     {
         services.AddDbContext<CloudDbContext>(configureDatabase);
         services.AddScoped<IOrganizationRepository, EfOrganizationRepository>();
+        services.AddScoped<IPublishedItemRepository, EfPublishedItemRepository>();
 
         return services;
     }

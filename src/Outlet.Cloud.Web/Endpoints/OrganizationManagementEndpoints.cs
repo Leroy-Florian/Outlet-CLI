@@ -1,7 +1,9 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using Outlet.Cloud.Application.Organizations;
 using Outlet.Cloud.Application.Ports;
+using Outlet.Cloud.Application.Registry;
 using Outlet.Cloud.Domain.Organizations;
 using Outlet.Cloud.Web.Composition;
 using Outlet.Identity.Application.AccessTokens;
@@ -181,6 +183,17 @@ public static class OrganizationManagementEndpoints
             var result = await revoke.HandleAsync(new RevokePersonalAccessTokenCommand(tokenId));
             return result.ToHttp();
         });
+
+        group.MapPost("/{organizationId:guid}/registry/items", async (Guid organizationId, PublishItemBody body, ClaimsPrincipal principal, UserManager<OutletIdentityUser> users, IOrganizationRepository orgs, PublishItemUseCase publish) =>
+        {
+            var (_, _, denied) = await AuthorizeManager(organizationId, principal, users, orgs);
+            if (denied is not null)
+                return denied;
+
+            IReadOnlyList<PublishedFileInput> files = [.. body.Files.Select(f => new PublishedFileInput(f.Path, f.Content))];
+            var result = await publish.HandleAsync(new PublishItemCommand(organizationId, body.Name, body.Manifest.GetRawText(), files));
+            return result.ToHttp(id => Results.Created($"/organizations/{organizationId}/registry/items/{body.Name}", new { publishedItemId = id }));
+        });
     }
 
     private static Guid CallerId(ClaimsPrincipal principal, UserManager<OutletIdentityUser> users) =>
@@ -223,3 +236,9 @@ public sealed record ChangeRoleBody(OrganizationRole Role);
 
 /// <summary>Issue a personal access token for the caller, scoped to their role in the organization.</summary>
 public sealed record CreateTokenBody(string Name, DateTime? ExpiresAtUtc);
+
+/// <summary>Publish (or replace) an item: its name, opaque manifest object, and files.</summary>
+public sealed record PublishItemBody(string Name, JsonElement Manifest, IReadOnlyList<PublishedFileBody> Files);
+
+/// <summary>A file of a published item.</summary>
+public sealed record PublishedFileBody(string Path, string Content);

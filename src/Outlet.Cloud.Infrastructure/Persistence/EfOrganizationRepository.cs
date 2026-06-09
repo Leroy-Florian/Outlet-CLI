@@ -29,6 +29,15 @@ public sealed class EfOrganizationRepository(CloudDbContext db) : IOrganizationR
         return [.. records.Select(ToDomain)];
     }
 
+    public async Task<Organization?> GetBySlugAsync(OrganizationSlug slug, CancellationToken cancellationToken = default)
+    {
+        var record = await db.Organizations
+            .Include(o => o.Members)
+            .FirstOrDefaultAsync(o => o.Slug == slug.Value, cancellationToken);
+
+        return record is null ? null : ToDomain(record);
+    }
+
     public async Task AddAsync(Organization organization, CancellationToken cancellationToken = default)
     {
         db.Organizations.Add(ToRecord(organization));

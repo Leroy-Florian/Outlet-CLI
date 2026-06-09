@@ -25,6 +25,19 @@ dotnet_diagnostic.IDE0306.severity = error  # Use collection expression for new
 [**/AssemblyReference.cs]
 dotnet_diagnostic.S2094.severity = none
 
+# EF Core generates migration files (and the model snapshot) with patterns like
+# `new[] { ... }` that the collection-expression analyzers flag. These files are
+# tool-generated, not hand-written, so the style gate does not apply to them.
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_diagnostic.IDE0300.severity = none
+dotnet_diagnostic.IDE0301.severity = none
+dotnet_diagnostic.IDE0302.severity = none
+dotnet_diagnostic.IDE0303.severity = none
+dotnet_diagnostic.IDE0304.severity = none
+dotnet_diagnostic.IDE0305.severity = none
+dotnet_diagnostic.IDE0306.severity = none
+
 [*.{ts,tsx,js,jsx,json,yml,yaml}]
 indent_style = space
 indent_size = 2

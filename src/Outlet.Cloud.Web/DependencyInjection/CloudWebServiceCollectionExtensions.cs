@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Outlet.Cloud.Application.Organizations;
+using Outlet.Cloud.Application.Registry;
 using Outlet.Cloud.Web.Authentication;
 using Outlet.Cloud.Web.Composition;
 using Outlet.Identity.Application.AccessTokens;
@@ -27,6 +28,7 @@ public static class CloudWebServiceCollectionExtensions
         services.AddScoped<AddMemberUseCase>();
         services.AddScoped<ChangeMemberRoleUseCase>();
         services.AddScoped<RemoveMemberUseCase>();
+        services.AddScoped<PublishItemUseCase>();
 
         services.AddScoped<OrganizationTokenIssuer>();
         services.AddScoped<PersonalAccessTokenAuthenticator>();

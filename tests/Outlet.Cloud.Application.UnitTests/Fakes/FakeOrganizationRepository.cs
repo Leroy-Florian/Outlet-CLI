@@ -18,6 +18,9 @@ public sealed class FakeOrganizationRepository : IOrganizationRepository
     public Task<IReadOnlyList<Organization>> ListForMemberAsync(MemberUserId userId, CancellationToken cancellationToken = default) =>
         Task.FromResult<IReadOnlyList<Organization>>([.. _byId.Values.Where(o => o.Memberships.Any(m => m.Id == userId))]);
 
+    public Task<Organization?> GetBySlugAsync(OrganizationSlug slug, CancellationToken cancellationToken = default) =>
+        Task.FromResult(_byId.Values.FirstOrDefault(o => o.Slug == slug));
+
     public Task AddAsync(Organization organization, CancellationToken cancellationToken = default)
     {
         _byId[organization.Id.Value] = organization;
