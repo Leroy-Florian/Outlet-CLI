@@ -1,8 +1,11 @@
 using System.CommandLine;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Outlet.Core.Application.Cli;
 using Outlet.Core.Application.Configuration;
 using Outlet.Core.Application.RegistryItems;
+using Outlet.Core.Domain.Cli;
 using Outlet.Core.Infrastructure.DependencyInjection;
 using Outlet.Kernel.Shared.Mediator;
 
@@ -241,11 +244,95 @@ updateCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (medi
         });
 }, cancellationToken));
 
+// outlet self-update
+var selfUpdateCommand = new Command(
+    "self-update",
+    "Update the Outlet CLI itself to the latest published version (runs 'dotnet tool update').");
+selfUpdateCommand.SetAction((_, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var result = await mediator.ExecuteAsync<SelfUpdateCliCommand, string>(new SelfUpdateCliCommand(), token);
+
+    return result.Match(
+        onSuccess: detail =>
+        {
+            Console.WriteLine(detail);
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
+}, cancellationToken));
+
 rootCommand.Subcommands.Add(initCommand);
 rootCommand.Subcommands.Add(addCommand);
 rootCommand.Subcommands.Add(removeCommand);
 rootCommand.Subcommands.Add(diffCommand);
 rootCommand.Subcommands.Add(updateCommand);
+rootCommand.Subcommands.Add(selfUpdateCommand);
 rootCommand.Subcommands.Add(listCommand);
 
-return await rootCommand.Parse(args).InvokeAsync();
+// Level 2: fire a throttled, best-effort "newer version available" check in the
+// background so it overlaps the command instead of delaying it. We print the notice
+// (to stderr, keeping stdout pipe-clean) only if it finishes in a short grace window.
+var updateNotice = StartUpdateCheck(provider, args);
+
+var exitCode = await rootCommand.Parse(args).InvokeAsync();
+
+await EmitUpdateNoticeIfReady(updateNotice);
+return exitCode;
+
+// Kicks off the background check. Returns the notice text (or null) once known.
+// Honours the OUTLET_NO_UPDATE_CHECK opt-out and never throws.
+Task<string?> StartUpdateCheck(IServiceProvider serviceProvider, string[] commandArgs)
+{
+    if (Environment.GetEnvironmentVariable("OUTLET_NO_UPDATE_CHECK") is { Length: > 0 })
+        return Task.FromResult<string?>(null);
+
+    // Don't nag during the explicit self-update itself.
+    if (commandArgs is ["self-update", ..])
+        return Task.FromResult<string?>(null);
+
+    var current = CliVersion.TryParse(Assembly.GetExecutingAssembly().GetName().Version?.ToString());
+    if (current is null)
+        return Task.FromResult<string?>(null);
+
+    return Task.Run(async () =>
+    {
+        try
+        {
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+            var result = await mediator.ExecuteAsync<CheckForCliUpdateQuery, CliUpdateStatus>(
+                new CheckForCliUpdateQuery(current));
+
+            if (result.IsSuccess && result.Value!.UpdateAvailable)
+                return $"A new Outlet version is available ({result.Value.LatestVersion}, you have " +
+                       $"{result.Value.CurrentVersion}). Run 'outlet self-update'.";
+        }
+        catch
+        {
+            // Best-effort: a failed background check is never the user's problem.
+        }
+
+        return null;
+    });
+}
+
+async Task EmitUpdateNoticeIfReady(Task<string?> notice)
+{
+    try
+    {
+        // Most runs are throttled and complete instantly; cap the wait so a slow
+        // once-a-day lookup never noticeably delays exit (next run will catch it).
+        var finished = await Task.WhenAny(notice, Task.Delay(TimeSpan.FromMilliseconds(800)));
+        if (finished == notice && notice.Result is { } message)
+            Console.Error.WriteLine(message);
+    }
+    catch
+    {
+        // Never let the notice path change the command's outcome.
+    }
+}
