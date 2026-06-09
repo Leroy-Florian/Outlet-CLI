@@ -61,7 +61,18 @@ public static class OutletConfigSerializer
                 return Fail("each registry must declare a non-empty 'name' and 'url'.");
             if (!Uri.TryCreate(registry.Url, UriKind.Absolute, out _))
                 return Fail($"registry '{registry.Name}' has a non-absolute url '{registry.Url}'.");
-            registries.Add(new RegistryConfig(registry.Name, registry.Url));
+
+            RegistryAuth? auth = null;
+            if (registry.Auth is { } rawAuth)
+            {
+                if (string.IsNullOrWhiteSpace(rawAuth.TokenEnv))
+                    return Fail($"registry '{registry.Name}' auth must declare a non-empty 'tokenEnv'.");
+
+                var scheme = string.IsNullOrWhiteSpace(rawAuth.Scheme) ? "Bearer" : rawAuth.Scheme.Trim();
+                auth = new RegistryAuth(scheme, rawAuth.TokenEnv.Trim());
+            }
+
+            registries.Add(new RegistryConfig(registry.Name, registry.Url, auth));
         }
 
         var installed = new List<InstalledItem>();
@@ -103,6 +114,13 @@ public static class OutletConfigSerializer
     {
         public string? Name { get; init; }
         public string? Url { get; init; }
+        public AuthJson? Auth { get; init; }
+    }
+
+    private sealed class AuthJson
+    {
+        public string? Scheme { get; init; }
+        public string? TokenEnv { get; init; }
     }
 
     private sealed class TargetsJson

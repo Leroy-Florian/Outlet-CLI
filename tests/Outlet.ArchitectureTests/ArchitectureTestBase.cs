@@ -7,9 +7,12 @@ namespace Outlet.ArchitectureTests;
 public abstract class ArchitectureTestBase
 {
     // ==========================================================================
-    // Outlet is (for now) a SINGLE bounded context: the registry/install engine.
-    // If a second context ever appears, switch to per-context assembly arrays
-    // like WOW's ArchitectureTestBase and add BoundedContextIsolationTests back.
+    // Outlet spans several bounded contexts:
+    //   - the registry/install engine (Outlet.Core.*),
+    //   - identity / access (Outlet.Identity.*) — users + personal access tokens,
+    //   - cloud (Outlet.Cloud.*) — organizations + memberships.
+    // The convention gates below run across every context's Domain assembly via
+    // AllDomainAssemblies; BoundedContextIsolationTests keeps the contexts decoupled.
     // ==========================================================================
 
     protected static readonly Assembly KernelAssembly =
@@ -24,9 +27,27 @@ public abstract class ArchitectureTestBase
     protected static readonly Assembly InfrastructureAssembly =
         typeof(Outlet.Core.Infrastructure.AssemblyReference).Assembly;
 
-    protected static readonly Assembly[] AllDomainAssemblies = [DomainAssembly];
-    protected static readonly Assembly[] AllApplicationAssemblies = [ApplicationAssembly];
-    protected static readonly Assembly[] AllInfrastructureAssemblies = [InfrastructureAssembly];
+    protected static readonly Assembly IdentityDomainAssembly =
+        typeof(Outlet.Identity.Domain.AssemblyReference).Assembly;
+
+    protected static readonly Assembly IdentityApplicationAssembly =
+        typeof(Outlet.Identity.Application.AssemblyReference).Assembly;
+
+    protected static readonly Assembly CloudDomainAssembly =
+        typeof(Outlet.Cloud.Domain.AssemblyReference).Assembly;
+
+    protected static readonly Assembly CloudApplicationAssembly =
+        typeof(Outlet.Cloud.Application.AssemblyReference).Assembly;
+
+    protected static readonly Assembly IdentityInfrastructureAssembly =
+        typeof(Outlet.Identity.Infrastructure.AssemblyReference).Assembly;
+
+    protected static readonly Assembly CloudInfrastructureAssembly =
+        typeof(Outlet.Cloud.Infrastructure.AssemblyReference).Assembly;
+
+    protected static readonly Assembly[] AllDomainAssemblies = [DomainAssembly, IdentityDomainAssembly, CloudDomainAssembly];
+    protected static readonly Assembly[] AllApplicationAssemblies = [ApplicationAssembly, IdentityApplicationAssembly, CloudApplicationAssembly];
+    protected static readonly Assembly[] AllInfrastructureAssemblies = [InfrastructureAssembly, IdentityInfrastructureAssembly, CloudInfrastructureAssembly];
 
     #region Given - Assembly Selection
 

@@ -5,7 +5,8 @@
   "workspaces": [
     "packages/outlet-hateoas",
     "packages/outlet-effect-react",
-    "playground/web"
+    "playground/web",
+    "playground/cloud-web"
   ],
   "scripts": {
     "build": "npm run build --workspaces",

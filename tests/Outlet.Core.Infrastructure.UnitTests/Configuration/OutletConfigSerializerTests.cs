@@ -75,6 +75,59 @@ public sealed class OutletConfigSerializerTests
     }
 
     [Fact]
+    public void Should_ParseAndRoundTripAuth_When_RegistryDeclaresIt()
+    {
+        var json = """
+            {
+              "registries": [ { "name": "acme", "url": "https://acme.test/", "auth": { "scheme": "Bearer", "tokenEnv": "ACME_TOKEN" } } ],
+              "targets": { "contract": { "project": "A.csproj", "namespace": "A" }, "adapter": { "project": "A.csproj", "namespace": "A" } }
+            }
+            """;
+
+        var parsed = OutletConfigSerializer.Parse(json);
+
+        parsed.IsSuccess.Should().BeTrue(parsed.Error);
+        var auth = parsed.Value!.Registries.Single().Auth;
+        auth.Should().NotBeNull();
+        auth!.Scheme.Should().Be("Bearer");
+        auth.TokenEnv.Should().Be("ACME_TOKEN");
+
+        var reparsed = OutletConfigSerializer.Parse(OutletConfigSerializer.Serialize(parsed.Value!));
+        reparsed.Value!.Registries.Single().Auth.Should().Be(auth);
+    }
+
+    [Fact]
+    public void Should_DefaultSchemeToBearer_When_OnlyTokenEnvGiven()
+    {
+        var json = """
+            {
+              "registries": [ { "name": "acme", "url": "https://acme.test/", "auth": { "tokenEnv": "ACME_TOKEN" } } ],
+              "targets": { "contract": { "project": "A.csproj", "namespace": "A" }, "adapter": { "project": "A.csproj", "namespace": "A" } }
+            }
+            """;
+
+        var parsed = OutletConfigSerializer.Parse(json);
+
+        parsed.Value!.Registries.Single().Auth!.Scheme.Should().Be("Bearer");
+    }
+
+    [Fact]
+    public void Should_Fail_When_AuthHasNoTokenEnv()
+    {
+        var json = """
+            {
+              "registries": [ { "name": "acme", "url": "https://acme.test/", "auth": { "scheme": "Bearer" } } ],
+              "targets": { "contract": { "project": "A.csproj", "namespace": "A" }, "adapter": { "project": "A.csproj", "namespace": "A" } }
+            }
+            """;
+
+        var result = OutletConfigSerializer.Parse(json);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("tokenEnv");
+    }
+
+    [Fact]
     public void Should_ProduceValidDefault_When_CreateDefaultIsUsed()
     {
         var config = OutletConfig.CreateDefault("src/App/App.csproj", "App");

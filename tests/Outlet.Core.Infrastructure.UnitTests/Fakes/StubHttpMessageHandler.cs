@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace Outlet.Core.Infrastructure.UnitTests.Fakes;
 
@@ -10,6 +11,9 @@ public sealed class StubHttpMessageHandler : HttpMessageHandler
 {
     private readonly Dictionary<string, (HttpStatusCode Status, string Content)> _responses = [];
 
+    /// <summary>The Authorization header of the most recent request (captured for assertions).</summary>
+    public AuthenticationHeaderValue? LastAuthorization { get; private set; }
+
     public StubHttpMessageHandler Map(string url, string content, HttpStatusCode status = HttpStatusCode.OK)
     {
         _responses[url] = (status, content);
@@ -18,6 +22,8 @@ public sealed class StubHttpMessageHandler : HttpMessageHandler
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        LastAuthorization = request.Headers.Authorization;
+
         var url = request.RequestUri!.AbsoluteUri;
 
         if (_responses.TryGetValue(url, out var mapped))

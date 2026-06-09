@@ -24,8 +24,15 @@ public sealed record OutletConfig(
     }
 }
 
-/// <summary>A configured registry source (auth is post-MVP and not modelled here yet).</summary>
-public sealed record RegistryConfig(string Name, string Url);
+/// <summary>A configured registry source. <paramref name="Auth"/> is null for anonymous (public) registries.</summary>
+public sealed record RegistryConfig(string Name, string Url, RegistryAuth? Auth = null);
+
+/// <summary>
+/// How the CLI authenticates to a private registry. The secret itself is NEVER stored
+/// in <c>outlet.json</c>: <paramref name="TokenEnv"/> names the environment variable
+/// (or CI secret) holding it. <paramref name="Scheme"/> is the HTTP auth scheme (e.g. "Bearer").
+/// </summary>
+public sealed record RegistryAuth(string Scheme, string TokenEnv);
 
 /// <summary>Routing of each item type into the user's projects.</summary>
 public sealed record OutletTargets(TargetRoute Contract, TargetRoute Adapter);

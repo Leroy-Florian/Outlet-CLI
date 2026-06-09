@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using Outlet.Core.Domain.RegistryItems;
 using Outlet.Core.Infrastructure.Registry;
 using Outlet.Core.Infrastructure.UnitTests.Fakes;
@@ -115,5 +116,32 @@ public sealed class HttpRegistrySourceTests
         var act = async () => await source.GetFileContentAsync(RegistryItemId.From("email-smtp"), "Missing.cs");
 
         await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Fact]
+    public async Task Should_AttachAuthorizationHeader_When_Provided()
+    {
+        var handler = new StubHttpMessageHandler().Map(IndexUrl, IndexJson);
+        var source = new HttpRegistrySource(
+            new HttpClient(handler),
+            new Uri(BaseUrl),
+            new AuthenticationHeaderValue("Bearer", "secret-123"));
+
+        await source.GetItemsAsync();
+
+        handler.LastAuthorization.Should().NotBeNull();
+        handler.LastAuthorization!.Scheme.Should().Be("Bearer");
+        handler.LastAuthorization.Parameter.Should().Be("secret-123");
+    }
+
+    [Fact]
+    public async Task Should_NotAttachAuthorization_When_Anonymous()
+    {
+        var handler = new StubHttpMessageHandler().Map(IndexUrl, IndexJson);
+        var source = new HttpRegistrySource(new HttpClient(handler), new Uri(BaseUrl));
+
+        await source.GetItemsAsync();
+
+        handler.LastAuthorization.Should().BeNull();
     }
 }

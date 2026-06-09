@@ -20,10 +20,13 @@ public static class OutletCoreServiceCollectionExtensions
         services.AddSingleton<HttpClient>(_ => new HttpClient());
 
         // Registry sources are read from the project's outlet.json (per working
-        // directory), then the client fans out across them.
+        // directory), then the client fans out across them. Private registries
+        // attach a bearer credential resolved from the environment.
+        services.AddSingleton<ICredentialResolver, EnvironmentCredentialResolver>();
         services.AddScoped<IRegistrySourceProvider>(sp => new ConfiguredRegistrySourceProvider(
             sp.GetRequiredService<IOutletConfigStore>(),
             sp.GetRequiredService<HttpClient>(),
+            sp.GetRequiredService<ICredentialResolver>(),
             Directory.GetCurrentDirectory()));
         services.AddScoped<IRegistryClient, ConfiguredRegistryClient>();
         services.AddScoped<IMsBuildEvaluator, DotnetMsBuildEvaluator>();

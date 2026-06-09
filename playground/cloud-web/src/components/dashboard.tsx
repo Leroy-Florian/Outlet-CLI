@@ -1,0 +1,93 @@
+import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import type { SessionUser } from '../App'
+import { api, type OrgSummary } from '../lib/api'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { OrgPanel } from './org-panel'
+
+export function Dashboard({ user, onLogout }: { user: SessionUser; onLogout: () => Promise<void> | void }) {
+  const [orgs, setOrgs] = useState<OrgSummary[]>([])
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [slug, setSlug] = useState('')
+  const [name, setName] = useState('')
+  const [error, setError] = useState<string | null>(null)
+
+  const loadOrgs = useCallback(async () => {
+    try {
+      const list = await api.listOrganizations()
+      setOrgs(list)
+      setSelectedId((current) => current ?? list[0]?.organizationId ?? null)
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Failed to load organizations.')
+    }
+  }, [])
+
+  useEffect(() => {
+    void loadOrgs()
+  }, [loadOrgs])
+
+  async function onCreate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setError(null)
+    try {
+      await api.createOrganization(slug, name)
+      setSlug('')
+      setName('')
+      await loadOrgs()
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Failed to create organization.')
+    }
+  }
+
+  return (
+    <div className="min-h-svh">
+      <header className="flex items-center justify-between border-b px-6 py-4">
+        <div className="flex items-center gap-2 font-medium">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md text-xs">O</div>
+          Outlet Cloud
+        </div>
+        <div className="flex items-center gap-3 text-sm">
+          <span className="text-muted-foreground">{user.email}</span>
+          <Button variant="outline" className="w-auto px-3" onClick={() => void onLogout()}>Log out</Button>
+        </div>
+      </header>
+
+      <main className="mx-auto grid max-w-5xl gap-8 p-6 md:grid-cols-[260px_1fr] md:p-10">
+        <aside className="flex flex-col gap-4">
+          <h2 className="text-sm font-semibold tracking-wide uppercase">Organizations</h2>
+          <nav className="flex flex-col gap-1">
+            {orgs.map((org) => (
+              <button
+                key={org.organizationId}
+                onClick={() => setSelectedId(org.organizationId)}
+                className={`flex items-center justify-between rounded-md px-3 py-2 text-left text-sm ${org.organizationId === selectedId ? 'bg-muted font-medium' : 'hover:bg-muted/60'}`}
+              >
+                {org.name}
+                <span className="text-muted-foreground text-xs">{org.role}</span>
+              </button>
+            ))}
+            {orgs.length === 0 && <p className="text-muted-foreground text-sm">No organizations yet.</p>}
+          </nav>
+
+          <form onSubmit={onCreate} className="mt-2 flex flex-col gap-2 border-t pt-4">
+            <Label htmlFor="slug">New organization</Label>
+            <Input id="slug" placeholder="slug (e.g. acme)" value={slug} onChange={(e) => setSlug(e.target.value)} required />
+            <Input placeholder="display name" value={name} onChange={(e) => setName(e.target.value)} required />
+            <Button type="submit">Create</Button>
+          </form>
+
+          {error && <p className="text-destructive text-sm">{error}</p>}
+        </aside>
+
+        <section>
+          {selectedId ? (
+            <OrgPanel key={selectedId} organizationId={selectedId} currentUserId={user.userId} />
+          ) : (
+            <p className="text-muted-foreground text-sm">Select or create an organization to manage members and tokens.</p>
+          )}
+        </section>
+      </main>
+    </div>
+  )
+}
