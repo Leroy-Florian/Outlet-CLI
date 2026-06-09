@@ -78,21 +78,32 @@ public sealed class AddItemUseCase(
                     continue;
                 }
 
+                var relative = Path.GetRelativePath(command.ProjectDirectory, destinationPath);
+                writtenFiles.Add(relative);
+
+                // Preview only: record what WOULD be written, but never fetch/rewrite/touch the disk.
+                if (command.DryRun)
+                    continue;
+
                 var content = await registryClient.GetFileContentAsync(item.Id, file, cancellationToken);
                 var rewritten = namespaceRewriter.Rewrite(content, sourceRoot, targetNamespace);
 
                 fileSystem.CreateDirectory(Path.GetDirectoryName(destinationPath) ?? destinationDirectory);
                 await fileSystem.WriteAllTextAsync(destinationPath, rewritten, cancellationToken);
 
-                var relative = Path.GetRelativePath(command.ProjectDirectory, destinationPath);
                 itemFiles.Add(new InstalledFile(relative, ContentHash.Of(rewritten)));
-                writtenFiles.Add(relative);
                 writtenAbsolutePaths.Add(destinationPath);
             }
 
             var packages = new List<InstalledPackage>();
             foreach (var dependency in item.NugetDependencies)
             {
+                packages.Add(new InstalledPackage(dependency.PackageId, dependency.MinimumVersion));
+
+                // Preview only: record the package, but never edit the project file.
+                if (command.DryRun)
+                    continue;
+
                 var request = new NuGetEditRequest(
                     projectFilePath,
                     dependency,
@@ -106,8 +117,6 @@ public sealed class AddItemUseCase(
 
                 if (edit.Outcome == NuGetEditOutcome.Added)
                     addedReferences.Add(request);
-
-                packages.Add(new InstalledPackage(dependency.PackageId, dependency.MinimumVersion));
             }
 
             lockEntries.Add(new InstalledItem(
@@ -133,13 +142,15 @@ public sealed class AddItemUseCase(
             restored = true;
         }
 
-        if (lockEntries.Count > 0)
+        // A preview never persists the lockfile — the project must be left exactly as it was found.
+        if (!command.DryRun && lockEntries.Count > 0)
         {
             var updated = config with { Installed = [.. config.Installed, .. lockEntries] };
             await configStore.SaveAsync(command.ProjectDirectory, updated, cancellationToken);
         }
 
-        return Result<InstallationReport>.Success(new InstallationReport(installedItems, writtenFiles, warnings, restored));
+        return Result<InstallationReport>.Success(
+            new InstallationReport(installedItems, writtenFiles, warnings, restored, command.DryRun));
     }
 
     /// <summary>

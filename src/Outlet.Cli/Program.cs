@@ -1,5 +1,7 @@
 using System.CommandLine;
 using System.Reflection;
+using System.Text.Json;
+using Outlet.Cli;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Outlet.Core.Application.Cli;
@@ -47,7 +49,8 @@ async Task<int> RunAsync(Func<IMediator, CancellationToken, Task<int>> action, C
 
 var rootCommand = new RootCommand(
     "Outlet — copy-paste registry for .NET backend infrastructure. " +
-    "Generic ports, swappable adapters, code you own.");
+    "Generic ports, swappable adapters, code you own. " +
+    "Exit codes: 0 success · 1 error · 130 cancelled.");
 
 // outlet init
 var initCommand = new Command("init", "Initialize outlet.json in the current project.");
@@ -80,22 +83,30 @@ var noRestoreOption = new Option<bool>("--no-restore")
 {
     Description = "Skip 'dotnet restore' after adding packages (transitive deps are not materialized yet).",
 };
+var dryRunOption = new Option<bool>("--dry-run")
+{
+    Description = "Preview the install: print the files and packages that would be written, change nothing.",
+};
 var addCommand = new Command("add", "Copy a registry item (and its dependencies) into the project.");
 addCommand.Arguments.Add(itemArgument);
 addCommand.Options.Add(noRestoreOption);
+addCommand.Options.Add(dryRunOption);
 addCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
 {
+    var dryRun = parseResult.GetValue(dryRunOption);
     var command = new AddItemCommand(
         Environment.CurrentDirectory,
         parseResult.GetValue(itemArgument)!,
-        Restore: !parseResult.GetValue(noRestoreOption));
+        Restore: !parseResult.GetValue(noRestoreOption),
+        DryRun: dryRun);
     var result = await mediator.ExecuteAsync<AddItemCommand, InstallationReport>(command, token);
 
     return result.Match(
         onSuccess: report =>
         {
+            var prefix = report.DryRun ? "would install" : "installed";
             foreach (var name in report.InstalledItems)
-                Console.WriteLine($"installed {name}");
+                Console.WriteLine($"{prefix} {name}");
             foreach (var file in report.WrittenFiles)
                 Console.WriteLine($"  + {file}");
             foreach (var warning in report.Warnings)
@@ -103,6 +114,8 @@ addCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediato
 
             if (report.InstalledItems.Count == 0)
                 Console.WriteLine("Nothing to install (already up to date).");
+            else if (report.DryRun)
+                Console.WriteLine("dry run — no changes written. Re-run without --dry-run to apply.");
             else if (report.Restored)
                 Console.WriteLine("restored packages (transitive dependencies resolved).");
             return 0;
@@ -119,10 +132,16 @@ var concernOption = new Option<string?>("--concern")
 {
     Description = "Only show items of this concern (e.g. email).",
 };
+var jsonOption = new Option<bool>("--json")
+{
+    Description = "Emit the catalogue as JSON (for scripting / CI) instead of the aligned table.",
+};
 var listCommand = new Command("list", "List the items available across the configured registries.");
 listCommand.Options.Add(concernOption);
+listCommand.Options.Add(jsonOption);
 listCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
 {
+    var asJson = parseResult.GetValue(jsonOption);
     var query = new ListRegistryItemsQuery(parseResult.GetValue(concernOption));
     var result = await mediator
         .ExecuteAsync<ListRegistryItemsQuery, IReadOnlyList<RegistryItemSummary>>(query, token);
@@ -130,6 +149,12 @@ listCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediat
     return result.Match(
         onSuccess: items =>
         {
+            if (asJson)
+            {
+                Console.WriteLine(JsonSerializer.Serialize(items, CliJson.Options));
+                return 0;
+            }
+
             if (items.Count == 0)
             {
                 Console.WriteLine("No registry items available (no registry configured, or none reachable).");

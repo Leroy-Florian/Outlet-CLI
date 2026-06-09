@@ -9,8 +9,8 @@
     <PackageId>Outlet.Cli</PackageId>
     <Version>0.1.0</Version>
     <Authors>Outlet</Authors>
-    <Description>Outlet — a copy-paste registry for .NET backend infrastructure (shadcn-style ports &amp; adapters). Commands: init, add, list.</Description>
-    <PackageTags>dotnet-tool;registry;scaffolding;hexagonal;ports-and-adapters;email</PackageTags>
+    <Description>Outlet — a copy-paste registry for .NET backend infrastructure (shadcn-style ports &amp; adapters). Commands: init, add, list, remove, diff, update, self-update.</Description>
+    <PackageTags>dotnet-tool;registry;scaffolding;hexagonal;ports-and-adapters;email;cache;resilience;sms;storage;llm</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 

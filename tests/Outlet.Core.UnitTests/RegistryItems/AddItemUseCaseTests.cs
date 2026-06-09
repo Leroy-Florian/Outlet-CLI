@@ -154,6 +154,34 @@ public sealed class AddItemUseCaseTests
     }
 
     [Fact]
+    public async Task Should_PreviewWithoutWriting_When_DryRun()
+    {
+        var result = await BuildUseCase().HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp", DryRun: true));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.DryRun.Should().BeTrue();
+        result.Value.InstalledItems.Should().Equal("email-abstractions", "email-smtp");
+        result.Value.WrittenFiles.Should().Contain(["IEmailSender.cs", "SmtpEmailSender.cs"]);
+
+        _fileSystem.Files.Should().BeEmpty("a dry run writes nothing to disk");
+        _nuGet.Requests.Should().BeEmpty("a dry run edits no project file");
+        _restorer.Requests.Should().BeEmpty("a dry run never restores");
+        _config.Saved!.Installed.Should().BeEmpty("a dry run never persists installed items to the lockfile");
+    }
+
+    [Fact]
+    public async Task Should_StillReportCollisions_When_DryRun()
+    {
+        _fileSystem.Seed("/repo/SmtpEmailSender.cs", "EXISTING USER CODE");
+
+        var result = await BuildUseCase().HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp", DryRun: true));
+
+        result.Value!.Warnings.Should().ContainMatch("*already exists*");
+        result.Value.WrittenFiles.Should().NotContain("SmtpEmailSender.cs");
+        _fileSystem.Files["/repo/SmtpEmailSender.cs"].Should().Be("EXISTING USER CODE");
+    }
+
+    [Fact]
     public async Task Should_Fail_When_ConfigIsMissing()
     {
         var emptyConfig = new FakeOutletConfigStore();
