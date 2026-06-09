@@ -194,6 +194,19 @@ public static class OrganizationManagementEndpoints
             var result = await publish.HandleAsync(new PublishItemCommand(organizationId, body.Name, body.Manifest.GetRawText(), files));
             return result.ToHttp(id => Results.Created($"/organizations/{organizationId}/registry/items/{body.Name}", new { publishedItemId = id }));
         });
+
+        group.MapGet("/{organizationId:guid}/registry/items", async (Guid organizationId, ClaimsPrincipal principal, UserManager<OutletIdentityUser> users, IOrganizationRepository orgs, IPublishedItemRepository items) =>
+        {
+            var callerId = CallerId(principal, users);
+            var org = await orgs.GetByIdAsync(OrganizationId.From(organizationId));
+            if (org is null)
+                return Results.NotFound();
+            if (RoleOf(org, callerId) is null)
+                return Results.StatusCode(StatusCodes.Status403Forbidden);
+
+            var published = await items.ListForOrganizationAsync(org.Id);
+            return Results.Ok(published.Select(i => new { name = i.Name.Value, fileCount = i.Files.Count }));
+        });
     }
 
     private static Guid CallerId(ClaimsPrincipal principal, UserManager<OutletIdentityUser> users) =>
