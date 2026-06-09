@@ -21,6 +21,11 @@ export interface OutletApiService {
   readonly login: (email: string, password: string) => Effect.Effect<void, OutletError>
   readonly logout: () => Effect.Effect<void, OutletError>
 
+  readonly subscribe: () => Effect.Effect<void, OutletError>
+  readonly cancelSubscription: () => Effect.Effect<void, OutletError>
+  readonly forgotPassword: (email: string) => Effect.Effect<string | null, OutletError>
+  readonly resetPassword: (email: string, token: string, newPassword: string) => Effect.Effect<void, OutletError>
+
   readonly listOrganizations: () => Effect.Effect<ReadonlyArray<OrgSummary>, OutletError>
   readonly createOrganization: (slug: string, name: string) => Effect.Effect<void, OutletError>
   readonly getOrganization: (id: string) => Effect.Effect<OrgDetail, OutletError>

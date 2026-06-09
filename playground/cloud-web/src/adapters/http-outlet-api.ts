@@ -67,6 +67,13 @@ const service: OutletApiService = {
   login: (email, password) => mutate('/auth/login', 'POST', { email, password }),
   logout: () => mutate('/auth/logout', 'POST'),
 
+  subscribe: () => mutate('/billing/subscribe', 'POST'),
+  cancelSubscription: () => mutate('/billing/cancel', 'POST'),
+  forgotPassword: (email) =>
+    Effect.map(readJson<{ token: string | null }>('/auth/forgot-password', jsonInit('POST', { email })), (r) => r.token),
+  resetPassword: (email, token, newPassword) =>
+    mutate('/auth/reset-password', 'POST', { email, token, newPassword }),
+
   listOrganizations: () => readJson<ReadonlyArray<OrgSummary>>('/organizations'),
   createOrganization: (slug, name) => mutate('/organizations', 'POST', { slug, name }),
   getOrganization: (id) => readJson<OrgDetail>(`/organizations/${id}`),

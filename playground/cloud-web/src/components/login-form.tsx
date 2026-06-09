@@ -8,9 +8,10 @@ import { Label } from './ui/label'
 type Props = {
   onAuthenticated: () => Promise<void> | void
   onSwitch: () => void
+  onForgot: () => void
 }
 
-export function LoginForm({ onAuthenticated, onSwitch }: Props) {
+export function LoginForm({ onAuthenticated, onSwitch, onForgot }: Props) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const login = useEffectFn((e: string, p: string) => Effect.flatMap(OutletApi, (api) => api.login(e, p)))
@@ -47,7 +48,7 @@ export function LoginForm({ onAuthenticated, onSwitch }: Props) {
         <div className="grid gap-3">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
-            <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">Forgot your password?</a>
+            <button type="button" onClick={onForgot} className="ml-auto text-sm underline-offset-4 hover:underline">Forgot your password?</button>
           </div>
           <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>

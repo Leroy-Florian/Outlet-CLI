@@ -2,10 +2,13 @@
 
 export type Role = 'Owner' | 'Admin' | 'Member'
 
+export type Plan = 'Free' | 'Pro'
+
 export interface SessionUser {
   readonly userId: string
   readonly email: string
   readonly displayName: string
+  readonly plan: Plan
 }
 
 export interface OrgSummary {

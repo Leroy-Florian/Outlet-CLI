@@ -1,44 +1,30 @@
 import { Effect } from 'effect'
 import { useState } from 'react'
 import type { Role } from '../domain/models'
+import { navigate } from '../router'
 import { OutletApi, useEffectFn, useEffectQuery } from '../runtime'
-import { Button } from './ui/button'
-import { Input } from './ui/input'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
 
 const ROLES: Role[] = ['Owner', 'Admin', 'Member']
 const selectClass =
   'h-9 rounded-md border border-input bg-transparent px-2 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
-const fieldClass =
-  'min-h-24 rounded-md border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
 
-export function OrgPanel({ organizationId, currentUserId }: { organizationId: string; currentUserId: string }) {
+export function OrganizationPage({ organizationId, currentUserId }: { organizationId: string; currentUserId: string }) {
   const detail = useEffectQuery(() => Effect.flatMap(OutletApi, (api) => api.getOrganization(organizationId)), [organizationId])
   const tokens = useEffectQuery(() => Effect.flatMap(OutletApi, (api) => api.listTokens(organizationId)), [organizationId])
-  const published = useEffectQuery(() => Effect.flatMap(OutletApi, (api) => api.listPublished(organizationId)), [organizationId])
 
   const addMember = useEffectFn((email: string, role: Role) => Effect.flatMap(OutletApi, (api) => api.addMember(organizationId, email, role)))
   const changeRole = useEffectFn((userId: string, role: Role) => Effect.flatMap(OutletApi, (api) => api.changeRole(organizationId, userId, role)))
   const removeMember = useEffectFn((userId: string) => Effect.flatMap(OutletApi, (api) => api.removeMember(organizationId, userId)))
   const issueToken = useEffectFn((name: string) => Effect.flatMap(OutletApi, (api) => api.issueToken(organizationId, name)))
   const revokeToken = useEffectFn((tokenId: string) => Effect.flatMap(OutletApi, (api) => api.revokeToken(organizationId, tokenId)))
-  const publish = useEffectFn((name: string, path: string, content: string) =>
-    Effect.flatMap(OutletApi, (api) =>
-      api.publish(organizationId, {
-        name,
-        manifest: { name, type: 'outlet:adapter', concern: 'misc', targetFrameworks: ['net10.0'], files: [{ path, target: 'adapter' }] },
-        files: [{ path, content }],
-      }),
-    ),
-  )
 
   const [error, setError] = useState<string | null>(null)
   const [secret, setSecret] = useState<string | null>(null)
   const [memberEmail, setMemberEmail] = useState('')
   const [memberRole, setMemberRole] = useState<Role>('Member')
   const [tokenName, setTokenName] = useState('')
-  const [itemName, setItemName] = useState('')
-  const [filePath, setFilePath] = useState('')
-  const [fileContent, setFileContent] = useState('')
 
   async function guard(action: Promise<unknown>, after?: () => void) {
     setError(null)
@@ -64,10 +50,17 @@ export function OrgPanel({ organizationId, currentUserId }: { organizationId: st
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold">{org.name}</h1>
+        <button onClick={() => navigate('/')} className="text-muted-foreground text-sm hover:underline">← Organizations</button>
+        <h1 className="mt-2 text-2xl font-bold">{org.name}</h1>
         <p className="text-muted-foreground text-sm">
           /{org.slug} · you are <span className="font-medium">{org.role}</span>
         </p>
+        <nav className="mt-3 flex gap-4 border-b pb-2 text-sm">
+          <span className="font-medium">Members</span>
+          <button onClick={() => navigate(`/orgs/${organizationId}/registry`)} className="text-muted-foreground hover:underline">
+            Registry
+          </button>
+        </nav>
       </div>
 
       {error && <p className="text-destructive text-sm">{error}</p>}
@@ -176,39 +169,6 @@ export function OrgPanel({ organizationId, currentUserId }: { organizationId: st
           <Button type="submit" className="w-auto px-3">Generate</Button>
         </form>
       </section>
-
-      {canManage && (
-        <section className="flex flex-col gap-3">
-          <h2 className="font-semibold">Private registry</h2>
-          <ul className="flex flex-col gap-2">
-            {(published.data ?? []).map((item) => (
-              <li key={item.name} className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
-                <span className="font-medium">{item.name}</span>
-                <span className="text-muted-foreground">{item.fileCount} file(s)</span>
-              </li>
-            ))}
-            {(published.data ?? []).length === 0 && <p className="text-muted-foreground text-sm">No items published yet.</p>}
-          </ul>
-
-          <form
-            className="flex flex-col gap-2"
-            onSubmit={(e) => {
-              e.preventDefault()
-              void guard(publish.run(itemName, filePath, fileContent), () => {
-                setItemName('')
-                setFilePath('')
-                setFileContent('')
-                published.refresh()
-              })
-            }}
-          >
-            <Input placeholder="item name (e.g. email-smtp)" value={itemName} onChange={(e) => setItemName(e.target.value)} required />
-            <Input placeholder="file path (e.g. SmtpEmailSender.cs)" value={filePath} onChange={(e) => setFilePath(e.target.value)} required />
-            <textarea className={fieldClass} placeholder="// file content" value={fileContent} onChange={(e) => setFileContent(e.target.value)} required />
-            <Button type="submit" className="w-auto px-3">Publish</Button>
-          </form>
-        </section>
-      )}
     </div>
   )
 }

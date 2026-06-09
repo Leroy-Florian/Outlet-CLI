@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { LoginForm } from './login-form'
 import { RegisterForm } from './register-form'
+import { ResetForm } from './reset-form'
 
 /** shadcn/ui "login-04" block: split screen — auth form on the left, brand panel on the right. */
 export function AuthScreen({ onAuthenticated }: { onAuthenticated: () => Promise<void> | void }) {
-  const [mode, setMode] = useState<'login' | 'register'>('login')
+  const [mode, setMode] = useState<'login' | 'register' | 'reset'>('login')
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
@@ -19,11 +20,11 @@ export function AuthScreen({ onAuthenticated }: { onAuthenticated: () => Promise
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            {mode === 'login' ? (
-              <LoginForm onAuthenticated={onAuthenticated} onSwitch={() => setMode('register')} />
-            ) : (
-              <RegisterForm onAuthenticated={onAuthenticated} onSwitch={() => setMode('login')} />
+            {mode === 'login' && (
+              <LoginForm onAuthenticated={onAuthenticated} onSwitch={() => setMode('register')} onForgot={() => setMode('reset')} />
             )}
+            {mode === 'register' && <RegisterForm onAuthenticated={onAuthenticated} onSwitch={() => setMode('login')} />}
+            {mode === 'reset' && <ResetForm onDone={() => setMode('login')} onSwitch={() => setMode('login')} />}
           </div>
         </div>
       </div>
