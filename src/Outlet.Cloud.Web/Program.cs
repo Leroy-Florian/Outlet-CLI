@@ -61,6 +61,7 @@ app.UseAuthorization();
 
 app.MapOutletCloud();
 app.MapOutletAuth();
+app.MapOrganizationManagement();
 
 app.Run();
 

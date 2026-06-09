@@ -9,6 +9,9 @@ public interface IOrganizationRepository
 
     Task<bool> ExistsWithSlugAsync(OrganizationSlug slug, CancellationToken cancellationToken = default);
 
+    /// <summary>Every organization the given user is a member of.</summary>
+    Task<IReadOnlyList<Organization>> ListForMemberAsync(MemberUserId userId, CancellationToken cancellationToken = default);
+
     Task AddAsync(Organization organization, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(Organization organization, CancellationToken cancellationToken = default);

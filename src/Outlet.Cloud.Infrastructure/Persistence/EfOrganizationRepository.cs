@@ -19,6 +19,16 @@ public sealed class EfOrganizationRepository(CloudDbContext db) : IOrganizationR
     public Task<bool> ExistsWithSlugAsync(OrganizationSlug slug, CancellationToken cancellationToken = default) =>
         db.Organizations.AnyAsync(o => o.Slug == slug.Value, cancellationToken);
 
+    public async Task<IReadOnlyList<Organization>> ListForMemberAsync(MemberUserId userId, CancellationToken cancellationToken = default)
+    {
+        var records = await db.Organizations
+            .Include(o => o.Members)
+            .Where(o => o.Members.Any(m => m.UserId == userId.Value))
+            .ToListAsync(cancellationToken);
+
+        return [.. records.Select(ToDomain)];
+    }
+
     public async Task AddAsync(Organization organization, CancellationToken cancellationToken = default)
     {
         db.Organizations.Add(ToRecord(organization));
