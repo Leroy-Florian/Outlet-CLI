@@ -1,4 +1,6 @@
+import { Effect } from 'effect'
 import { useState, type FormEvent } from 'react'
+import { OutletApi, useEffectFn } from '../runtime'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
@@ -11,31 +13,23 @@ type Props = {
 export function LoginForm({ onAuthenticated, onSwitch }: Props) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
+  const login = useEffectFn((e: string, p: string) => Effect.flatMap(OutletApi, (api) => api.login(e, p)))
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setBusy(true)
-    setError(null)
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-      if (!response.ok) {
-        setError(response.status === 401 ? 'Invalid email or password.' : `Login failed (${response.status}).`)
-        return
-      }
+      await login.run(email, password)
       await onAuthenticated()
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Network error.')
-    } finally {
-      setBusy(false)
+    } catch {
+      // login.error carries the typed failure rendered below.
     }
   }
+
+  const errorText = login.error
+    ? login.error.status === 401
+      ? 'Invalid email or password.'
+      : login.error.message
+    : null
 
   return (
     <form className="flex flex-col gap-6" onSubmit={onSubmit}>
@@ -53,20 +47,16 @@ export function LoginForm({ onAuthenticated, onSwitch }: Props) {
         <div className="grid gap-3">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
-            <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
-              Forgot your password?
-            </a>
+            <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">Forgot your password?</a>
           </div>
           <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
-        <Button type="submit" disabled={busy}>{busy ? 'Signing in…' : 'Login'}</Button>
-        {error && <p className="text-destructive text-center text-sm">{error}</p>}
+        <Button type="submit" disabled={login.running}>{login.running ? 'Signing in…' : 'Login'}</Button>
+        {errorText && <p className="text-destructive text-center text-sm">{errorText}</p>}
       </div>
       <div className="text-center text-sm">
         Don&apos;t have an account?{' '}
-        <button type="button" onClick={onSwitch} className="underline underline-offset-4">
-          Sign up
-        </button>
+        <button type="button" onClick={onSwitch} className="underline underline-offset-4">Sign up</button>
       </div>
     </form>
   )

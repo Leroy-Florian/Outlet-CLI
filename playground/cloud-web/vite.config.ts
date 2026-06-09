@@ -6,6 +6,12 @@ import tailwindcss from '@tailwindcss/vite'
 // (stripping the /api prefix so /api/auth/login -> {host}/auth/login).
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      // Use the workspace bridge from source (no separate lib build step).
+      '@outlet/effect-react': new URL('../../packages/outlet-effect-react/src/index.ts', import.meta.url).pathname,
+    },
+  },
   server: {
     port: 5273,
     proxy: {

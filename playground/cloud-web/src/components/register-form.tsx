@@ -1,4 +1,6 @@
+import { Effect } from 'effect'
 import { useState, type FormEvent } from 'react'
+import { OutletApi, useEffectFn } from '../runtime'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
@@ -12,31 +14,17 @@ export function RegisterForm({ onAuthenticated, onSwitch }: Props) {
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
+  const register = useEffectFn((name: string, e: string, p: string) =>
+    Effect.flatMap(OutletApi, (api) => api.register(e, p, name)),
+  )
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setBusy(true)
-    setError(null)
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email, password, displayName }),
-      })
-      if (!response.ok) {
-        const body = (await response.json().catch(() => null)) as { error?: string } | null
-        setError(body?.error ?? `Registration failed (${response.status}).`)
-        return
-      }
-      // The backend signs the new account in; refresh the session.
+      await register.run(displayName, email, password)
       await onAuthenticated()
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Network error.')
-    } finally {
-      setBusy(false)
+    } catch {
+      // register.error carries the typed failure rendered below.
     }
   }
 
@@ -59,14 +47,12 @@ export function RegisterForm({ onAuthenticated, onSwitch }: Props) {
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
-        <Button type="submit" disabled={busy}>{busy ? 'Creating…' : 'Create account'}</Button>
-        {error && <p className="text-destructive text-center text-sm">{error}</p>}
+        <Button type="submit" disabled={register.running}>{register.running ? 'Creating…' : 'Create account'}</Button>
+        {register.error && <p className="text-destructive text-center text-sm">{register.error.message}</p>}
       </div>
       <div className="text-center text-sm">
         Already have an account?{' '}
-        <button type="button" onClick={onSwitch} className="underline underline-offset-4">
-          Login
-        </button>
+        <button type="button" onClick={onSwitch} className="underline underline-offset-4">Login</button>
       </div>
     </form>
   )

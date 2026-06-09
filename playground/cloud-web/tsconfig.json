@@ -11,7 +11,11 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "ignoreDeprecations": "6.0"
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@outlet/effect-react": ["../../packages/outlet-effect-react/src/index.ts"]
+    }
   },
   "include": ["src"]
 }

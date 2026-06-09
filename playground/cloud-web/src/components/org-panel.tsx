@@ -1,69 +1,72 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
-import { api, type IssuedToken, type OrgDetail, type Role, type TokenSummary } from '../lib/api'
+import { Effect } from 'effect'
+import { useState } from 'react'
+import type { Role } from '../domain/models'
+import { OutletApi, useEffectFn, useEffectQuery } from '../runtime'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 
 const ROLES: Role[] = ['Owner', 'Admin', 'Member']
 const selectClass =
   'h-9 rounded-md border border-input bg-transparent px-2 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
+const fieldClass =
+  'min-h-24 rounded-md border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
 
 export function OrgPanel({ organizationId, currentUserId }: { organizationId: string; currentUserId: string }) {
-  const [detail, setDetail] = useState<OrgDetail | null>(null)
-  const [tokens, setTokens] = useState<TokenSummary[]>([])
-  const [issued, setIssued] = useState<IssuedToken | null>(null)
+  const detail = useEffectQuery(() => Effect.flatMap(OutletApi, (api) => api.getOrganization(organizationId)), [organizationId])
+  const tokens = useEffectQuery(() => Effect.flatMap(OutletApi, (api) => api.listTokens(organizationId)), [organizationId])
+  const published = useEffectQuery(() => Effect.flatMap(OutletApi, (api) => api.listPublished(organizationId)), [organizationId])
+
+  const addMember = useEffectFn((email: string, role: Role) => Effect.flatMap(OutletApi, (api) => api.addMember(organizationId, email, role)))
+  const changeRole = useEffectFn((userId: string, role: Role) => Effect.flatMap(OutletApi, (api) => api.changeRole(organizationId, userId, role)))
+  const removeMember = useEffectFn((userId: string) => Effect.flatMap(OutletApi, (api) => api.removeMember(organizationId, userId)))
+  const issueToken = useEffectFn((name: string) => Effect.flatMap(OutletApi, (api) => api.issueToken(organizationId, name)))
+  const revokeToken = useEffectFn((tokenId: string) => Effect.flatMap(OutletApi, (api) => api.revokeToken(organizationId, tokenId)))
+  const publish = useEffectFn((name: string, path: string, content: string) =>
+    Effect.flatMap(OutletApi, (api) =>
+      api.publish(organizationId, {
+        name,
+        manifest: { name, type: 'outlet:adapter', concern: 'misc', targetFrameworks: ['net10.0'], files: [{ path, target: 'adapter' }] },
+        files: [{ path, content }],
+      }),
+    ),
+  )
+
   const [error, setError] = useState<string | null>(null)
+  const [secret, setSecret] = useState<string | null>(null)
   const [memberEmail, setMemberEmail] = useState('')
   const [memberRole, setMemberRole] = useState<Role>('Member')
   const [tokenName, setTokenName] = useState('')
+  const [itemName, setItemName] = useState('')
+  const [filePath, setFilePath] = useState('')
+  const [fileContent, setFileContent] = useState('')
 
-  const reload = useCallback(async () => {
-    setDetail(await api.getOrganization(organizationId))
-    setTokens(await api.listTokens(organizationId))
-  }, [organizationId])
-
-  useEffect(() => {
-    setIssued(null)
-    setError(null)
-    void reload().catch((caught: unknown) =>
-      setError(caught instanceof Error ? caught.message : 'Failed to load organization.'),
-    )
-  }, [reload])
-
-  async function run(action: () => Promise<void>) {
+  async function guard(action: Promise<unknown>, after?: () => void) {
     setError(null)
     try {
-      await action()
-      await reload()
+      await action
+      after?.()
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Action failed.')
     }
   }
 
-  async function onGenerateToken(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setError(null)
-    try {
-      const token = await api.createToken(organizationId, tokenName)
-      setTokenName('')
-      setIssued(token)
-      setTokens(await api.listTokens(organizationId))
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Failed to generate token.')
-    }
+  if (detail.loading && detail.data === null) {
+    return <p className="text-muted-foreground text-sm">Loading…</p>
   }
 
-  if (!detail) {
-    return <p className="text-muted-foreground text-sm">{error ?? 'Loading…'}</p>
+  const org = detail.data
+  if (org === null) {
+    return <p className="text-destructive text-sm">{detail.error?.message ?? 'Failed to load organization.'}</p>
   }
 
-  const canManage = detail.role === 'Owner' || detail.role === 'Admin'
+  const canManage = org.role === 'Owner' || org.role === 'Admin'
 
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold">{detail.name}</h1>
+        <h1 className="text-2xl font-bold">{org.name}</h1>
         <p className="text-muted-foreground text-sm">
-          /{detail.slug} · you are <span className="font-medium">{detail.role}</span>
+          /{org.slug} · you are <span className="font-medium">{org.role}</span>
         </p>
       </div>
 
@@ -72,7 +75,7 @@ export function OrgPanel({ organizationId, currentUserId }: { organizationId: st
       <section className="flex flex-col gap-3">
         <h2 className="font-semibold">Members</h2>
         <ul className="flex flex-col gap-2">
-          {detail.members.map((member) => (
+          {org.members.map((member) => (
             <li key={member.userId} className="flex items-center justify-between rounded-md border px-3 py-2">
               <div className="text-sm">
                 <span className="font-medium">{member.displayName ?? member.email}</span>{' '}
@@ -84,13 +87,13 @@ export function OrgPanel({ organizationId, currentUserId }: { organizationId: st
                     <select
                       className={selectClass}
                       value={member.role}
-                      onChange={(e) => void run(() => api.changeRole(organizationId, member.userId, e.target.value as Role))}
+                      onChange={(e) => void guard(changeRole.run(member.userId, e.target.value as Role), () => detail.refresh())}
                     >
                       {ROLES.map((role) => (
                         <option key={role} value={role}>{role}</option>
                       ))}
                     </select>
-                    <Button variant="outline" className="w-auto px-2" onClick={() => void run(() => api.removeMember(organizationId, member.userId))}>
+                    <Button variant="outline" className="w-auto px-2" onClick={() => void guard(removeMember.run(member.userId), () => detail.refresh())}>
                       Remove
                     </Button>
                   </>
@@ -110,7 +113,8 @@ export function OrgPanel({ organizationId, currentUserId }: { organizationId: st
             className="flex gap-2"
             onSubmit={(e) => {
               e.preventDefault()
-              void run(() => api.addMember(organizationId, memberEmail, memberRole)).then(() => setMemberEmail(''))
+              void guard(addMember.run(memberEmail, memberRole), () => setMemberEmail(''))
+              detail.refresh()
             }}
           >
             <Input placeholder="email to add" type="email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} required />
@@ -127,35 +131,82 @@ export function OrgPanel({ organizationId, currentUserId }: { organizationId: st
       <section className="flex flex-col gap-3">
         <h2 className="font-semibold">Personal access tokens</h2>
 
-        {issued && (
+        {secret && (
           <div className="border-primary bg-muted rounded-md border p-3 text-sm">
             <p className="font-medium">Copy your token now — it won&apos;t be shown again:</p>
-            <code className="mt-1 block break-all">{issued.secret}</code>
+            <code className="mt-1 block break-all">{secret}</code>
           </div>
         )}
 
         <ul className="flex flex-col gap-2">
-          {tokens.map((token) => (
+          {(tokens.data ?? []).map((token) => (
             <li key={token.tokenId} className="flex items-center justify-between rounded-md border px-3 py-2">
               <div className="text-sm">
                 <span className="font-medium">{token.name}</span>{' '}
                 <span className="text-muted-foreground">{token.revoked ? 'revoked' : 'active'}</span>
               </div>
               {!token.revoked && (
-                <Button variant="outline" className="w-auto px-2" onClick={() => void run(() => api.revokeToken(organizationId, token.tokenId))}>
+                <Button variant="outline" className="w-auto px-2" onClick={() => void guard(revokeToken.run(token.tokenId), () => tokens.refresh())}>
                   Revoke
                 </Button>
               )}
             </li>
           ))}
-          {tokens.length === 0 && <p className="text-muted-foreground text-sm">No tokens yet.</p>}
+          {(tokens.data ?? []).length === 0 && <p className="text-muted-foreground text-sm">No tokens yet.</p>}
         </ul>
 
-        <form className="flex gap-2" onSubmit={onGenerateToken}>
+        <form
+          className="flex gap-2"
+          onSubmit={(e) => {
+            e.preventDefault()
+            setError(null)
+            issueToken
+              .run(tokenName)
+              .then((token) => {
+                setTokenName('')
+                setSecret(token.secret)
+                tokens.refresh()
+              })
+              .catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Failed to generate token.'))
+          }}
+        >
           <Input placeholder="token name (e.g. ci)" value={tokenName} onChange={(e) => setTokenName(e.target.value)} required />
           <Button type="submit" className="w-auto px-3">Generate</Button>
         </form>
       </section>
+
+      {canManage && (
+        <section className="flex flex-col gap-3">
+          <h2 className="font-semibold">Private registry</h2>
+          <ul className="flex flex-col gap-2">
+            {(published.data ?? []).map((item) => (
+              <li key={item.name} className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
+                <span className="font-medium">{item.name}</span>
+                <span className="text-muted-foreground">{item.fileCount} file(s)</span>
+              </li>
+            ))}
+            {(published.data ?? []).length === 0 && <p className="text-muted-foreground text-sm">No items published yet.</p>}
+          </ul>
+
+          <form
+            className="flex flex-col gap-2"
+            onSubmit={(e) => {
+              e.preventDefault()
+              void guard(publish.run(itemName, filePath, fileContent), () => {
+                setItemName('')
+                setFilePath('')
+                setFileContent('')
+                published.refresh()
+              })
+            }}
+          >
+            <Input placeholder="item name (e.g. email-smtp)" value={itemName} onChange={(e) => setItemName(e.target.value)} required />
+            <Input placeholder="file path (e.g. SmtpEmailSender.cs)" value={filePath} onChange={(e) => setFilePath(e.target.value)} required />
+            <textarea className={fieldClass} placeholder="// file content" value={fileContent} onChange={(e) => setFileContent(e.target.value)} required />
+            <Button type="submit" className="w-auto px-3">Publish</Button>
+          </form>
+        </section>
+      )}
     </div>
   )
 }
