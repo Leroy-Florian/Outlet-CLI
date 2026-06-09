@@ -27,6 +27,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 var app = builder.Build();
 
 app.MapOutletCloud();
+app.MapOutletAuth();
 
 app.Run();
 
