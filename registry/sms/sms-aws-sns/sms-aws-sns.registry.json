@@ -1,0 +1,17 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "sms-aws-sns",
+  "type": "outlet:adapter",
+  "concern": "sms",
+  "description": "Amazon SNS adapter for ISmsSender, backed by the AWS SDK.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["sms-abstractions"],
+  "nugetDependencies": [
+    { "id": "AWSSDK.SimpleNotificationService", "version": "4.0.3.1" }
+  ],
+  "files": [
+    { "path": "AwsSnsSmsOptions.cs", "target": "adapter" },
+    { "path": "AwsSnsSmsSender.cs", "target": "adapter" },
+    { "path": "AwsSnsSmsServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

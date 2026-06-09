@@ -88,6 +88,18 @@ Concern **cache** (`registry/cache/`):
 The generic `ICacheStore` port is identical across all three, so swapping provider is a
 one-line change. `cache-redis` shows the "specific beside generic" pattern: `IRedisCacheStore`
 (atomic counters) implemented by the same instance, forwarded to both interfaces.
+Concern **sms** (`registry/sms/`):
+
+| Item | Type | Provider | DI |
+|---|---|---|---|
+| `sms-abstractions` | contract | — (zero dependency) | — |
+| `sms-twilio` | adapter | Twilio (thin REST) | `AddTwilioSms(...)` |
+| `sms-vonage` | adapter | Vonage / Nexmo (thin REST) | `AddVonageSms(...)` |
+| `sms-aws-sns` | adapter | Amazon SNS (AWS SDK) | `AddAwsSnsSms(...)` |
+
+The generic `ISmsSender` port is identical across all three adapters → swapping provider is a
+one-line DI change. `sms-twilio` also shows the "specific beside the generic" pattern via
+`ITwilioSmsSender` (sending through a Messaging Service).
 
 ## How it works
 

@@ -111,10 +111,10 @@
       "isContract": false
     },
     {
-      "name": "storage-abstractions",
+      "name": "sms-abstractions",
       "type": "outlet:contract",
-      "concern": "storage",
-      "description": "Generic object/blob storage port (IBlobStorage) and DTOs — zero external dependency.",
+      "concern": "sms",
+      "description": "Generic SMS port (ISmsSender) and DTOs — zero external dependency.",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
@@ -124,157 +124,114 @@
       "nugetDependencies": [],
       "files": [
         {
-          "path": "IBlobStorage.cs",
+          "path": "ISmsSender.cs",
           "target": "contract"
         },
         {
-          "path": "Blob.cs",
+          "path": "SmsMessage.cs",
           "target": "contract"
         },
         {
-          "path": "BlobInfo.cs",
-          "target": "contract"
-        },
-        {
-          "path": "PutBlobOptions.cs",
+          "path": "SmsResult.cs",
           "target": "contract"
         }
       ],
       "isContract": true
     },
     {
-      "name": "storage-azure-blob",
+      "name": "sms-aws-sns",
       "type": "outlet:adapter",
-      "concern": "storage",
-      "description": "Azure Blob Storage adapter for IBlobStorage (+ provider-specific SAS URIs), backed by Azure.Storage.Blobs.",
+      "concern": "sms",
+      "description": "Amazon SNS adapter for ISmsSender, backed by the AWS SDK.",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
         "net10.0"
       ],
       "registryDependencies": [
-        "storage-abstractions"
+        "sms-abstractions"
       ],
       "nugetDependencies": [
         {
-          "id": "Azure.Storage.Blobs",
-          "version": "12.29.0"
+          "id": "AWSSDK.SimpleNotificationService",
+          "version": "4.0.3.1"
         }
       ],
       "files": [
         {
-          "path": "IAzureBlobStorage.cs",
+          "path": "AwsSnsSmsOptions.cs",
           "target": "adapter"
         },
         {
-          "path": "AzureBlobStorageOptions.cs",
+          "path": "AwsSnsSmsSender.cs",
           "target": "adapter"
         },
         {
-          "path": "AzureBlobStorage.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "AzureBlobStorageServiceCollectionExtensions.cs",
+          "path": "AwsSnsSmsServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],
       "isContract": false
     },
     {
-      "name": "storage-filesystem",
+      "name": "sms-twilio",
       "type": "outlet:adapter",
-      "concern": "storage",
-      "description": "Local-filesystem adapter for IBlobStorage — content under a root directory, metadata in a sidecar tree. Zero external dependency.",
+      "concern": "sms",
+      "description": "Twilio adapter for ISmsSender (thin REST, + provider-specific Messaging Service sends).",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
         "net10.0"
       ],
       "registryDependencies": [
-        "storage-abstractions"
+        "sms-abstractions"
       ],
       "nugetDependencies": [],
       "files": [
         {
-          "path": "FileSystemBlobStorageOptions.cs",
+          "path": "ITwilioSmsSender.cs",
           "target": "adapter"
         },
         {
-          "path": "FileSystemBlobStorage.cs",
+          "path": "TwilioSmsOptions.cs",
           "target": "adapter"
         },
         {
-          "path": "FileSystemBlobStorageServiceCollectionExtensions.cs",
+          "path": "TwilioSmsSender.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "TwilioSmsServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],
       "isContract": false
     },
     {
-      "name": "storage-in-memory",
+      "name": "sms-vonage",
       "type": "outlet:adapter",
-      "concern": "storage",
-      "description": "In-memory adapter for IBlobStorage — thread-safe, zero external dependency (tests, local dev, ephemeral caches).",
+      "concern": "sms",
+      "description": "Vonage (Nexmo) adapter for ISmsSender, thin REST over HttpClient.",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
         "net10.0"
       ],
       "registryDependencies": [
-        "storage-abstractions"
+        "sms-abstractions"
       ],
       "nugetDependencies": [],
       "files": [
         {
-          "path": "InMemoryBlobStorageOptions.cs",
+          "path": "VonageSmsOptions.cs",
           "target": "adapter"
         },
         {
-          "path": "InMemoryBlobStorage.cs",
+          "path": "VonageSmsSender.cs",
           "target": "adapter"
         },
         {
-          "path": "InMemoryBlobStorageServiceCollectionExtensions.cs",
-          "target": "adapter"
-        }
-      ],
-      "isContract": false
-    },
-    {
-      "name": "storage-s3",
-      "type": "outlet:adapter",
-      "concern": "storage",
-      "description": "AWS S3 adapter for IBlobStorage (+ provider-specific presigned URLs), backed by AWSSDK.S3.",
-      "targetFrameworks": [
-        "net8.0",
-        "net9.0",
-        "net10.0"
-      ],
-      "registryDependencies": [
-        "storage-abstractions"
-      ],
-      "nugetDependencies": [
-        {
-          "id": "AWSSDK.S3",
-          "version": "4.0.24.1"
-        }
-      ],
-      "files": [
-        {
-          "path": "IS3BlobStorage.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "S3BlobStorageOptions.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "S3BlobStorage.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "S3BlobStorageServiceCollectionExtensions.cs",
+          "path": "VonageSmsServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],

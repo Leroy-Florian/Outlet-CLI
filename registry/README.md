@@ -100,11 +100,29 @@ sensible à la casse, de type chemin (`invoices/2026/03.pdf`) ; l'**absence n'es
 Tests : `storage-in-memory` et `storage-filesystem` rejouent toute la suite de conformité de port
 de façon **hermétique** (lane PR) ; `storage-s3` et `storage-azure-blob` la rejouent contre un vrai
 endpoint (MinIO / Azurite) dans la **lane Live nightly** (skippée si l'endpoint n'est pas configuré).
+## Contenu actuel — concern `sms`
+
+| Item | Type | Provider | DI |
+|---|---|---|---|
+| `sms-abstractions` | contract | — (zéro dépendance) | — |
+| `sms-twilio` | adapter | Twilio (REST) | `AddTwilioSms(...)` |
+| `sms-vonage` | adapter | Vonage / Nexmo (REST) | `AddVonageSms(...)` |
+| `sms-aws-sns` | adapter | AWS SNS (SDK) | `AddAwsSnsSms(...)` |
+
+Le port générique `ISmsSender` est identique pour les trois adapters → swap en **une ligne**
+de DI. `sms-twilio` illustre le pattern « spécifique à côté du générique » :
+`ITwilioSmsSender` (envoi via Messaging Service) implémenté par la même instance, forwardée
+vers les deux interfaces. `sms-twilio` et `sms-vonage` sont des **adapters REST minces**
+(juste `HttpClient` + `System.Text.Json`, fournis par le framework → `nugetDependencies` vide) ;
+`sms-aws-sns` s'appuie sur le SDK provider (`AWSSDK.SimpleNotificationService`).
 
 ## Convention `nugetDependencies`
 
 Un item déclare uniquement les packages **qu'il introduit** (la lib provider : MailKit,
-SendGrid…). L'infrastructure DI/Options (`Microsoft.Extensions.DependencyInjection`,
-`Microsoft.Extensions.Options`) est **fournie par l'hôte** : on appelle `AddXxx(...)` sur
-*votre* `IServiceCollection`, vous l'avez donc déjà. Les pinner à un plancher provoquerait
-un downgrade (NU1605) chez les hôtes qui en ont une version plus récente.
+SendGrid, AWSSDK.SimpleNotificationService…). Un adapter purement REST (`sms-twilio`,
+`sms-vonage`) n'introduit aucun package : `HttpClient` et `System.Text.Json` font partie du
+framework partagé (.NET 8+). L'infrastructure DI/Options
+(`Microsoft.Extensions.DependencyInjection`, `Microsoft.Extensions.Options`) est **fournie
+par l'hôte** : on appelle `AddXxx(...)` sur *votre* `IServiceCollection`, vous l'avez donc
+déjà. Les pinner à un plancher provoquerait un downgrade (NU1605) chez les hôtes qui en ont
+une version plus récente.
