@@ -113,8 +113,10 @@ export function OrgPanel({ organizationId, currentUserId }: { organizationId: st
             className="flex gap-2"
             onSubmit={(e) => {
               e.preventDefault()
-              void guard(addMember.run(memberEmail, memberRole), () => setMemberEmail(''))
-              detail.refresh()
+              void guard(addMember.run(memberEmail, memberRole), () => {
+                setMemberEmail('')
+                detail.refresh()
+              })
             }}
           >
             <Input placeholder="email to add" type="email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} required />
