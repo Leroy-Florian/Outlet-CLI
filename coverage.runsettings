@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Coverage is gated on the product's logic core — Domain + Application — where the
+  CLAUDE.md quality bar lives (>= 90% line). Infrastructure/Cli are integration-tested,
+  not line-gated, so they are deliberately excluded from this measurement.
+-->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <Include>[Outlet.Core.Domain]*,[Outlet.Core.Application]*</Include>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

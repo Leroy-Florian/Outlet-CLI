@@ -57,3 +57,6 @@ docs/.vitepress/cache/
 # Test run artifacts (hang dumps, TRX, coverage)
 TestResults/
 *.dmp
+
+# Coverage output (CI coverage gate)
+/coverage/

@@ -28,6 +28,19 @@ jobs:
       - name: Test
         run: dotnet test Outlet.slnx -c Release --no-build --filter "Category!=Live"
 
+      # Gate de qualité : la barre du CLAUDE.md (>= 90% de lignes sur Domain+Application)
+      # est désormais APPLIQUÉE, pas seulement affirmée. Le filtre d'assemblies vit dans
+      # coverage.runsettings ; Infrastructure/Cli sont testés en intégration, pas line-gated.
+      - name: Coverage gate (Domain + Application >= 90%)
+        run: |
+          dotnet test tests/Outlet.Core.UnitTests/Outlet.Core.UnitTests.csproj -c Release --no-build \
+            --collect:"XPlat Code Coverage" --settings coverage.runsettings --results-directory ./coverage
+          file=$(find ./coverage -name 'coverage.cobertura.xml' | head -1)
+          rate=$(grep -oE 'line-rate="[0-9.]+"' "$file" | head -1 | grep -oE '[0-9.]+')
+          pct=$(awk "BEGIN{printf \"%.2f\", ${rate}*100}")
+          echo "Domain+Application line coverage: ${pct}%"
+          awk "BEGIN{exit !(${rate} >= 0.90)}" || { echo "::error::coverage ${pct}% is below the 90% bar"; exit 1; }
+
       # Régénère le registre publié (dist/registry/) : valide chaque manifeste,
       # vérifie que les fichiers déclarés existent (le manifeste ne ment jamais),
       # et échoue si dist/ committé diverge du contenu de registry/.
