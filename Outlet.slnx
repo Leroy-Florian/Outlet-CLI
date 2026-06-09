@@ -16,11 +16,14 @@
     <Project Path="tests/Outlet.Registry.Resilience.Compat/Outlet.Registry.Resilience.Compat.csproj" />
     <Project Path="tests/Outlet.Registry.Cache.Tests/Outlet.Registry.Cache.Tests.csproj" />
     <Project Path="tests/Outlet.Registry.Cache.Compat/Outlet.Registry.Cache.Compat.csproj" />
+    <Project Path="tests/Outlet.Registry.Storage.Tests/Outlet.Registry.Storage.Tests.csproj" />
+    <Project Path="tests/Outlet.Registry.Storage.Compat/Outlet.Registry.Storage.Compat.csproj" />
     <Project Path="tests/Outlet.ArchitectureTests/Outlet.ArchitectureTests.csproj" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/SwapDemo/SwapDemo.csproj" />
     <Project Path="samples/CacheSwapDemo/CacheSwapDemo.csproj" />
+    <Project Path="samples/StorageSwapDemo/StorageSwapDemo.csproj" />
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/Outlet.Registry.Builder/Outlet.Registry.Builder.csproj" />

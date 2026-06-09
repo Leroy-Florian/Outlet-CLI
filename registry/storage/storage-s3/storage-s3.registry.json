@@ -1,0 +1,18 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "storage-s3",
+  "type": "outlet:adapter",
+  "concern": "storage",
+  "description": "AWS S3 adapter for IBlobStorage (+ provider-specific presigned URLs), backed by AWSSDK.S3.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["storage-abstractions"],
+  "nugetDependencies": [
+    { "id": "AWSSDK.S3", "version": "4.0.24.1" }
+  ],
+  "files": [
+    { "path": "IS3BlobStorage.cs", "target": "adapter" },
+    { "path": "S3BlobStorageOptions.cs", "target": "adapter" },
+    { "path": "S3BlobStorage.cs", "target": "adapter" },
+    { "path": "S3BlobStorageServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

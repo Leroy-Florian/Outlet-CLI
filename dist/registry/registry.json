@@ -1,139 +1,6 @@
 {
   "items": [
     {
-      "name": "cache-abstractions",
-      "type": "outlet:contract",
-      "concern": "cache",
-      "description": "Generic cache port (ICacheStore) and expiration options — zero external dependency.",
-      "targetFrameworks": [
-        "net8.0",
-        "net9.0",
-        "net10.0"
-      ],
-      "registryDependencies": [],
-      "nugetDependencies": [],
-      "files": [
-        {
-          "path": "ICacheStore.cs",
-          "target": "contract"
-        },
-        {
-          "path": "CacheEntryOptions.cs",
-          "target": "contract"
-        }
-      ],
-      "isContract": true
-    },
-    {
-      "name": "cache-memcached",
-      "type": "outlet:adapter",
-      "concern": "cache",
-      "description": "Memcached adapter for ICacheStore, backed by EnyimMemcachedCore.",
-      "targetFrameworks": [
-        "net8.0",
-        "net9.0",
-        "net10.0"
-      ],
-      "registryDependencies": [
-        "cache-abstractions"
-      ],
-      "nugetDependencies": [
-        {
-          "id": "EnyimMemcachedCore",
-          "version": "3.5.1"
-        }
-      ],
-      "files": [
-        {
-          "path": "MemcachedCacheOptions.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "MemcachedCacheStore.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "MemcachedCacheServiceCollectionExtensions.cs",
-          "target": "adapter"
-        }
-      ],
-      "isContract": false
-    },
-    {
-      "name": "cache-memory",
-      "type": "outlet:adapter",
-      "concern": "cache",
-      "description": "In-process adapter for ICacheStore, backed by IMemoryCache (the hermetic, no-server baseline).",
-      "targetFrameworks": [
-        "net8.0",
-        "net9.0",
-        "net10.0"
-      ],
-      "registryDependencies": [
-        "cache-abstractions"
-      ],
-      "nugetDependencies": [
-        {
-          "id": "Microsoft.Extensions.Caching.Memory",
-          "version": "10.0.8"
-        }
-      ],
-      "files": [
-        {
-          "path": "InMemoryCacheOptions.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "InMemoryCacheStore.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "InMemoryCacheServiceCollectionExtensions.cs",
-          "target": "adapter"
-        }
-      ],
-      "isContract": false
-    },
-    {
-      "name": "cache-redis",
-      "type": "outlet:adapter",
-      "concern": "cache",
-      "description": "Redis adapter for ICacheStore (+ provider-specific atomic counters), backed by StackExchange.Redis.",
-      "targetFrameworks": [
-        "net8.0",
-        "net9.0",
-        "net10.0"
-      ],
-      "registryDependencies": [
-        "cache-abstractions"
-      ],
-      "nugetDependencies": [
-        {
-          "id": "StackExchange.Redis",
-          "version": "2.13.17"
-        }
-      ],
-      "files": [
-        {
-          "path": "IRedisCacheStore.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "RedisCacheOptions.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "RedisCacheStore.cs",
-          "target": "adapter"
-        },
-        {
-          "path": "RedisCacheServiceCollectionExtensions.cs",
-          "target": "adapter"
-        }
-      ],
-      "isContract": false
-    },
-    {
       "name": "email-abstractions",
       "type": "outlet:contract",
       "concern": "email",
@@ -244,10 +111,10 @@
       "isContract": false
     },
     {
-      "name": "resilience-abstractions",
+      "name": "storage-abstractions",
       "type": "outlet:contract",
-      "concern": "resilience",
-      "description": "Generic resilience port (IResilienceExecutor) + options and rejection type — zero external dependency.",
+      "concern": "storage",
+      "description": "Generic object/blob storage port (IBlobStorage) and DTOs — zero external dependency.",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
@@ -257,115 +124,157 @@
       "nugetDependencies": [],
       "files": [
         {
-          "path": "IResilienceExecutor.cs",
+          "path": "IBlobStorage.cs",
           "target": "contract"
         },
         {
-          "path": "ResilienceBackoff.cs",
+          "path": "Blob.cs",
           "target": "contract"
         },
         {
-          "path": "ResilienceOptions.cs",
+          "path": "BlobInfo.cs",
           "target": "contract"
         },
         {
-          "path": "ResilienceRejectedException.cs",
+          "path": "PutBlobOptions.cs",
           "target": "contract"
         }
       ],
       "isContract": true
     },
     {
-      "name": "resilience-builtin",
+      "name": "storage-azure-blob",
       "type": "outlet:adapter",
-      "concern": "resilience",
-      "description": "Zero-dependency, hand-written adapter for IResilienceExecutor (retry + timeout + circuit breaker, no provider package).",
+      "concern": "storage",
+      "description": "Azure Blob Storage adapter for IBlobStorage (+ provider-specific SAS URIs), backed by Azure.Storage.Blobs.",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
         "net10.0"
       ],
       "registryDependencies": [
-        "resilience-abstractions"
+        "storage-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Azure.Storage.Blobs",
+          "version": "12.29.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "IAzureBlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AzureBlobStorageOptions.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AzureBlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "AzureBlobStorageServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "storage-filesystem",
+      "type": "outlet:adapter",
+      "concern": "storage",
+      "description": "Local-filesystem adapter for IBlobStorage — content under a root directory, metadata in a sidecar tree. Zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "storage-abstractions"
       ],
       "nugetDependencies": [],
       "files": [
         {
-          "path": "BuiltInCircuitBreaker.cs",
+          "path": "FileSystemBlobStorageOptions.cs",
           "target": "adapter"
         },
         {
-          "path": "BuiltInResilienceExecutor.cs",
+          "path": "FileSystemBlobStorage.cs",
           "target": "adapter"
         },
         {
-          "path": "BuiltInResilienceServiceCollectionExtensions.cs",
+          "path": "FileSystemBlobStorageServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],
       "isContract": false
     },
     {
-      "name": "resilience-microsoft",
+      "name": "storage-in-memory",
       "type": "outlet:adapter",
-      "concern": "resilience",
-      "description": "Microsoft.Extensions.Resilience adapter for IResilienceExecutor (DI-native pipeline registry + telemetry).",
+      "concern": "storage",
+      "description": "In-memory adapter for IBlobStorage — thread-safe, zero external dependency (tests, local dev, ephemeral caches).",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
         "net10.0"
       ],
       "registryDependencies": [
-        "resilience-abstractions"
+        "storage-abstractions"
       ],
-      "nugetDependencies": [
-        {
-          "id": "Microsoft.Extensions.Resilience",
-          "version": "9.0.0"
-        }
-      ],
+      "nugetDependencies": [],
       "files": [
         {
-          "path": "MicrosoftResilienceExecutor.cs",
+          "path": "InMemoryBlobStorageOptions.cs",
           "target": "adapter"
         },
         {
-          "path": "MicrosoftResilienceServiceCollectionExtensions.cs",
+          "path": "InMemoryBlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "InMemoryBlobStorageServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],
       "isContract": false
     },
     {
-      "name": "resilience-polly",
+      "name": "storage-s3",
       "type": "outlet:adapter",
-      "concern": "resilience",
-      "description": "Polly v8 adapter for IResilienceExecutor (+ provider-specific access to the raw ResiliencePipeline).",
+      "concern": "storage",
+      "description": "AWS S3 adapter for IBlobStorage (+ provider-specific presigned URLs), backed by AWSSDK.S3.",
       "targetFrameworks": [
         "net8.0",
         "net9.0",
         "net10.0"
       ],
       "registryDependencies": [
-        "resilience-abstractions"
+        "storage-abstractions"
       ],
       "nugetDependencies": [
         {
-          "id": "Polly",
-          "version": "8.5.0"
+          "id": "AWSSDK.S3",
+          "version": "4.0.24.1"
         }
       ],
       "files": [
         {
-          "path": "IPollyResilienceExecutor.cs",
+          "path": "IS3BlobStorage.cs",
           "target": "adapter"
         },
         {
-          "path": "PollyResilienceExecutor.cs",
+          "path": "S3BlobStorageOptions.cs",
           "target": "adapter"
         },
         {
-          "path": "PollyResilienceServiceCollectionExtensions.cs",
+          "path": "S3BlobStorage.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "S3BlobStorageServiceCollectionExtensions.cs",
           "target": "adapter"
         }
       ],

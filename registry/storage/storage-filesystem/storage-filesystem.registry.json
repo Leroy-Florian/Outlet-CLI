@@ -1,0 +1,15 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "storage-filesystem",
+  "type": "outlet:adapter",
+  "concern": "storage",
+  "description": "Local-filesystem adapter for IBlobStorage — content under a root directory, metadata in a sidecar tree. Zero external dependency.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["storage-abstractions"],
+  "nugetDependencies": [],
+  "files": [
+    { "path": "FileSystemBlobStorageOptions.cs", "target": "adapter" },
+    { "path": "FileSystemBlobStorage.cs", "target": "adapter" },
+    { "path": "FileSystemBlobStorageServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

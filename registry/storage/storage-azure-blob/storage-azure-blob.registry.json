@@ -1,0 +1,18 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "storage-azure-blob",
+  "type": "outlet:adapter",
+  "concern": "storage",
+  "description": "Azure Blob Storage adapter for IBlobStorage (+ provider-specific SAS URIs), backed by Azure.Storage.Blobs.",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["storage-abstractions"],
+  "nugetDependencies": [
+    { "id": "Azure.Storage.Blobs", "version": "12.29.0" }
+  ],
+  "files": [
+    { "path": "IAzureBlobStorage.cs", "target": "adapter" },
+    { "path": "AzureBlobStorageOptions.cs", "target": "adapter" },
+    { "path": "AzureBlobStorage.cs", "target": "adapter" },
+    { "path": "AzureBlobStorageServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

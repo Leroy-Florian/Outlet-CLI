@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Outlet.Samples.StorageSwapDemo</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    In a real project, `outlet add storage-in-memory storage-s3 …` copies these files into
+    your repo (you own and edit them). The sample compiles them straight from the registry
+    sources to keep a single source of truth in this monorepo.
+  -->
+  <ItemGroup>
+    <Compile Include="../../registry/storage/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" />
+    <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+
+</Project>
