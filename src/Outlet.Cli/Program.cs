@@ -73,11 +73,19 @@ var itemArgument = new Argument<string>("item")
 {
     Description = "Registry item to copy into the project (e.g. email-smtp).",
 };
+var noRestoreOption = new Option<bool>("--no-restore")
+{
+    Description = "Skip 'dotnet restore' after adding packages (transitive deps are not materialized yet).",
+};
 var addCommand = new Command("add", "Copy a registry item (and its dependencies) into the project.");
 addCommand.Arguments.Add(itemArgument);
+addCommand.Options.Add(noRestoreOption);
 addCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
 {
-    var command = new AddItemCommand(Environment.CurrentDirectory, parseResult.GetValue(itemArgument)!);
+    var command = new AddItemCommand(
+        Environment.CurrentDirectory,
+        parseResult.GetValue(itemArgument)!,
+        Restore: !parseResult.GetValue(noRestoreOption));
     var result = await mediator.ExecuteAsync<AddItemCommand, InstallationReport>(command, token);
 
     return result.Match(
@@ -92,6 +100,8 @@ addCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediato
 
             if (report.InstalledItems.Count == 0)
                 Console.WriteLine("Nothing to install (already up to date).");
+            else if (report.Restored)
+                Console.WriteLine("restored packages (transitive dependencies resolved).");
             return 0;
         },
         onFailure: error =>
