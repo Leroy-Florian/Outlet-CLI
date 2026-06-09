@@ -21,6 +21,8 @@
     <!-- Floor versions consumed by registry adapters; the build/test harness pins them so the manifests never lie. -->
     <PackageVersion Include="MailKit" Version="4.16.0" />
     <PackageVersion Include="SendGrid" Version="9.29.3" />
+    <PackageVersion Include="Polly" Version="8.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.Resilience" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="Test Dependencies">

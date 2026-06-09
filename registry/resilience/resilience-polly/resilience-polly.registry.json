@@ -1,0 +1,17 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "resilience-polly",
+  "type": "outlet:adapter",
+  "concern": "resilience",
+  "description": "Polly v8 adapter for IResilienceExecutor (+ provider-specific access to the raw ResiliencePipeline).",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["resilience-abstractions"],
+  "nugetDependencies": [
+    { "id": "Polly", "version": "8.5.0" }
+  ],
+  "files": [
+    { "path": "IPollyResilienceExecutor.cs", "target": "adapter" },
+    { "path": "PollyResilienceExecutor.cs", "target": "adapter" },
+    { "path": "PollyResilienceServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}

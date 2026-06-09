@@ -109,6 +109,134 @@
         }
       ],
       "isContract": false
+    },
+    {
+      "name": "resilience-abstractions",
+      "type": "outlet:contract",
+      "concern": "resilience",
+      "description": "Generic resilience port (IResilienceExecutor) + options and rejection type — zero external dependency.",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "IResilienceExecutor.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ResilienceBackoff.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ResilienceOptions.cs",
+          "target": "contract"
+        },
+        {
+          "path": "ResilienceRejectedException.cs",
+          "target": "contract"
+        }
+      ],
+      "isContract": true
+    },
+    {
+      "name": "resilience-builtin",
+      "type": "outlet:adapter",
+      "concern": "resilience",
+      "description": "Zero-dependency, hand-written adapter for IResilienceExecutor (retry + timeout + circuit breaker, no provider package).",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "resilience-abstractions"
+      ],
+      "nugetDependencies": [],
+      "files": [
+        {
+          "path": "BuiltInCircuitBreaker.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "BuiltInResilienceExecutor.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "BuiltInResilienceServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "resilience-microsoft",
+      "type": "outlet:adapter",
+      "concern": "resilience",
+      "description": "Microsoft.Extensions.Resilience adapter for IResilienceExecutor (DI-native pipeline registry + telemetry).",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "resilience-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Microsoft.Extensions.Resilience",
+          "version": "9.0.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "MicrosoftResilienceExecutor.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "MicrosoftResilienceServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
+    },
+    {
+      "name": "resilience-polly",
+      "type": "outlet:adapter",
+      "concern": "resilience",
+      "description": "Polly v8 adapter for IResilienceExecutor (+ provider-specific access to the raw ResiliencePipeline).",
+      "targetFrameworks": [
+        "net8.0",
+        "net9.0",
+        "net10.0"
+      ],
+      "registryDependencies": [
+        "resilience-abstractions"
+      ],
+      "nugetDependencies": [
+        {
+          "id": "Polly",
+          "version": "8.5.0"
+        }
+      ],
+      "files": [
+        {
+          "path": "IPollyResilienceExecutor.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "PollyResilienceExecutor.cs",
+          "target": "adapter"
+        },
+        {
+          "path": "PollyResilienceServiceCollectionExtensions.cs",
+          "target": "adapter"
+        }
+      ],
+      "isContract": false
     }
   ]
 }

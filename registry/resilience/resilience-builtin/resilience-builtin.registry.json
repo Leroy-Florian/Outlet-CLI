@@ -1,0 +1,15 @@
+{
+  "$schema": "../../registry-item.schema.json",
+  "name": "resilience-builtin",
+  "type": "outlet:adapter",
+  "concern": "resilience",
+  "description": "Zero-dependency, hand-written adapter for IResilienceExecutor (retry + timeout + circuit breaker, no provider package).",
+  "targetFrameworks": ["net8.0", "net9.0", "net10.0"],
+  "registryDependencies": ["resilience-abstractions"],
+  "nugetDependencies": [],
+  "files": [
+    { "path": "BuiltInCircuitBreaker.cs", "target": "adapter" },
+    { "path": "BuiltInResilienceExecutor.cs", "target": "adapter" },
+    { "path": "BuiltInResilienceServiceCollectionExtensions.cs", "target": "adapter" }
+  ]
+}
