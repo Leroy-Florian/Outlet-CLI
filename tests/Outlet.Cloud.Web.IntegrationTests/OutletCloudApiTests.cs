@@ -103,7 +103,10 @@ public sealed class OutletCloudApiTests
         var response = await client.PostAsJsonAsync("/auth/register",
             new { email, password = "Str0ng!pwd", displayName = email.Split('@')[0] });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        return (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("userId").GetGuid();
+        var userId = (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("userId").GetGuid();
+        // The web UI is Pro-only; subscribe so the management endpoints are reachable.
+        (await client.PostAsync("/billing/subscribe", null)).StatusCode.Should().Be(HttpStatusCode.OK);
+        return userId;
     }
 
     private static async Task<Guid> CreateOrg(HttpClient client, string slug)

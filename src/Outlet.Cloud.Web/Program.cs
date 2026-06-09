@@ -40,8 +40,11 @@ builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddIdent
 builder.Services.AddAuthorization();
 
 // SignInManager / auth cookie are ASP.NET Core concerns, added on top of the
-// membership core registered by AddOutletIdentityInfrastructure.
-new IdentityBuilder(typeof(OutletIdentityUser), typeof(IdentityRole<Guid>), builder.Services).AddSignInManager();
+// membership core registered by AddOutletIdentityInfrastructure. Default token
+// providers back the password-reset flow.
+new IdentityBuilder(typeof(OutletIdentityUser), typeof(IdentityRole<Guid>), builder.Services)
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddOutletCloudWeb();
 builder.Services.ConfigureHttpJsonOptions(options =>

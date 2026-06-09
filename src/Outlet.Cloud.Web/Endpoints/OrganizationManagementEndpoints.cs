@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Outlet.Cloud.Application.Organizations;
 using Outlet.Cloud.Application.Ports;
 using Outlet.Cloud.Application.Registry;
@@ -25,6 +26,20 @@ public static class OrganizationManagementEndpoints
     public static void MapOrganizationManagement(this WebApplication app)
     {
         var group = app.MapGroup("/organizations").RequireAuthorization();
+
+        // Outlet Cloud (the whole management UI) is a paid offering: every endpoint here
+        // requires a Pro account. The free tier is the public registry via the CLI.
+        group.AddEndpointFilter(async (context, next) =>
+        {
+            var users = context.HttpContext.RequestServices.GetRequiredService<UserManager<OutletIdentityUser>>();
+            var user = await users.GetUserAsync(context.HttpContext.User);
+            if (user is null)
+                return Results.Unauthorized();
+            if (user.Plan != UserPlan.Pro)
+                return Results.Json(new { error = "Outlet Cloud requires a Pro subscription." }, statusCode: StatusCodes.Status402PaymentRequired);
+
+            return await next(context);
+        });
 
         group.MapGet("/", async (ClaimsPrincipal principal, UserManager<OutletIdentityUser> users, IOrganizationRepository orgs) =>
         {
