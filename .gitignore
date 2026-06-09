@@ -53,3 +53,6 @@ playground/web/dist/
 
 # Frontend build output
 playground/*/dist/
+
+# Local SQLite demo databases (Outlet:UseSqlite=true)
+*.db
