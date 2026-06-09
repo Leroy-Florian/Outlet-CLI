@@ -116,6 +116,14 @@ tests/Outlet.ArchitectureTests/     ← LE gate : toute convention est testée
 - **CPM** : toute version de package vit dans `Directory.Packages.props`, jamais dans un csproj.
 - Interfaces préfixées `I`, naming vérifié par `NamingConventionTests`.
 
+### Documentation XML (`<summary>`) — revue manuelle, pas de test
+
+Pas de gate automatique : juger l'intention d'une phrase sans LLM est trop fragile (faux positifs/négatifs). C'est une règle de revue, à respecter en écrivant et à vérifier à la relecture.
+
+- **Toujours facultative.** Aucune doc XML n'est *exigée* — ni sur un type, ni sur une méthode, ni sur une property. L'absence de `<summary>` est normale et préférable à un commentaire vide de sens.
+- **Un seul motif légitime : expliquer le *pourquoi*.** Intention, contrainte, arbitrage, décision verrouillée, piège — bref ce que le nom ne peut pas porter. Si la phrase n'ajoute rien au nom, on la **supprime** plutôt que de l'écrire.
+- **Ne jamais paraphraser l'identifiant.** Ex. à bannir : `IEmailSender` → « Sends an email. » ; `Name` → « Gets the name. ». À garder : `SmtpEmailSender` → « …retry/CB laissés à Polly par-dessus le port. » (apporte une info absente du nom).
+
 ## Stratégie de tests
 
 - **Outillage (Core/CLI)** : unitaire/intégration, **zéro réseau**.

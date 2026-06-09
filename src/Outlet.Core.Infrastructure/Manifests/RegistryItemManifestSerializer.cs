@@ -26,7 +26,6 @@ public static class RegistryItemManifestSerializer
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
-    /// <summary>Deserializes and validates a manifest document.</summary>
     public static Result<RegistryItemManifest> Parse(string json)
     {
         if (string.IsNullOrWhiteSpace(json))

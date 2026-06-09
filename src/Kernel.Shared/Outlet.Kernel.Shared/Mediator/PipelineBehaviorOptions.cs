@@ -1,8 +1,5 @@
 namespace Outlet.Kernel.Shared.Mediator;
 
-/// <summary>
-/// Configuration for built-in pipeline behaviors.
-/// </summary>
 public sealed class PipelineBehaviorOptions
 {
     /// <summary>

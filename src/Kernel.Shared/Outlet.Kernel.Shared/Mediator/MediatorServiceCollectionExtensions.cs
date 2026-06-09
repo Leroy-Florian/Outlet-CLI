@@ -3,9 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Outlet.Kernel.Shared.Mediator;
 
-/// <summary>
-/// DI extensions for Mediator registration.
-/// </summary>
 public static class MediatorServiceCollectionExtensions
 {
     /// <summary>
@@ -29,9 +26,6 @@ public static class MediatorServiceCollectionExtensions
         return services;
     }
 
-    /// <summary>
-    /// Registers all IQuery and IUseCase handlers from the specified assemblies.
-    /// </summary>
     public static IServiceCollection AddHandlersFromAssembly(
         this IServiceCollection services,
         params Assembly[] assemblies)
