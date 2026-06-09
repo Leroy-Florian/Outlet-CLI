@@ -9,4 +9,9 @@
     <ProjectReference Include="..\Kernel.Shared\Outlet.Kernel.Shared\Outlet.Kernel.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- SQLite lets the host run standalone for local demos (no PostgreSQL needed). -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+  </ItemGroup>
+
 </Project>

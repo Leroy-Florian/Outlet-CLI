@@ -23,6 +23,8 @@ public static class IdentityInfrastructureServiceCollectionExtensions
     {
         services.AddDbContext<IdentityDataContext>(configureDatabase);
 
+        // AddIdentityCore + EF stores live here (class library). SignInManager and the
+        // auth cookie are ASP.NET Core concerns and are added by the web host.
         services.AddIdentityCore<OutletIdentityUser>()
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<IdentityDataContext>();
