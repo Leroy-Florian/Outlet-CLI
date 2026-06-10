@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Archetype: a "legacy" single-project app — old-style mono project, an LTS target
+    (net8.0), NO Central Package Management and NO DI container. Proves Outlet can land
+    an adapter the user instantiates by hand (the triptyque without AddXxx) and that the
+    NuGet package is written inline into the csproj (not a Directory.Packages.props).
+
+    Standalone on purpose: it does NOT inherit the repo's Directory.Build.props — the E2E
+    harness copies it to an isolated temp directory before running `outlet`.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Acme.Legacy</RootNamespace>
+  </PropertyGroup>
+
+</Project>

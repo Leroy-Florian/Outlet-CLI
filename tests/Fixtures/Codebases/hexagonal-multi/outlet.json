@@ -1,0 +1,19 @@
+{
+  "registries": [
+    {
+      "name": "local",
+      "url": "https://registry.outlet.dev/"
+    }
+  ],
+  "targets": {
+    "contract": {
+      "project": "src/Acme.Hex.Application/Acme.Hex.Application.csproj",
+      "namespace": "Acme.Hex"
+    },
+    "adapter": {
+      "project": "src/Acme.Hex.Infrastructure/Acme.Hex.Infrastructure.csproj",
+      "namespace": "Acme.Hex"
+    }
+  },
+  "installed": []
+}
