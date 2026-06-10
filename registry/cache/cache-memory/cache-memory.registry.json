@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "cache-memory",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "cache",
   "description": "In-process adapter for ICacheStore, backed by IMemoryCache (the hermetic, no-server baseline).",

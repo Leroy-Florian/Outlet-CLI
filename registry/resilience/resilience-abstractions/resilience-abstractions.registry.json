@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "resilience-abstractions",
+  "version": "1.0.0",
   "type": "outlet:contract",
   "concern": "resilience",
   "description": "Generic resilience port (IResilienceExecutor) + options and rejection type — zero external dependency.",

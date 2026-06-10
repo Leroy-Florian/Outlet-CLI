@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "email-smtp",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "email",
   "description": "SMTP adapter for IEmailSender, backed by MailKit.",

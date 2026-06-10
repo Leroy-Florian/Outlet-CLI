@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "storage-azure-blob",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "storage",
   "description": "Azure Blob Storage adapter for IBlobStorage (+ provider-specific SAS URIs), backed by Azure.Storage.Blobs.",

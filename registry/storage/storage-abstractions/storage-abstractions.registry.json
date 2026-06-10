@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "storage-abstractions",
+  "version": "1.0.0",
   "type": "outlet:contract",
   "concern": "storage",
   "description": "Generic object/blob storage port (IBlobStorage) and DTOs — zero external dependency.",

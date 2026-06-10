@@ -106,7 +106,8 @@ public static class RegistryItemManifestSerializer
                 [.. manifest.Files.Select(f => f.Path)],
                 [.. manifest.RegistryDependencies.Select(RegistryItemId.From)],
                 [.. manifest.NugetDependencies.Select(d => PackageDependency.From(d.Id, d.Version))],
-                [.. manifest.TargetFrameworks]);
+                [.. manifest.TargetFrameworks],
+                ItemVersion.From(manifest.Version));
         }
         catch (ArgumentException ex)
         {
@@ -118,6 +119,12 @@ public static class RegistryItemManifestSerializer
     {
         if (string.IsNullOrWhiteSpace(raw.Name))
             return Fail("'name' is required.");
+
+        if (string.IsNullOrWhiteSpace(raw.Version))
+            return Fail("'version' is required (semantic 'major.minor.patch').");
+
+        if (!IsSemanticVersion(raw.Version))
+            return Fail($"'version' must be 'major.minor.patch', but was '{raw.Version}'.");
 
         if (raw.Type is not (RegistryItemManifest.ContractType or RegistryItemManifest.AdapterType))
             return Fail(
@@ -153,6 +160,7 @@ public static class RegistryItemManifestSerializer
 
         var manifest = new RegistryItemManifest(
             raw.Name!,
+            raw.Version!,
             raw.Type!,
             raw.Concern!,
             raw.Description,
@@ -167,11 +175,18 @@ public static class RegistryItemManifestSerializer
     private static Result<RegistryItemManifest> Fail(string reason)
         => Result<RegistryItemManifest>.Failure($"Invalid manifest: {reason}");
 
+    private static bool IsSemanticVersion(string value)
+    {
+        var parts = value.Split('.');
+        return parts.Length == 3 && parts.All(p => p.Length > 0 && p.All(char.IsAsciiDigit));
+    }
+
     // Lenient deserialization shape: every member is nullable so a malformed
     // document is reported by Validate() rather than throwing on bind.
     private sealed class ManifestJson
     {
         public string? Name { get; init; }
+        public string? Version { get; init; }
         public string? Type { get; init; }
         public string? Concern { get; init; }
         public string? Description { get; init; }

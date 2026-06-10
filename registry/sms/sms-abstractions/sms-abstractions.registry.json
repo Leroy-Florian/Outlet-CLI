@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "sms-abstractions",
+  "version": "1.0.0",
   "type": "outlet:contract",
   "concern": "sms",
   "description": "Generic SMS port (ISmsSender) and DTOs — zero external dependency.",

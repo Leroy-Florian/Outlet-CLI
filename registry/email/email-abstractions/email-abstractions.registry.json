@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "email-abstractions",
+  "version": "1.0.0",
   "type": "outlet:contract",
   "concern": "email",
   "description": "Generic e-mail port (IEmailSender) and DTOs — zero external dependency.",

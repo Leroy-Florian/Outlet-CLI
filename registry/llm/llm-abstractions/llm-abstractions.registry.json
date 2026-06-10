@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "llm-abstractions",
+  "version": "1.0.0",
   "type": "outlet:contract",
   "concern": "llm",
   "description": "Generic chat-completion port (IChatCompletion) and DTOs — zero external dependency.",

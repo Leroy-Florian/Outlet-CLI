@@ -28,6 +28,7 @@ public sealed class RegistryCatalogBuilderTests
             ("email/ghost/ghost.registry.json", """
                 {
                   "name": "ghost-item",
+                  "version": "1.0.0",
                   "type": "outlet:adapter",
                   "concern": "email",
                   "targetFrameworks": ["net10.0"],
@@ -54,6 +55,7 @@ public sealed class RegistryCatalogBuilderTests
         var manifest = """
             {
               "name": "dup",
+              "version": "1.0.0",
               "type": "outlet:contract",
               "concern": "email",
               "targetFrameworks": ["net10.0"],

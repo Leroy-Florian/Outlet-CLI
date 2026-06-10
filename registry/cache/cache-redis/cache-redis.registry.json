@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "cache-redis",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "cache",
   "description": "Redis adapter for ICacheStore (+ provider-specific atomic counters), backed by StackExchange.Redis.",

@@ -162,7 +162,7 @@ listCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediat
             }
 
             foreach (var item in items)
-                Console.WriteLine($"{item.Name,-30} {item.Concern,-10} {item.Type,-16} {item.FileCount} file(s)");
+                Console.WriteLine($"{item.Name,-30} {item.Version,-8} {item.Concern,-10} {item.Type,-16} {item.FileCount} file(s)");
             return 0;
         },
         onFailure: error =>

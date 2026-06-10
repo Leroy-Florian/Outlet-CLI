@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "cache-abstractions",
+  "version": "1.0.0",
   "type": "outlet:contract",
   "concern": "cache",
   "description": "Generic cache port (ICacheStore) and expiration options — zero external dependency.",

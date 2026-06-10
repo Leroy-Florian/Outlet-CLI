@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "email-sendgrid",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "email",
   "description": "SendGrid adapter for IEmailSender (+ provider-specific dynamic templates).",

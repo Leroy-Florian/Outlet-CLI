@@ -2,6 +2,7 @@
   "items": [
     {
       "name": "cache-abstractions",
+      "version": "1.0.0",
       "type": "outlet:contract",
       "concern": "cache",
       "description": "Generic cache port (ICacheStore) and expiration options — zero external dependency.",
@@ -26,6 +27,7 @@
     },
     {
       "name": "cache-memcached",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "cache",
       "description": "Memcached adapter for ICacheStore, backed by EnyimMemcachedCore.",
@@ -61,6 +63,7 @@
     },
     {
       "name": "cache-memory",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "cache",
       "description": "In-process adapter for ICacheStore, backed by IMemoryCache (the hermetic, no-server baseline).",
@@ -96,6 +99,7 @@
     },
     {
       "name": "cache-redis",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "cache",
       "description": "Redis adapter for ICacheStore (+ provider-specific atomic counters), backed by StackExchange.Redis.",
@@ -135,6 +139,7 @@
     },
     {
       "name": "email-abstractions",
+      "version": "1.0.0",
       "type": "outlet:contract",
       "concern": "email",
       "description": "Generic e-mail port (IEmailSender) and DTOs — zero external dependency.",
@@ -171,6 +176,7 @@
     },
     {
       "name": "email-sendgrid",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "email",
       "description": "SendGrid adapter for IEmailSender (+ provider-specific dynamic templates).",
@@ -210,6 +216,7 @@
     },
     {
       "name": "email-smtp",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "email",
       "description": "SMTP adapter for IEmailSender, backed by MailKit.",
@@ -245,6 +252,7 @@
     },
     {
       "name": "llm-abstractions",
+      "version": "1.0.0",
       "type": "outlet:contract",
       "concern": "llm",
       "description": "Generic chat-completion port (IChatCompletion) and DTOs — zero external dependency.",
@@ -289,6 +297,7 @@
     },
     {
       "name": "llm-anthropic",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "llm",
       "description": "Anthropic (Claude) adapter for IChatCompletion, backed by the Anthropic.SDK client.",
@@ -324,6 +333,7 @@
     },
     {
       "name": "llm-google",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "llm",
       "description": "Google Gemini adapter for IChatCompletion, backed by the Mscc.GenerativeAI client.",
@@ -359,6 +369,7 @@
     },
     {
       "name": "llm-openai",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "llm",
       "description": "OpenAI adapter for IChatCompletion (+ provider-specific JSON mode), backed by the official OpenAI SDK.",
@@ -398,6 +409,7 @@
     },
     {
       "name": "resilience-abstractions",
+      "version": "1.0.0",
       "type": "outlet:contract",
       "concern": "resilience",
       "description": "Generic resilience port (IResilienceExecutor) + options and rejection type — zero external dependency.",
@@ -430,6 +442,7 @@
     },
     {
       "name": "resilience-builtin",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "resilience",
       "description": "Zero-dependency, hand-written adapter for IResilienceExecutor (retry + timeout + circuit breaker, no provider package).",
@@ -460,6 +473,7 @@
     },
     {
       "name": "resilience-microsoft",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "resilience",
       "description": "Microsoft.Extensions.Resilience adapter for IResilienceExecutor (DI-native pipeline registry + telemetry).",
@@ -491,6 +505,7 @@
     },
     {
       "name": "resilience-polly",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "resilience",
       "description": "Polly v8 adapter for IResilienceExecutor (+ provider-specific access to the raw ResiliencePipeline).",
@@ -526,6 +541,7 @@
     },
     {
       "name": "sms-abstractions",
+      "version": "1.0.0",
       "type": "outlet:contract",
       "concern": "sms",
       "description": "Generic SMS port (ISmsSender) and DTOs — zero external dependency.",
@@ -554,6 +570,7 @@
     },
     {
       "name": "sms-aws-sns",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "sms",
       "description": "Amazon SNS adapter for ISmsSender, backed by the AWS SDK.",
@@ -589,6 +606,7 @@
     },
     {
       "name": "sms-twilio",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "sms",
       "description": "Twilio adapter for ISmsSender (thin REST, + provider-specific Messaging Service sends).",
@@ -623,6 +641,7 @@
     },
     {
       "name": "sms-vonage",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "sms",
       "description": "Vonage (Nexmo) adapter for ISmsSender, thin REST over HttpClient.",
@@ -653,6 +672,7 @@
     },
     {
       "name": "storage-abstractions",
+      "version": "1.0.0",
       "type": "outlet:contract",
       "concern": "storage",
       "description": "Generic object/blob storage port (IBlobStorage) and DTOs — zero external dependency.",
@@ -685,6 +705,7 @@
     },
     {
       "name": "storage-azure-blob",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "storage",
       "description": "Azure Blob Storage adapter for IBlobStorage (+ provider-specific SAS URIs), backed by Azure.Storage.Blobs.",
@@ -724,6 +745,7 @@
     },
     {
       "name": "storage-filesystem",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "storage",
       "description": "Local-filesystem adapter for IBlobStorage — content under a root directory, metadata in a sidecar tree. Zero external dependency.",
@@ -754,6 +776,7 @@
     },
     {
       "name": "storage-in-memory",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "storage",
       "description": "In-memory adapter for IBlobStorage — thread-safe, zero external dependency (tests, local dev, ephemeral caches).",
@@ -784,6 +807,7 @@
     },
     {
       "name": "storage-s3",
+      "version": "1.0.0",
       "type": "outlet:adapter",
       "concern": "storage",
       "description": "AWS S3 adapter for IBlobStorage (+ provider-specific presigned URLs), backed by AWSSDK.S3.",

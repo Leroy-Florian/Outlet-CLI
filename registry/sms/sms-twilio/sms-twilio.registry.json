@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "sms-twilio",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "sms",
   "description": "Twilio adapter for ISmsSender (thin REST, + provider-specific Messaging Service sends).",
