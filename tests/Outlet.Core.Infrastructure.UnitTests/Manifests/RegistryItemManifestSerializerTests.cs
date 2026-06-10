@@ -188,6 +188,56 @@ public sealed class RegistryItemManifestSerializerTests
     }
 
     [Fact]
+    public void Should_ParseAndRoundTrip_When_FileCarriesAHash()
+    {
+        var hash = new string('a', 64);
+        var json = $$"""
+            {
+              "name": "email-smtp",
+              "type": "outlet:adapter",
+              "concern": "email",
+              "targetFrameworks": ["net10.0"],
+              "files": [{ "path": "SmtpEmailSender.cs", "target": "adapter", "hash": "{{hash}}" }]
+            }
+            """;
+
+        var parsed = RegistryItemManifestSerializer.Parse(json);
+
+        parsed.IsSuccess.Should().BeTrue(parsed.Error);
+        parsed.Value!.Files[0].Hash.Should().Be(hash);
+
+        var reparsed = RegistryItemManifestSerializer.Parse(RegistryItemManifestSerializer.Serialize(parsed.Value));
+        reparsed.Value!.Files[0].Hash.Should().Be(hash);
+    }
+
+    [Fact]
+    public void Should_LeaveHashNull_When_FileOmitsIt()
+    {
+        var parsed = RegistryItemManifestSerializer.Parse(ValidAdapterJson);
+
+        parsed.Value!.Files.Should().OnlyContain(f => f.Hash == null);
+    }
+
+    [Fact]
+    public void Should_Fail_When_FileHashIsNotSha256Hex()
+    {
+        var json = """
+            {
+              "name": "email-smtp",
+              "type": "outlet:adapter",
+              "concern": "email",
+              "targetFrameworks": ["net10.0"],
+              "files": [{ "path": "SmtpEmailSender.cs", "target": "adapter", "hash": "not-a-hash" }]
+            }
+            """;
+
+        var result = RegistryItemManifestSerializer.Parse(json);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("SHA-256");
+    }
+
+    [Fact]
     public void Should_FailMapping_When_NameIsNotKebabCase()
     {
         var manifest = new RegistryItemManifest(

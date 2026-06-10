@@ -1,3 +1,4 @@
+using Outlet.Core.Application.RegistryItems;
 using Outlet.Core.Domain.RegistryItems;
 using Outlet.Core.Infrastructure.Registry;
 using Outlet.Core.Infrastructure.UnitTests.Fakes;
@@ -116,4 +117,56 @@ public sealed class HttpRegistrySourceTests
 
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
+
+    [Fact]
+    public async Task Should_ReturnFile_When_ItsHashMatchesTheIndex()
+    {
+        const string content = "public sealed class SmtpEmailSender;";
+        var (source, handler) = Build();
+        handler.Map(IndexUrl, IndexWithHash(ContentHash.Of(content)));
+        handler.Map("https://registry.test/email-smtp/SmtpEmailSender.cs", content);
+
+        var fetched = await source.GetFileContentAsync(RegistryItemId.From("email-smtp"), "SmtpEmailSender.cs");
+
+        fetched.Should().Be(content);
+    }
+
+    [Fact]
+    public async Task Should_Throw_When_ServedFileDoesNotMatchTheDeclaredHash()
+    {
+        var (source, handler) = Build();
+        handler.Map(IndexUrl, IndexWithHash(ContentHash.Of("the original, listed content")));
+        handler.Map("https://registry.test/email-smtp/SmtpEmailSender.cs", "tampered content");
+
+        var act = async () => await source.GetFileContentAsync(RegistryItemId.From("email-smtp"), "SmtpEmailSender.cs");
+
+        (await act.Should().ThrowAsync<InvalidOperationException>())
+            .Which.Message.Should().Contain("does not match the hash");
+    }
+
+    [Fact]
+    public async Task Should_NotVerify_When_IndexDeclaresNoHash()
+    {
+        var (source, handler) = Build();
+        handler.Map(IndexUrl, IndexJson);
+        handler.Map("https://registry.test/email-smtp/SmtpEmailSender.cs", "anything goes");
+
+        var fetched = await source.GetFileContentAsync(RegistryItemId.From("email-smtp"), "SmtpEmailSender.cs");
+
+        fetched.Should().Be("anything goes");
+    }
+
+    private static string IndexWithHash(string hash) => $$"""
+        {
+          "items": [
+            {
+              "name": "email-smtp",
+              "type": "outlet:adapter",
+              "concern": "email",
+              "targetFrameworks": ["net10.0"],
+              "files": [{ "path": "SmtpEmailSender.cs", "target": "adapter", "hash": "{{hash}}" }]
+            }
+          ]
+        }
+        """;
 }
