@@ -172,6 +172,51 @@ listCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediat
         });
 }, cancellationToken));
 
+// outlet search <text> [--json]
+var searchTextArgument = new Argument<string>("text")
+{
+    Description = "Fragment matched against item id and concern (e.g. 'sms', 'redis').",
+};
+var searchJsonOption = new Option<bool>("--json")
+{
+    Description = "Emit matches as JSON (for scripting / CI) instead of the aligned table.",
+};
+var searchCommand = new Command("search", "Find catalogue items by a free-text fragment of their id or concern.");
+searchCommand.Arguments.Add(searchTextArgument);
+searchCommand.Options.Add(searchJsonOption);
+searchCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var asJson = parseResult.GetValue(searchJsonOption);
+    var query = new SearchRegistryItemsQuery(parseResult.GetValue(searchTextArgument)!);
+    var result = await mediator
+        .ExecuteAsync<SearchRegistryItemsQuery, IReadOnlyList<RegistryItemSummary>>(query, token);
+
+    return result.Match(
+        onSuccess: items =>
+        {
+            if (asJson)
+            {
+                Console.WriteLine(JsonSerializer.Serialize(items, CliJson.Options));
+                return 0;
+            }
+
+            if (items.Count == 0)
+            {
+                Console.WriteLine("No matching items (try 'outlet list' to see the full catalogue).");
+                return 0;
+            }
+
+            foreach (var item in items)
+                Console.WriteLine($"{item.Name,-30} {item.Concern,-10} {item.Type,-16} {item.FileCount} file(s)");
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
+}, cancellationToken));
+
 // outlet remove <item>
 var removeItemArgument = new Argument<string>("item")
 {
@@ -297,6 +342,7 @@ rootCommand.Subcommands.Add(diffCommand);
 rootCommand.Subcommands.Add(updateCommand);
 rootCommand.Subcommands.Add(selfUpdateCommand);
 rootCommand.Subcommands.Add(listCommand);
+rootCommand.Subcommands.Add(searchCommand);
 
 // Level 2: fire a throttled, best-effort "newer version available" check in the
 // background so it overlaps the command instead of delaying it. We print the notice
