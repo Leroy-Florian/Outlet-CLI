@@ -60,6 +60,36 @@ public sealed class InitProjectUseCaseTests
     }
 
     [Fact]
+    public async Task Should_UseExplicitRoutes_When_OverridesProvided()
+    {
+        _inspector.WithProject("/repo/src/Acme.Application/Acme.Application.csproj", "Acme.Application", "net10.0");
+        _inspector.WithProject("/repo/src/Acme.Infrastructure/Acme.Infrastructure.csproj", "Acme.Infrastructure", "net10.0");
+        _inspector.WithProject("/repo/src/Acme.Api/Acme.Api.csproj", "Acme.Api", "net10.0");
+
+        var contractOverride = Path.Combine("src", "Acme.Api", "Acme.Api.csproj");
+        var adapterOverride = Path.Combine("src", "Acme.Infrastructure", "Acme.Infrastructure.csproj");
+
+        var result = await BuildUseCase().HandleAsync(
+            new InitProjectCommand(ProjectDirectory, contractOverride, adapterOverride));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.Config.Targets.Contract.Project.Should().Be(contractOverride);
+        result.Value!.Config.Targets.Adapter.Project.Should().Be(adapterOverride);
+    }
+
+    [Fact]
+    public async Task Should_Fail_When_OverrideProjectUnknown()
+    {
+        _inspector.WithProject("/repo/src/App/App.csproj", "Acme.App", "net10.0");
+
+        var result = await BuildUseCase().HandleAsync(
+            new InitProjectCommand(ProjectDirectory, ContractProject: "does/not/Exist.csproj"));
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("Unknown project");
+    }
+
+    [Fact]
     public async Task Should_Fail_When_ConfigAlreadyExists()
     {
         _inspector.WithProject("/repo/App.csproj", "App");

@@ -51,50 +51,22 @@ var rootCommand = new RootCommand(
     "Generic ports, swappable adapters, code you own. " +
     "Exit codes: 0 success · 1 error · 130 cancelled.");
 
-// outlet init
+// outlet init [--yes]
+var initYesOption = new Option<bool>("--yes", "-y")
+{
+    Description = "Accept the auto-detected routing without prompting (use in CI / non-interactive scripts).",
+};
 var initCommand = new Command(
     "init",
     "Initialize outlet.json in the current project. " +
     "Detects the layout (mono vs multi-project), Central Package Management and per-project frameworks, " +
     "then routes item types: in a hexagonal solution contracts go to the Application/Domain project and " +
     "adapters to Infrastructure; otherwise both go to the single project. " +
-    "Will not overwrite an existing outlet.json. Example: outlet init");
-initCommand.SetAction((_, cancellationToken) => RunAsync(async (mediator, token) =>
-{
-    var result = await mediator.ExecuteAsync<InitProjectCommand, InitReport>(
-        new InitProjectCommand(Environment.CurrentDirectory), token);
-
-    return result.Match(
-        onSuccess: report =>
-        {
-            var config = report.Config;
-            var layout = report.IsMultiProject
-                ? $"multi-project ({report.ProjectCount} projects)"
-                : "single project";
-            Console.WriteLine($"Detected: {layout}.");
-            Console.WriteLine(
-                report.UsesCentralPackageManagement
-                    ? $"  Central Package Management: yes ({report.CentralPackagesFilePath})."
-                    : "  Central Package Management: no.");
-
-            Console.WriteLine("Wrote outlet.json:");
-            Console.WriteLine(
-                $"  contract -> {config.Targets.Contract.Project} (namespace {config.Targets.Contract.Namespace})");
-            Console.WriteLine(
-                $"  adapter  -> {config.Targets.Adapter.Project} (namespace {config.Targets.Adapter.Namespace})");
-            if (report.HexagonalRoutingApplied)
-                Console.WriteLine("  hexagonal layout detected — contracts and adapters routed to separate projects.");
-
-            Console.WriteLine();
-            Console.WriteLine("Next: 'outlet list' to browse the catalogue, then 'outlet add email-smtp' to install your first item.");
-            return 0;
-        },
-        onFailure: error =>
-        {
-            Console.Error.WriteLine($"error: {error}");
-            return 1;
-        });
-}, cancellationToken));
+    "In a multi-project solution it prompts to confirm the targets (skip with --yes, or when stdin is not a TTY). " +
+    "Will not overwrite an existing outlet.json. Example: outlet init --yes");
+initCommand.Options.Add(initYesOption);
+initCommand.SetAction((parseResult, cancellationToken) =>
+    RunAsync((mediator, token) => RunInitAsync(mediator, parseResult.GetValue(initYesOption), token), cancellationToken));
 
 // outlet add <item>
 var itemArgument = new Argument<string>("item")
@@ -329,6 +301,112 @@ var exitCode = await rootCommand.Parse(args).InvokeAsync();
 
 await EmitUpdateNoticeIfReady(updateNotice);
 return exitCode;
+
+// Runs `init`. In a multi-project solution with a TTY (and no --yes) it previews the
+// detected layout and prompts to confirm the contract/adapter targets; otherwise it
+// writes straight from the auto-routing heuristic.
+async Task<int> RunInitAsync(IMediator mediator, bool assumeYes, CancellationToken token)
+{
+    var directory = Environment.CurrentDirectory;
+    string? contractChoice = null;
+    string? adapterChoice = null;
+
+    var interactive = !assumeYes && !Console.IsInputRedirected;
+    if (interactive)
+    {
+        var previewResult = await mediator.ExecuteAsync<PreviewInitProjectQuery, InitProjectPreview>(
+            new PreviewInitProjectQuery(directory), token);
+        if (previewResult.IsFailure)
+        {
+            Console.Error.WriteLine($"error: {previewResult.Error}");
+            return 1;
+        }
+
+        var preview = previewResult.Value!;
+        // Only prompt when there is a real choice: multiple projects and no existing config.
+        if (!preview.ConfigExists && preview.IsMultiProject && preview.Projects.Count > 1)
+            (contractChoice, adapterChoice) = PromptForRoutes(preview);
+    }
+
+    var result = await mediator.ExecuteAsync<InitProjectCommand, InitReport>(
+        new InitProjectCommand(directory, contractChoice, adapterChoice), token);
+
+    return result.Match(
+        onSuccess: report =>
+        {
+            PrintInitReport(report);
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
+}
+
+(string Contract, string Adapter) PromptForRoutes(InitProjectPreview preview)
+{
+    Console.WriteLine($"Detected {preview.Projects.Count} projects:");
+    for (var i = 0; i < preview.Projects.Count; i++)
+    {
+        var candidate = preview.Projects[i];
+        var frameworks = candidate.TargetFrameworks.Count > 0
+            ? $"  [{string.Join(", ", candidate.TargetFrameworks)}]"
+            : string.Empty;
+        Console.WriteLine($"  {i + 1}. {candidate.RelativePath}{frameworks}");
+    }
+    Console.WriteLine();
+
+    var contract = PromptForProject("Project hosting the contracts (ports + DTOs)", preview.Projects, preview.ProposedContractProject);
+    var adapter = PromptForProject("Project hosting the adapters (+ NuGet packages)", preview.Projects, preview.ProposedAdapterProject);
+    return (contract, adapter);
+}
+
+string PromptForProject(string label, IReadOnlyList<CandidateProject> projects, string? proposed)
+{
+    var defaultIndex = 0;
+    for (var i = 0; i < projects.Count; i++)
+    {
+        if (string.Equals(projects[i].RelativePath, proposed, StringComparison.OrdinalIgnoreCase))
+        {
+            defaultIndex = i;
+            break;
+        }
+    }
+
+    while (true)
+    {
+        Console.Write($"{label}? [{defaultIndex + 1}] ");
+        var line = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(line))
+            return projects[defaultIndex].RelativePath;
+        if (int.TryParse(line.Trim(), out var choice) && choice >= 1 && choice <= projects.Count)
+            return projects[choice - 1].RelativePath;
+        Console.WriteLine($"  Enter a number between 1 and {projects.Count}, or press Enter for the default.");
+    }
+}
+
+void PrintInitReport(InitReport report)
+{
+    var config = report.Config;
+    var layout = report.IsMultiProject
+        ? $"multi-project ({report.ProjectCount} projects)"
+        : "single project";
+    Console.WriteLine($"Detected: {layout}.");
+    Console.WriteLine(
+        report.UsesCentralPackageManagement
+            ? $"  Central Package Management: yes ({report.CentralPackagesFilePath})."
+            : "  Central Package Management: no.");
+
+    Console.WriteLine("Wrote outlet.json:");
+    Console.WriteLine($"  contract -> {config.Targets.Contract.Project} (namespace {config.Targets.Contract.Namespace})");
+    Console.WriteLine($"  adapter  -> {config.Targets.Adapter.Project} (namespace {config.Targets.Adapter.Namespace})");
+    if (report.HexagonalRoutingApplied)
+        Console.WriteLine("  hexagonal layout detected — contracts and adapters routed to separate projects.");
+
+    Console.WriteLine();
+    Console.WriteLine("Next: 'outlet list' to browse the catalogue, then 'outlet add email-smtp' to install your first item.");
+}
 
 // Kicks off the background check. Returns the notice text (or null) once known.
 // Honours the OUTLET_NO_UPDATE_CHECK opt-out and never throws.

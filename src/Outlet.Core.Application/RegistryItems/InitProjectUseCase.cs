@@ -4,8 +4,16 @@ using Outlet.Kernel.Shared;
 
 namespace Outlet.Core.Application.RegistryItems;
 
-/// <summary>Command: initialize <c>outlet.json</c> for the project at <paramref name="ProjectDirectory"/>.</summary>
-public sealed record InitProjectCommand(string ProjectDirectory);
+/// <summary>
+/// Command: initialize <c>outlet.json</c> for the project at <paramref name="ProjectDirectory"/>.
+/// When <paramref name="ContractProject"/>/<paramref name="AdapterProject"/> are supplied (the
+/// interactive flow), they override the auto-routing — each is a project-relative path as listed
+/// by <see cref="PreviewInitProjectQuery"/>. When null, the hexagonal heuristic decides that side.
+/// </summary>
+public sealed record InitProjectCommand(
+    string ProjectDirectory,
+    string? ContractProject = null,
+    string? AdapterProject = null);
 
 /// <summary>
 /// Outcome of <see cref="InitProjectUseCase"/>: the written config plus the
@@ -29,6 +37,8 @@ public sealed record InitReport(
 public sealed class InitProjectUseCase(IProjectInspector projectInspector, IOutletConfigStore configStore)
     : IUseCase<InitProjectCommand, InitReport>
 {
+    private sealed record RouteResolution(TargetRoute Contract, TargetRoute Adapter, bool Hexagonal);
+
     public async Task<Result<InitReport>> HandleAsync(InitProjectCommand command, CancellationToken cancellationToken = default)
     {
         if (configStore.Exists(command.ProjectDirectory))
@@ -38,8 +48,12 @@ public sealed class InitProjectUseCase(IProjectInspector projectInspector, IOutl
         if (inspection.Projects.Count == 0)
             return Result<InitReport>.Failure($"No .csproj found under '{command.ProjectDirectory}'.");
 
-        var (contract, adapter, hexagonal) = ResolveRoutes(command.ProjectDirectory, inspection.Projects);
-        var config = OutletConfig.Create(contract, adapter);
+        var routes = ResolveRoutes(command, inspection.Projects);
+        if (routes.IsFailure)
+            return Result<InitReport>.Failure(routes.Error!);
+
+        var resolution = routes.Value!;
+        var config = OutletConfig.Create(resolution.Contract, resolution.Adapter);
 
         await configStore.SaveAsync(command.ProjectDirectory, config, cancellationToken);
 
@@ -49,35 +63,38 @@ public sealed class InitProjectUseCase(IProjectInspector projectInspector, IOutl
             inspection.IsMultiProject,
             inspection.UsesCentralPackageManagement,
             inspection.CentralPackagesFilePath,
-            hexagonal);
+            resolution.Hexagonal);
         return Result<InitReport>.Success(report);
     }
 
-    // Hexagonal heuristic (the locked routing rule): contracts land in the
-    // Application (else Domain) project, adapters in Infrastructure. When none of
-    // those projects exist we fall back to the first project for both — the
-    // mono-project default.
-    private static (TargetRoute Contract, TargetRoute Adapter, bool Hexagonal) ResolveRoutes(
-        string projectDirectory, IReadOnlyList<InspectedProject> projects)
+    private static Result<RouteResolution> ResolveRoutes(
+        InitProjectCommand command, IReadOnlyList<InspectedProject> projects)
     {
-        var fallback = projects[0];
+        var (heuristicContract, heuristicAdapter, _) = InitRouting.Resolve(command.ProjectDirectory, projects);
 
-        var contractProject =
-            FindBySuffix(projects, ".Application")
-            ?? FindBySuffix(projects, ".Domain")
-            ?? fallback;
+        var contract = heuristicContract;
+        if (command.ContractProject is not null)
+        {
+            var picked = Pick(command.ProjectDirectory, projects, command.ContractProject);
+            if (picked is null)
+                return Result<RouteResolution>.Failure($"Unknown project '{command.ContractProject}'.");
+            contract = InitRouting.ToRoute(command.ProjectDirectory, picked);
+        }
 
-        var adapterProject = FindBySuffix(projects, ".Infrastructure") ?? fallback;
+        var adapter = heuristicAdapter;
+        if (command.AdapterProject is not null)
+        {
+            var picked = Pick(command.ProjectDirectory, projects, command.AdapterProject);
+            if (picked is null)
+                return Result<RouteResolution>.Failure($"Unknown project '{command.AdapterProject}'.");
+            adapter = InitRouting.ToRoute(command.ProjectDirectory, picked);
+        }
 
-        var contract = ToRoute(projectDirectory, contractProject);
-        var adapter = ToRoute(projectDirectory, adapterProject);
-        return (contract, adapter, !ReferenceEquals(contractProject, adapterProject));
+        var hexagonal = !string.Equals(contract.Project, adapter.Project, StringComparison.OrdinalIgnoreCase);
+        return Result<RouteResolution>.Success(new RouteResolution(contract, adapter, hexagonal));
     }
 
-    private static InspectedProject? FindBySuffix(IReadOnlyList<InspectedProject> projects, string suffix) =>
+    private static InspectedProject? Pick(string projectDirectory, IReadOnlyList<InspectedProject> projects, string relativePath) =>
         projects.FirstOrDefault(p =>
-            Path.GetFileNameWithoutExtension(p.ProjectFilePath).EndsWith(suffix, StringComparison.OrdinalIgnoreCase));
-
-    private static TargetRoute ToRoute(string projectDirectory, InspectedProject project) =>
-        new(Path.GetRelativePath(projectDirectory, project.ProjectFilePath), project.RootNamespace);
+            string.Equals(InitRouting.RelativePath(projectDirectory, p), relativePath, StringComparison.OrdinalIgnoreCase));
 }
