@@ -17,11 +17,18 @@ public sealed record OutletConfig(
     public static OutletConfig CreateDefault(string projectPath, string rootNamespace)
     {
         var route = new TargetRoute(projectPath, rootNamespace);
-        return new OutletConfig(
-            [new RegistryConfig("outlet", "https://registry.outlet.dev/")],
-            new OutletTargets(route, route),
-            []);
+        return Create(route, route);
     }
+
+    /// <summary>
+    /// A fresh config with the default registry and explicit per-type routing —
+    /// lets a hexagonal layout send contracts and adapters to separate projects.
+    /// </summary>
+    public static OutletConfig Create(TargetRoute contract, TargetRoute adapter) =>
+        new(
+            [new RegistryConfig("outlet", "https://registry.outlet.dev/")],
+            new OutletTargets(contract, adapter),
+            []);
 }
 
 /// <summary>A configured registry source (auth is post-MVP and not modelled here yet).</summary>

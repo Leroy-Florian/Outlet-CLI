@@ -21,10 +21,42 @@ public sealed class InitProjectUseCaseTests
         var result = await BuildUseCase().HandleAsync(new InitProjectCommand(ProjectDirectory));
 
         result.IsSuccess.Should().BeTrue(result.Error);
-        var config = result.Value!;
+        var config = result.Value!.Config;
         config.Targets.Adapter.Project.Should().Be(Path.Combine("src", "App", "App.csproj"));
         config.Targets.Adapter.Namespace.Should().Be("Acme.App");
+        config.Targets.Contract.Project.Should().Be(config.Targets.Adapter.Project);
+        result.Value!.HexagonalRoutingApplied.Should().BeFalse();
         _config.Saved.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Should_RouteContractAndAdapterToSeparateProjects_When_HexagonalLayout()
+    {
+        _inspector.WithProject("/repo/src/Acme.Domain/Acme.Domain.csproj", "Acme.Domain", "net10.0");
+        _inspector.WithProject("/repo/src/Acme.Application/Acme.Application.csproj", "Acme.Application", "net10.0");
+        _inspector.WithProject("/repo/src/Acme.Infrastructure/Acme.Infrastructure.csproj", "Acme.Infrastructure", "net10.0");
+        _inspector.WithProject("/repo/src/Acme.Api/Acme.Api.csproj", "Acme.Api", "net10.0");
+
+        var result = await BuildUseCase().HandleAsync(new InitProjectCommand(ProjectDirectory));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        var report = result.Value!;
+        report.HexagonalRoutingApplied.Should().BeTrue();
+        report.Config.Targets.Contract.Project.Should().Be(Path.Combine("src", "Acme.Application", "Acme.Application.csproj"));
+        report.Config.Targets.Adapter.Project.Should().Be(Path.Combine("src", "Acme.Infrastructure", "Acme.Infrastructure.csproj"));
+    }
+
+    [Fact]
+    public async Task Should_FallBackToDomain_When_NoApplicationProject()
+    {
+        _inspector.WithProject("/repo/src/Acme.Domain/Acme.Domain.csproj", "Acme.Domain", "net10.0");
+        _inspector.WithProject("/repo/src/Acme.Infrastructure/Acme.Infrastructure.csproj", "Acme.Infrastructure", "net10.0");
+
+        var result = await BuildUseCase().HandleAsync(new InitProjectCommand(ProjectDirectory));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.Config.Targets.Contract.Project
+            .Should().Be(Path.Combine("src", "Acme.Domain", "Acme.Domain.csproj"));
     }
 
     [Fact]

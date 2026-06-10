@@ -5,7 +5,6 @@ using Outlet.Cli;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Outlet.Core.Application.Cli;
-using Outlet.Core.Application.Configuration;
 using Outlet.Core.Application.RegistryItems;
 using Outlet.Core.Domain.Cli;
 using Outlet.Core.Infrastructure.DependencyInjection;
@@ -53,18 +52,41 @@ var rootCommand = new RootCommand(
     "Exit codes: 0 success · 1 error · 130 cancelled.");
 
 // outlet init
-var initCommand = new Command("init", "Initialize outlet.json in the current project.");
+var initCommand = new Command(
+    "init",
+    "Initialize outlet.json in the current project. " +
+    "Detects the layout (mono vs multi-project), Central Package Management and per-project frameworks, " +
+    "then routes item types: in a hexagonal solution contracts go to the Application/Domain project and " +
+    "adapters to Infrastructure; otherwise both go to the single project. " +
+    "Will not overwrite an existing outlet.json. Example: outlet init");
 initCommand.SetAction((_, cancellationToken) => RunAsync(async (mediator, token) =>
 {
-    var result = await mediator.ExecuteAsync<InitProjectCommand, OutletConfig>(
+    var result = await mediator.ExecuteAsync<InitProjectCommand, InitReport>(
         new InitProjectCommand(Environment.CurrentDirectory), token);
 
     return result.Match(
-        onSuccess: config =>
+        onSuccess: report =>
         {
+            var config = report.Config;
+            var layout = report.IsMultiProject
+                ? $"multi-project ({report.ProjectCount} projects)"
+                : "single project";
+            Console.WriteLine($"Detected: {layout}.");
             Console.WriteLine(
-                $"Initialized outlet.json (target project '{config.Targets.Adapter.Project}', " +
-                $"namespace '{config.Targets.Adapter.Namespace}').");
+                report.UsesCentralPackageManagement
+                    ? $"  Central Package Management: yes ({report.CentralPackagesFilePath})."
+                    : "  Central Package Management: no.");
+
+            Console.WriteLine("Wrote outlet.json:");
+            Console.WriteLine(
+                $"  contract -> {config.Targets.Contract.Project} (namespace {config.Targets.Contract.Namespace})");
+            Console.WriteLine(
+                $"  adapter  -> {config.Targets.Adapter.Project} (namespace {config.Targets.Adapter.Namespace})");
+            if (report.HexagonalRoutingApplied)
+                Console.WriteLine("  hexagonal layout detected — contracts and adapters routed to separate projects.");
+
+            Console.WriteLine();
+            Console.WriteLine("Next: 'outlet list' to browse the catalogue, then 'outlet add email-smtp' to install your first item.");
             return 0;
         },
         onFailure: error =>
