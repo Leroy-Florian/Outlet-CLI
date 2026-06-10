@@ -19,6 +19,9 @@ public sealed class ConfiguredRegistryClient(IRegistrySourceProvider sourceProvi
     public async Task<string> GetFileContentAsync(RegistryItemId id, string filePath, CancellationToken cancellationToken = default)
         => await (await AggregateAsync(cancellationToken)).GetFileContentAsync(id, filePath, cancellationToken);
 
+    public async Task<string?> GetSourceNameAsync(RegistryItemId id, CancellationToken cancellationToken = default)
+        => await (await AggregateAsync(cancellationToken)).GetSourceNameAsync(id, cancellationToken);
+
     private async Task<MultiSourceRegistryClient> AggregateAsync(CancellationToken cancellationToken)
         => new(await sourceProvider.GetSourcesAsync(cancellationToken));
 }

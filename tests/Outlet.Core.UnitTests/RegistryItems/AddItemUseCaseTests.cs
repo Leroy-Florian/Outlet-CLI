@@ -202,6 +202,56 @@ public sealed class AddItemUseCaseTests
         result.Error.Should().Contain("was not found");
     }
 
+    [Fact]
+    public async Task Should_RefuseInstall_When_ItemComesFromUntrustedRegistry()
+    {
+        _config.Seed(OutletConfig.CreateDefault("App.csproj", "MyApp") with
+        {
+            Registries = [new RegistryConfig("thirdparty", "https://third.example/", Trusted: false)],
+        });
+        _registry.SourceName = "thirdparty";
+
+        var result = await BuildUseCase().HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp"));
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("not marked trusted").And.Contain("thirdparty").And.Contain("--yes");
+        _fileSystem.Files.Should().BeEmpty("nothing is written when the registry is untrusted");
+        _config.Saved!.Installed.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Should_InstallWithWarning_When_UntrustedRegistryIsAccepted()
+    {
+        _config.Seed(OutletConfig.CreateDefault("App.csproj", "MyApp") with
+        {
+            Registries = [new RegistryConfig("thirdparty", "https://third.example/", Trusted: false)],
+        });
+        _registry.SourceName = "thirdparty";
+
+        var result = await BuildUseCase().HandleAsync(
+            new AddItemCommand(ProjectDirectory, "email-smtp", AcceptUntrusted: true));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.InstalledItems.Should().Equal("email-abstractions", "email-smtp");
+        result.Value.Warnings.Should().Contain(w => w.Contains("untrusted registry 'thirdparty'"));
+        _fileSystem.Files.Should().ContainKey("/repo/SmtpEmailSender.cs");
+    }
+
+    [Fact]
+    public async Task Should_Install_When_RegistryIsTrusted()
+    {
+        _config.Seed(OutletConfig.CreateDefault("App.csproj", "MyApp") with
+        {
+            Registries = [new RegistryConfig("corp", "https://corp.example/", Trusted: true)],
+        });
+        _registry.SourceName = "corp";
+
+        var result = await BuildUseCase().HandleAsync(new AddItemCommand(ProjectDirectory, "email-smtp"));
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.Warnings.Should().NotContain(w => w.Contains("untrusted"));
+    }
+
     private void SeedRegistry()
     {
         SeedItem("email-abstractions", RegistryItemType.Contract, "IEmailSender.cs", []);

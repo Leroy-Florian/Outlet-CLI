@@ -35,7 +35,7 @@ public sealed class HttpRegistrySourceTests
     private static (HttpRegistrySource Source, StubHttpMessageHandler Handler) Build()
     {
         var handler = new StubHttpMessageHandler();
-        var source = new HttpRegistrySource(new HttpClient(handler), new Uri(BaseUrl));
+        var source = new HttpRegistrySource(new HttpClient(handler), new Uri(BaseUrl), "test");
         return (source, handler);
     }
 

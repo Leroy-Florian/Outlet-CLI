@@ -57,6 +57,13 @@ public sealed class AddItemUseCase(
         var writtenAbsolutePaths = new List<string>();
         var addedReferences = new List<NuGetEditRequest>();
 
+        // Refuse code from a registry the user has not vouched for BEFORE touching the project —
+        // installing it means owning and running third-party code. Accepted installs still warn.
+        var trustRefusal = await EnforceTrustAsync(
+            resolution.Value!, alreadyInstalled, config, command.AcceptUntrusted, warnings, cancellationToken);
+        if (trustRefusal is not null)
+            return Result<InstallationReport>.Failure(trustRefusal);
+
         foreach (var item in resolution.Value!)
         {
             if (alreadyInstalled.Contains(item.Id.Value))
@@ -215,6 +222,65 @@ public sealed class AddItemUseCase(
                     reference.UsesCentralPackageManagement,
                     reference.CentralPackagesFilePath),
                 cancellationToken);
+    }
+
+    /// <summary>
+    /// Returns a refusal message when any to-be-installed item resolves from a registry that is not
+    /// marked trusted and the caller did not accept it; otherwise null (appending a warning per
+    /// accepted untrusted item). Already-installed items are never re-gated.
+    /// </summary>
+    private async Task<string?> EnforceTrustAsync(
+        IReadOnlyList<RegistryItem> items,
+        HashSet<string> alreadyInstalled,
+        OutletConfig config,
+        bool acceptUntrusted,
+        List<string> warnings,
+        CancellationToken cancellationToken)
+    {
+        var registriesByName = new Dictionary<string, RegistryConfig>(StringComparer.Ordinal);
+        foreach (var registry in config.Registries)
+            registriesByName[registry.Name] = registry;
+
+        var untrusted = new List<(string Item, string Registry, string Url)>();
+        foreach (var item in items)
+        {
+            if (alreadyInstalled.Contains(item.Id.Value))
+                continue;
+
+            var sourceName = await registryClient.GetSourceNameAsync(item.Id, cancellationToken);
+            var registry = sourceName is null ? null : registriesByName.GetValueOrDefault(sourceName);
+            if (registry is { Trusted: true })
+                continue;
+
+            untrusted.Add((item.Id.Value, sourceName ?? "(unknown)", registry?.Url ?? ""));
+        }
+
+        if (untrusted.Count == 0)
+            return null;
+
+        if (!acceptUntrusted)
+            return BuildUntrustedRefusal(untrusted);
+
+        foreach (var (itemName, registryName, _) in untrusted)
+            warnings.Add(
+                $"installed '{itemName}' from untrusted registry '{registryName}' — accepted with --yes; " +
+                "review the copied code, you now own and run it.");
+
+        return null;
+    }
+
+    private static string BuildUntrustedRefusal(IReadOnlyList<(string Item, string Registry, string Url)> untrusted)
+    {
+        var lines = untrusted.Select(u => u.Url.Length > 0
+            ? $"  - {u.Item}  (registry '{u.Registry}', {u.Url})"
+            : $"  - {u.Item}  (registry '{u.Registry}')");
+
+        return
+            "refusing to install code from a registry you have not marked trusted:" + Environment.NewLine +
+            string.Join(Environment.NewLine, lines) + Environment.NewLine +
+            "Outlet copies this code into your project — you will own and run it. Review the registry and its code " +
+            "first, then either re-run with '--yes' to install anyway, or trust the registry once with " +
+            "'outlet registry trust <name>'.";
     }
 
     private static string? CheckCompatibility(

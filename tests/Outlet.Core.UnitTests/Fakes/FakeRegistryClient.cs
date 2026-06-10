@@ -12,6 +12,9 @@ public sealed class FakeRegistryClient : IRegistryClient
     private readonly Dictionary<string, RegistryItem> _items = [];
     private readonly Dictionary<(string ItemId, string FilePath), string> _fileContents = [];
 
+    /// <summary>The registry name reported as the provenance of every seeded item (default: the trusted official registry).</summary>
+    public string SourceName { get; set; } = "outlet";
+
     public void Seed(RegistryItem item) => _items[item.Id.Value] = item;
 
     public void SeedFileContent(RegistryItemId id, string filePath, string content)
@@ -27,4 +30,7 @@ public sealed class FakeRegistryClient : IRegistryClient
         => _fileContents.TryGetValue((id.Value, filePath), out var content)
             ? Task.FromResult(content)
             : throw new InvalidOperationException($"No file content seeded for {id}/{filePath}.");
+
+    public Task<string?> GetSourceNameAsync(RegistryItemId id, CancellationToken cancellationToken = default)
+        => Task.FromResult(_items.ContainsKey(id.Value) ? SourceName : null);
 }
