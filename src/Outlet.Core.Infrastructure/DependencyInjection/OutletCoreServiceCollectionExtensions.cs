@@ -43,6 +43,7 @@ public static class OutletCoreServiceCollectionExtensions
             sp.GetRequiredService<HttpClient>(),
             Directory.GetCurrentDirectory()));
         services.AddScoped<IRegistryClient, ConfiguredRegistryClient>();
+        services.AddScoped<IRegistryPublisher, RegistryCatalogPublisher>();
         services.AddScoped<IMsBuildEvaluator, DotnetMsBuildEvaluator>();
         services.AddScoped<IProjectInspector, MsBuildProjectInspector>();
         services.AddScoped<IPackageRestorer, DotnetPackageRestorer>();
