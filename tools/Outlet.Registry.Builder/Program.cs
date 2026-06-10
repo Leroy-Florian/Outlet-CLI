@@ -15,20 +15,7 @@ if (result.IsFailure)
 }
 
 var catalog = result.Value!;
-
-Directory.CreateDirectory(outputDir);
-File.WriteAllText(Path.Combine(outputDir, "registry.json"), catalog.IndexJson);
-
-foreach (var item in catalog.Items)
-{
-    var itemOutput = Path.Combine(outputDir, item.Manifest.Name);
-    foreach (var file in item.Files)
-    {
-        var destination = Path.Combine(itemOutput, file);
-        Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
-        File.Copy(Path.Combine(item.ItemDirectory, file), destination, overwrite: true);
-    }
-}
+RegistryCatalogWriter.Write(catalog, outputDir);
 
 Console.WriteLine($"Generated {catalog.Items.Count} item(s) into '{outputDir}':");
 foreach (var item in catalog.Items)

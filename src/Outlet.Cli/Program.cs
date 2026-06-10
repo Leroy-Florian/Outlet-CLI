@@ -290,6 +290,54 @@ selfUpdateCommand.SetAction((_, cancellationToken) => RunAsync(async (mediator, 
         });
 }, cancellationToken));
 
+// outlet publish [--root <dir>] [--out <dir>] [--dry-run]
+var publishRootOption = new Option<string>("--root")
+{
+    Description = "Registry source tree to publish (the directory holding the *.registry.json items).",
+    DefaultValueFactory = _ => "registry",
+};
+var publishOutOption = new Option<string>("--out")
+{
+    Description = "Directory to write the publishable artifact (index + item files) into.",
+    DefaultValueFactory = _ => Path.Combine("dist", "registry"),
+};
+var publishDryRunOption = new Option<bool>("--dry-run")
+{
+    Description = "Validate the registry and report what would be published, without writing the artifact.",
+};
+var publishCommand = new Command(
+    "publish",
+    "Build the publishable registry artifact (index + files) from a registry source tree — for authoring your own registry.");
+publishCommand.Options.Add(publishRootOption);
+publishCommand.Options.Add(publishOutOption);
+publishCommand.Options.Add(publishDryRunOption);
+publishCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var command = new PublishRegistryCommand(
+        parseResult.GetValue(publishRootOption)!,
+        parseResult.GetValue(publishOutOption)!,
+        DryRun: parseResult.GetValue(publishDryRunOption));
+    var result = await mediator.ExecuteAsync<PublishRegistryCommand, RegistryPublicationReport>(command, token);
+
+    return result.Match(
+        onSuccess: report =>
+        {
+            var prefix = report.DryRun ? "would publish" : "published";
+            Console.WriteLine($"{prefix} {report.Items.Count} item(s)" +
+                (report.DryRun ? "." : $" to '{report.OutputDirectory}'."));
+            foreach (var item in report.Items)
+                Console.WriteLine($"  - {item.Name} ({item.FileCount} file(s))");
+            if (report.DryRun)
+                Console.WriteLine("dry run — nothing written. Re-run without --dry-run to write the artifact.");
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
+}, cancellationToken));
+
 rootCommand.Subcommands.Add(initCommand);
 rootCommand.Subcommands.Add(addCommand);
 rootCommand.Subcommands.Add(removeCommand);
@@ -297,6 +345,7 @@ rootCommand.Subcommands.Add(diffCommand);
 rootCommand.Subcommands.Add(updateCommand);
 rootCommand.Subcommands.Add(selfUpdateCommand);
 rootCommand.Subcommands.Add(listCommand);
+rootCommand.Subcommands.Add(publishCommand);
 
 // Level 2: fire a throttled, best-effort "newer version available" check in the
 // background so it overlaps the command instead of delaying it. We print the notice
