@@ -137,6 +137,8 @@ public static class RegistryItemManifestSerializer
         {
             if (string.IsNullOrWhiteSpace(file.Path) || string.IsNullOrWhiteSpace(file.Target))
                 return Fail("every file must declare a non-empty 'path' and 'target'.");
+            if (file.Hash is { Length: > 0 } hash && !IsSha256Hex(hash))
+                return Fail($"file '{file.Path}' has a 'hash' that is not a 64-char SHA-256 hex string.");
         }
 
         foreach (var dependency in raw.NugetDependencies ?? [])
@@ -159,13 +161,19 @@ public static class RegistryItemManifestSerializer
             [.. raw.TargetFrameworks],
             [.. raw.RegistryDependencies ?? []],
             [.. (raw.NugetDependencies ?? []).Select(d => new ManifestNugetDependency(d.Id!, d.Version!))],
-            [.. raw.Files.Select(f => new ManifestFile(f.Path!, f.Target!))]);
+            [.. raw.Files.Select(f => new ManifestFile(f.Path!, f.Target!, NullIfBlank(f.Hash)))]);
 
         return Result<RegistryItemManifest>.Success(manifest);
     }
 
     private static Result<RegistryItemManifest> Fail(string reason)
         => Result<RegistryItemManifest>.Failure($"Invalid manifest: {reason}");
+
+    private static string? NullIfBlank(string? value)
+        => string.IsNullOrWhiteSpace(value) ? null : value;
+
+    private static bool IsSha256Hex(string value)
+        => value.Length == 64 && value.All(Uri.IsHexDigit);
 
     // Lenient deserialization shape: every member is nullable so a malformed
     // document is reported by Validate() rather than throwing on bind.
@@ -191,6 +199,7 @@ public static class RegistryItemManifestSerializer
     {
         public string? Path { get; init; }
         public string? Target { get; init; }
+        public string? Hash { get; init; }
     }
 
     private sealed class IndexJson

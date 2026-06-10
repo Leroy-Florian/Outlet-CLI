@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Outlet.Core.Application.RegistryItems;
 using Outlet.Core.Infrastructure.Manifests;
 
 namespace Outlet.Core.Infrastructure.UnitTests.Manifests;
@@ -72,6 +73,37 @@ public sealed class RegistryCatalogBuilderTests
 
             result.IsFailure.Should().BeTrue();
             result.Error.Should().Contain("Duplicate item name");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Should_StampEachFileHash_IntoThePublishedIndex()
+    {
+        const string fileContent = "public sealed class Ghost { }\n";
+        var root = CreateTempRegistry(
+            ("email/ghost/ghost.registry.json", """
+                {
+                  "name": "ghost-item",
+                  "type": "outlet:adapter",
+                  "concern": "email",
+                  "targetFrameworks": ["net10.0"],
+                  "files": [{ "path": "Ghost.cs", "target": "adapter" }]
+                }
+                """));
+        WriteFile(root, "email/ghost/Ghost.cs", fileContent);
+
+        try
+        {
+            var result = RegistryCatalogBuilder.Build(root);
+
+            result.IsSuccess.Should().BeTrue(result.Error);
+            var index = RegistryItemManifestSerializer.ParseIndex(result.Value!.IndexJson).Value!;
+            var file = index.Single(m => m.Name == "ghost-item").Files.Single();
+            file.Hash.Should().Be(ContentHash.Of(fileContent));
         }
         finally
         {

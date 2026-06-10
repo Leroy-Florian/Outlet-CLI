@@ -1,3 +1,4 @@
+using Outlet.Core.Application.RegistryItems;
 using Outlet.Kernel.Shared;
 
 namespace Outlet.Core.Infrastructure.Manifests;
@@ -45,15 +46,22 @@ public static class RegistryCatalogBuilder
                 return Result<RegistryCatalog>.Failure($"Duplicate item name '{manifest.Name}'.");
 
             var itemDirectory = Path.GetDirectoryName(manifestFile)!;
+            var hashedFiles = new List<ManifestFile>();
             foreach (var file in manifest.Files)
             {
-                if (!File.Exists(Path.Combine(itemDirectory, file.Path)))
+                var sourcePath = Path.Combine(itemDirectory, file.Path);
+                if (!File.Exists(sourcePath))
                     return Result<RegistryCatalog>.Failure(
                         $"Item '{manifest.Name}' declares file '{file.Path}' that is missing on disk.");
+
+                // Stamp the served content's hash into the PUBLISHED manifest (authors never
+                // hand-write it), so a client can detect a file that no longer matches the index.
+                hashedFiles.Add(file with { Hash = ContentHash.Of(File.ReadAllText(sourcePath)) });
             }
 
-            manifests.Add(manifest);
-            items.Add(new RegistryCatalogItem(manifest, itemDirectory, [.. manifest.Files.Select(f => f.Path)]));
+            var publishedManifest = manifest with { Files = hashedFiles };
+            manifests.Add(publishedManifest);
+            items.Add(new RegistryCatalogItem(publishedManifest, itemDirectory, [.. manifest.Files.Select(f => f.Path)]));
         }
 
         return Result<RegistryCatalog>.Success(

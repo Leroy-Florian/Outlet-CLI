@@ -15,11 +15,13 @@
       "files": [
         {
           "path": "ICacheStore.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "CF2E9A8B8CE9BF4F9B3A49A0D4F347A403695B4EE589CA3273E12269850291CD"
         },
         {
           "path": "CacheEntryOptions.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "6B4EB435A8A527A2ECCE939DE0AD6AA1A994E7F0C59CDB7DDF8C3BBABBA87137"
         }
       ],
       "isContract": true
@@ -46,15 +48,18 @@
       "files": [
         {
           "path": "MemcachedCacheOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "72A6C4D8973629C6C957B0AEDD7E287632A33A1F901C94EBE188D9D6F117B2E1"
         },
         {
           "path": "MemcachedCacheStore.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "DF9BE95483C6D593926A11B2B829D9D7F5A223AE809D33852CE4BD248BE4443E"
         },
         {
           "path": "MemcachedCacheServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "40E7810D7280D1CAD7F064FB58E734990ED3306E296E08B9EC787F586C96A1A4"
         }
       ],
       "isContract": false
@@ -81,15 +86,18 @@
       "files": [
         {
           "path": "InMemoryCacheOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "9D61FB48F793E75613518F6ABD31C0CFC07A7FA3185848304FD87524004E9306"
         },
         {
           "path": "InMemoryCacheStore.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "337C81ADEB171BB995061C8BD403E1442A9602182772805A6523CF0CA451F936"
         },
         {
           "path": "InMemoryCacheServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "9A8CF2DAE4E3355E60290E67D9D28728F2067CCB6990E175A4A5C8F0C052C908"
         }
       ],
       "isContract": false
@@ -116,19 +124,23 @@
       "files": [
         {
           "path": "IRedisCacheStore.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "192F23ECBD695C59978004B1659792893579CE115740BE02FFB0E1C030442557"
         },
         {
           "path": "RedisCacheOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "924AF38FA5CA88B29BA5A78EB382417D0001BEF48B6A01161ABD91BD783CFECF"
         },
         {
           "path": "RedisCacheStore.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "7373DBC2826FC859790E073707254D4403F8D81834BB9136D7D06CC00BEC92B7"
         },
         {
           "path": "RedisCacheServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "B76A5E2230CC02D4E7A126FDD514F8AADD1450D454E1401F710AE5F3D94C8793"
         }
       ],
       "isContract": false
@@ -148,23 +160,28 @@
       "files": [
         {
           "path": "IEmailSender.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "309A19B25B71A2B80E0AED0F661CEEAC39C762834A115A1E3D768EAE5EF99AE2"
         },
         {
           "path": "EmailAddress.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "0CB5A201E9F58B590E38DEFB7C44D8B50AE821CE0C39FC66134FDCDB49A1C2C1"
         },
         {
           "path": "EmailAttachment.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "F5CD8CA683991992DA1A03B7DE3940E667F73D3FBCAD2BA6913F83256DCDD7DB"
         },
         {
           "path": "EmailMessage.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "E96877FAF54E42DAB6B91D42EF1FFB554FEC16C25DB87A3285649ED5EC92CB6C"
         },
         {
           "path": "EmailResult.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "3991209443077EE65C09E1DF5F39C8B7276E0A73BD39E4C813C8507D0481807B"
         }
       ],
       "isContract": true
@@ -191,19 +208,23 @@
       "files": [
         {
           "path": "ISendGridEmailSender.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "F0A5DC92B8E5B6DAA04EBE0B325D371EA9DF58E011D7502C3464ED96410B72B8"
         },
         {
           "path": "SendGridEmailOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "9BB87856015699E62ED921F7BA7D6CFB996B14BEF6AF3FA598080DAB8EB769AA"
         },
         {
           "path": "SendGridEmailSender.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "AD4410606A0BFF6C1B31AE366E83E6F2AD5818D4F82FDDB44AB9547A1ED086FB"
         },
         {
           "path": "SendGridEmailServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "CE01A75CDEEE64D61EB73D7D69B84703CDAA9C39720A0367BB27D0CEEB7B2D3A"
         }
       ],
       "isContract": false
@@ -230,15 +251,18 @@
       "files": [
         {
           "path": "SmtpEmailOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "C5D084D6DF6DE4BF2C8BF0836B4A2987D12C709E98AF15FDE58F0ED990BCB562"
         },
         {
           "path": "SmtpEmailSender.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "37AB50310BA9E02F7990ABA703B61D0C270F0EDA5187A0060BBFA92E6C070332"
         },
         {
           "path": "SmtpEmailServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "2B3DDC530D38C64F524E7A1930466C0B6F9B15F4F5044BB3426EECDCD2797512"
         }
       ],
       "isContract": false
@@ -258,31 +282,38 @@
       "files": [
         {
           "path": "IChatCompletion.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "7D94F108FAB710C3DF7E4210EB2B3BBD286CBDF7E7127664B217D445E3850F9E"
         },
         {
           "path": "ChatRole.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "9C5596F5ADA24E570762DBB6A63E0CE5C2BF67237489F92F4A0C47FD236185E5"
         },
         {
           "path": "ChatMessage.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "8DFB0A9D67E5B938D98F5D91BEF51349192F5624F2A5E51B13E3FB14B6F648BC"
         },
         {
           "path": "ChatRequest.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "927B00C048F2412D8CBFF4AAAF472389DB1BB5E941160A979B5CD92D62F4155C"
         },
         {
           "path": "ChatUsage.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "C0C20407026B7E5D1E23A77C375344A165AC3F9A029F0AC97729A51660FF8329"
         },
         {
           "path": "ChatResult.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "095A7E0242BB39AEDF3E292C795364F3B3219513B799309EEC449D32A4C42AB9"
         },
         {
           "path": "ChatStreamChunk.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "7A6043220E38CA37C2CD5D4253413349379F415EEE6521536EB78A55E338AD18"
         }
       ],
       "isContract": true
@@ -309,15 +340,18 @@
       "files": [
         {
           "path": "AnthropicChatCompletionOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "9EE5B7DF26450D5D7F097A1900854A1212B18136A9CBB8F30B648BEFEF181182"
         },
         {
           "path": "AnthropicChatCompletion.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "130161BA1C7C43A86C0AE2258DB1E19ECC0CEC38E9D68D0FB627F20E0E0FCEA9"
         },
         {
           "path": "AnthropicChatCompletionServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "CA94D89FC4AEB3463EF48711AFD2B82E534F862880E3703C9684E4E66D8EA145"
         }
       ],
       "isContract": false
@@ -344,15 +378,18 @@
       "files": [
         {
           "path": "GoogleChatCompletionOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "88FED3A1C518F08019216CAD4413289272BADE33EFFFE4EC9BF179E9171A766B"
         },
         {
           "path": "GoogleChatCompletion.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "F465DB6D7E634CF1486B2B89F2CE7F283332CAA4C9FB0E65520FC17A4404060C"
         },
         {
           "path": "GoogleChatCompletionServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "406EA05A8CAAAEECAD9E4E316855CBBD1E477E0DC746DA501C8F02E2A8D97AF9"
         }
       ],
       "isContract": false
@@ -379,19 +416,23 @@
       "files": [
         {
           "path": "IOpenAiChatCompletion.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "62A4BA7D061EDA37ACA7F0DEF1AD85277A9ADC2DD780BACC2AC778E28409A1D5"
         },
         {
           "path": "OpenAiChatCompletionOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "9EB486C17089D368EB807BF151710F2D540B9C37C03E22D143268FF6683474D3"
         },
         {
           "path": "OpenAiChatCompletion.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "A6257C71FEF4E27FF2B21FA0BBB040BF6075AAEF77BB07E471BC96393D496796"
         },
         {
           "path": "OpenAiChatCompletionServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "635E976239C1757B5EE6E3A96FCF251D6A540264F6F25B6277606C1B7D5B2800"
         }
       ],
       "isContract": false
@@ -411,19 +452,23 @@
       "files": [
         {
           "path": "IResilienceExecutor.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "733CF8918BC12A5F8AE82C590BDC9EF4397315F608CDE2918D2CFE47AF7442A3"
         },
         {
           "path": "ResilienceBackoff.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "8EE48A297CA42FA5AE96F8F6D1372214626354C0CE068451CADBDD622E0D4764"
         },
         {
           "path": "ResilienceOptions.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "9F8797EE2A38F4244E7A1DE0E5C77181E37DFF4516D5B59F3AE770994FD7E943"
         },
         {
           "path": "ResilienceRejectedException.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "C447CF1E37195BD5EE341E1A27AA28F2BCE077F8EC05BA3E62349A3AA277FD79"
         }
       ],
       "isContract": true
@@ -445,15 +490,18 @@
       "files": [
         {
           "path": "BuiltInCircuitBreaker.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "A27010259A817F5F135832B60505593AB46CA5E7DEF99F2CFFDAF9886B0586B8"
         },
         {
           "path": "BuiltInResilienceExecutor.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "8EB98033BD5AA921B496EE78C00BDF225ABBEBFEC7647C5E0527CB5E3F528822"
         },
         {
           "path": "BuiltInResilienceServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "90F8473C14165C0F0FCA4BD8D8B06003C83335FECD78238791B1F16294656E2B"
         }
       ],
       "isContract": false
@@ -480,11 +528,13 @@
       "files": [
         {
           "path": "MicrosoftResilienceExecutor.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "ED19AF10EC04EBB5A193D63AE74F4F58D2CAA90171ADCC6416EEDD2475F95FB1"
         },
         {
           "path": "MicrosoftResilienceServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "4FB3C1D4072BCCC7D9AEF949C02C27E59CCB8B2D4B5A2645CDCE23EEF5043269"
         }
       ],
       "isContract": false
@@ -511,15 +561,18 @@
       "files": [
         {
           "path": "IPollyResilienceExecutor.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "FC1C3EC574B676EE53CB25902CDA3551F0CC5DC503909C8B9C7D21367F203CC5"
         },
         {
           "path": "PollyResilienceExecutor.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "05721628173FEE2B7D1BDB5992755E47C77FF38348B39FC0DCE0671FF66C6184"
         },
         {
           "path": "PollyResilienceServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "F6DD59DEFBE2556BF5AA0777AA58188A9DF9920490CEA4D6E22CFE7885989175"
         }
       ],
       "isContract": false
@@ -539,15 +592,18 @@
       "files": [
         {
           "path": "ISmsSender.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "1B30E882E6DF3A1DA5E000B812BBE2F9F483E404FE4786D17AA73F7ABA0CD766"
         },
         {
           "path": "SmsMessage.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "4D6DE4B4325A3DC00A62E4C282D19EB7FF080C18B1FE34A39D6AB0E470E57B61"
         },
         {
           "path": "SmsResult.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "F71B6C504346BEEAD9FD546BEAE0983030C66601F4B8DFB43877D7EFD1E50191"
         }
       ],
       "isContract": true
@@ -574,15 +630,18 @@
       "files": [
         {
           "path": "AwsSnsSmsOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "CEB42F59831B04BFDA2FFFC1B72C98D6BE56498DA86281DEC8D2A314BADDEF4D"
         },
         {
           "path": "AwsSnsSmsSender.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "9FD12995403EC18D668B13813310F057745B193D2FF4AF6025245A2A99515878"
         },
         {
           "path": "AwsSnsSmsServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "BD81C0A0B85B366F5F3C07BD1D4D7E626BF2F22614ED05017FD33F95D8921182"
         }
       ],
       "isContract": false
@@ -604,19 +663,23 @@
       "files": [
         {
           "path": "ITwilioSmsSender.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "2AEE32E6207A172B57040700B7877C43F26F63B88F3D774B0A44BC90FD8DCE9E"
         },
         {
           "path": "TwilioSmsOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "520EB639D0595B3D2BDF150B5564B9734D73B7728ED4854FCE841213B516E5B0"
         },
         {
           "path": "TwilioSmsSender.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "9688021BD4F287FEFBF9D20F3CEEDB244856440D020C98E266EE9F7091B7E664"
         },
         {
           "path": "TwilioSmsServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "D1B546361CAEFA24E1B2485EAD74927B899B3712FC879AE9811D07E28CBFAA50"
         }
       ],
       "isContract": false
@@ -638,15 +701,18 @@
       "files": [
         {
           "path": "VonageSmsOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "72AB3835461F4DDFF109195E54373DE75F7D52FB9129A5251A0CE9181326DACC"
         },
         {
           "path": "VonageSmsSender.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "FC595F1A83894EF1DCE5FEEF719FD842D3A07463ACBFBC6D9E56639F115FE6CA"
         },
         {
           "path": "VonageSmsServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "90FCFCB1DAD194CD2C019522C3068BC4C8D702A4F315A2BF001D84D596A2C8EE"
         }
       ],
       "isContract": false
@@ -666,19 +732,23 @@
       "files": [
         {
           "path": "IBlobStorage.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "2748DE1410DE0AD28FCF492CC75FB10FD929566FBB1D91BE678210CDD48EECB1"
         },
         {
           "path": "Blob.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "9AA3B354F4FB876CF3E09A1A7A558E493B8F2ED1A2A471AA448552856E5D2574"
         },
         {
           "path": "BlobInfo.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "5AF0E8C843764579A554EF86CF8E304C636090DA884B51035474F360BA2A8416"
         },
         {
           "path": "PutBlobOptions.cs",
-          "target": "contract"
+          "target": "contract",
+          "hash": "4C401A319D9D4D74A1B02D96BF4B6694FD16A7CEEEF77333575EBB3BA85EC61E"
         }
       ],
       "isContract": true
@@ -705,19 +775,23 @@
       "files": [
         {
           "path": "IAzureBlobStorage.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "46D543BCD813A97AB0A6C5FE483F07AE95D1095141AA3C4B51E8D2E558030855"
         },
         {
           "path": "AzureBlobStorageOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "A9E9C45860A5401FF80787E423C2E013A58DD0BA04C77E5C5C84D4EB6EF4F690"
         },
         {
           "path": "AzureBlobStorage.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "102665B96AB8A61CA3DB0ABB3562772F68038AE4168C9A96FDA67A311C688A48"
         },
         {
           "path": "AzureBlobStorageServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "29C9496B55C53AE2BD3B31B1D061A7152BDDE613B0AC117982610A25C799E9F5"
         }
       ],
       "isContract": false
@@ -739,15 +813,18 @@
       "files": [
         {
           "path": "FileSystemBlobStorageOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "EF9F83EE7A450BD535842FE6D8EA9951F113FA41BD673CAE8AA411791D5394B6"
         },
         {
           "path": "FileSystemBlobStorage.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "D496D75044DB00272C3172A3442D020D1CC3C0645E109B9E5112DD811B2EE8F7"
         },
         {
           "path": "FileSystemBlobStorageServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "7BE53C5FC41618EBFFE6DE8AE70E679B7AE020391641BD69919BA234F23AE350"
         }
       ],
       "isContract": false
@@ -769,15 +846,18 @@
       "files": [
         {
           "path": "InMemoryBlobStorageOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "FABA198C2A4752AAFFABB432AED41680036484EDBDB7C894C9726348029C9E74"
         },
         {
           "path": "InMemoryBlobStorage.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "17A369C3FE4EB9C9F914197FE6730A28946B09C8A1E3A22160696FFBB9230AFD"
         },
         {
           "path": "InMemoryBlobStorageServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "718F28D71B188D2A384C13642AC6C7A5D02E930AFA87EE7A2AA66AD1747C0179"
         }
       ],
       "isContract": false
@@ -804,19 +884,23 @@
       "files": [
         {
           "path": "IS3BlobStorage.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "6C012EE28630C9D2DC83AFE44446656204E4DB8C693E30725281E4A5E72DB616"
         },
         {
           "path": "S3BlobStorageOptions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "227F963C8FD296F9E8F3FE7ABD08902D411A60EBC60DECA194C78CCF5CBB3C9F"
         },
         {
           "path": "S3BlobStorage.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "8E0C0EA31CB68377EC594323F94CE906BE203FC3154422B00738E734382101AC"
         },
         {
           "path": "S3BlobStorageServiceCollectionExtensions.cs",
-          "target": "adapter"
+          "target": "adapter",
+          "hash": "B4EE36882554B9E9A9AF508E057E4F84615D7146312EFAF43B9FA3D33E098814"
         }
       ],
       "isContract": false

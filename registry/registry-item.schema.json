@@ -83,6 +83,11 @@
             "type": "string",
             "description": "Logical routing role, e.g. 'contract' or 'adapter'.",
             "enum": ["contract", "adapter"]
+          },
+          "hash": {
+            "type": "string",
+            "description": "SHA-256 (hex) of the file content. Stamped into the PUBLISHED index by the catalogue builder; authors leave it out of source manifests. The CLI verifies a downloaded file against it to detect corruption or tampering in transit — it does not vouch for an untrusted registry's origin.",
+            "pattern": "^[A-Fa-f0-9]{64}$"
           }
         }
       }
