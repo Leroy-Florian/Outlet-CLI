@@ -24,9 +24,10 @@ jobs:
         run: dotnet build Outlet.slnx -c Release --no-restore
 
       # Lane PR : hermétique, rapide, sans secret. Les tests "Live"
-      # (providers réels) appartiennent à une lane planifiée non bloquante.
+      # (providers réels) appartiennent à une lane planifiée non bloquante ;
+      # les tests "E2E" (CLI réelle bout-en-bout × OS) vivent dans e2e.yml.
       - name: Test
-        run: dotnet test Outlet.slnx -c Release --no-build --filter "Category!=Live"
+        run: dotnet test Outlet.slnx -c Release --no-build --filter "Category!=Live&Category!=E2E"
 
       # Gate de qualité : la barre du CLAUDE.md (>= 90% de lignes sur Domain+Application)
       # est désormais APPLIQUÉE, pas seulement affirmée. Le filtre d'assemblies vit dans

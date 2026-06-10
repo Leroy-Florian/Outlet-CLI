@@ -1,0 +1,16 @@
+<Project>
+
+  <!--
+    Central Package Management ON. Outlet must detect this (ManagePackageVersionsCentrally)
+    and, on `add cache-memory`, append a <PackageVersion> for Microsoft.Extensions.Caching.Memory
+    here while keeping the csproj reference versionless.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
+  </ItemGroup>
+
+</Project>

@@ -23,6 +23,7 @@
     <Project Path="tests/Outlet.Registry.Llm.Tests/Outlet.Registry.Llm.Tests.csproj" />
     <Project Path="tests/Outlet.Registry.Llm.Compat/Outlet.Registry.Llm.Compat.csproj" />
     <Project Path="tests/Outlet.ArchitectureTests/Outlet.ArchitectureTests.csproj" />
+    <Project Path="tests/Outlet.E2E.Tests/Outlet.E2E.Tests.csproj" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/SwapDemo/SwapDemo.csproj" />

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Hexagonal "Infrastructure" layer: the adapter (and its NuGet package) land here.
+    Contract and adapter share the SAME namespace (Acme.Hex) but live in different
+    assemblies — so the adapter sees the port through this project reference, which is
+    exactly what makes multi-project routing compile.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Acme.Hex</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Acme.Hex.Application\Acme.Hex.Application.csproj" />
+  </ItemGroup>
+
+</Project>

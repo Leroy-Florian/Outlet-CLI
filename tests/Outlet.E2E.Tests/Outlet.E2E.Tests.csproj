@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <!-- This suite drives the REAL CLI as a subprocess against on-disk fixtures, so it
+         never runs in the fast PR lane (Category=E2E). Its own gate is e2e.yml. -->
+  </PropertyGroup>
+
+  <!-- Kestrel: serves dist/registry over loopback HTTP so the real CLI fetches items
+       hermetically (no Docker, no public network), identically on Linux/macOS/Windows. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="FluentAssertions" />
+  </ItemGroup>
+
+</Project>

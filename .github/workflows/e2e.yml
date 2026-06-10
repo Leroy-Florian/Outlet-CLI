@@ -1,0 +1,48 @@
+name: E2E — codebase × OS
+
+# Proves the guarantee: whatever the codebase archetype, whatever the OS, the REAL
+# `outlet` CLI installs an adapter and the project then COMPILES and RUNS.
+#
+# This lane drives the published CLI as a subprocess against on-disk fixtures
+# (tests/Fixtures/Codebases) on Linux, macOS and Windows. It runs concurrently with
+# ci.yml, so it does not extend the fast PR lane's critical path. The runtime proof
+# uses the in-memory cache adapter on purpose — no Docker, no network — so "it runs"
+# holds identically on every OS.
+#
+# Placement note: kept blocking on PRs. If the slowest OS leg proves too slow to gate
+# every PR, move the `pull_request` trigger to a `schedule:` (nightly) here — nothing
+# else needs to change.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: '1'
+
+jobs:
+  e2e:
+    name: E2E — ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install the down-level runtimes too (net8.0) so multi-targeted fixtures both
+      # COMPILE and RUN, alongside the current SDK that builds & runs net10.0.
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: E2E (real CLI × fixtures, compile + run)
+        run: dotnet test tests/Outlet.E2E.Tests/Outlet.E2E.Tests.csproj -c Release --filter "Category=E2E"
