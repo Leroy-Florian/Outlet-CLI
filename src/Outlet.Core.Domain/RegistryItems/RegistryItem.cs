@@ -16,6 +16,9 @@ public sealed class RegistryItem : AggregateRoot<RegistryItemId>
     public ConcernName Concern { get; }
     public RegistryItemType Type { get; }
 
+    /// <summary>The item's own semantic version, as published by the registry; see <see cref="ItemVersion"/>.</summary>
+    public ItemVersion Version { get; }
+
     private readonly List<string> _files;
     public IReadOnlyList<string> Files => _files;
 
@@ -34,6 +37,7 @@ public sealed class RegistryItem : AggregateRoot<RegistryItemId>
         RegistryItemId id,
         ConcernName concern,
         RegistryItemType type,
+        ItemVersion version,
         IEnumerable<string> files,
         IEnumerable<RegistryItemId> registryDependencies,
         IEnumerable<PackageDependency> nugetDependencies,
@@ -42,6 +46,7 @@ public sealed class RegistryItem : AggregateRoot<RegistryItemId>
     {
         Concern = concern;
         Type = type;
+        Version = version;
         _files = [.. files];
         _registryDependencies = [.. registryDependencies];
         _nugetDependencies = [.. nugetDependencies];
@@ -55,7 +60,8 @@ public sealed class RegistryItem : AggregateRoot<RegistryItemId>
         IReadOnlyCollection<string> files,
         IReadOnlyCollection<RegistryItemId>? registryDependencies = null,
         IReadOnlyCollection<PackageDependency>? nugetDependencies = null,
-        IReadOnlyCollection<string>? targetFrameworks = null)
+        IReadOnlyCollection<string>? targetFrameworks = null,
+        ItemVersion? version = null)
     {
         if (files.Count == 0)
             return Result<RegistryItem>.Failure($"Registry item '{id}' must ship at least one file.");
@@ -69,6 +75,7 @@ public sealed class RegistryItem : AggregateRoot<RegistryItemId>
             id,
             concern,
             type,
+            version ?? ItemVersion.Default,
             files,
             registryDependencies ?? [],
             nugetDependencies ?? [],

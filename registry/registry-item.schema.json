@@ -5,7 +5,7 @@
   "description": "Explicit, per-item manifest (<item>.registry.json) describing a single installable registry item. The manifest is the source of truth consumed by the Outlet engine; it must never lie about the files it ships.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["name", "type", "concern", "targetFrameworks", "files"],
+  "required": ["name", "version", "type", "concern", "targetFrameworks", "files"],
   "properties": {
     "$schema": {
       "type": "string",
@@ -15,6 +15,11 @@
       "type": "string",
       "description": "Unique item id, lowercase kebab-case (a-z, 0-9, '-'). E.g. 'email-smtp'.",
       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "version": {
+      "type": "string",
+      "description": "Item version, semantic 'major.minor.patch' (e.g. '1.0.0'). Bumped when the shipped code changes; consumed by 'outlet diff'/'update' to announce a registry-side change.",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
     },
     "type": {
       "type": "string",

@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "storage-filesystem",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "storage",
   "description": "Local-filesystem adapter for IBlobStorage — content under a root directory, metadata in a sidecar tree. Zero external dependency.",

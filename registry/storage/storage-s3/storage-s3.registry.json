@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "storage-s3",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "storage",
   "description": "AWS S3 adapter for IBlobStorage (+ provider-specific presigned URLs), backed by AWSSDK.S3.",

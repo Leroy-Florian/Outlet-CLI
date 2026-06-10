@@ -121,7 +121,7 @@ public sealed class AddItemUseCase(
 
             lockEntries.Add(new InstalledItem(
                 item.Id.Value,
-                "0.0.0",
+                item.Version.ToString(),
                 itemFiles,
                 packages,
                 [.. item.RegistryDependencies.Select(dependency => dependency.Value)]));

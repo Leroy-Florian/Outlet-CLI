@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "resilience-microsoft",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "resilience",
   "description": "Microsoft.Extensions.Resilience adapter for IResilienceExecutor (DI-native pipeline registry + telemetry).",

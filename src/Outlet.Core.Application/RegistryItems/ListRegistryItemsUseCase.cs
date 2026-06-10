@@ -26,7 +26,8 @@ public sealed class ListRegistryItemsUseCase(IRegistryClient registryClient)
                 i.Id.Value,
                 i.Concern.Value,
                 i.Type == Domain.RegistryItems.RegistryItemType.Contract ? "outlet:contract" : "outlet:adapter",
-                i.Files.Count)),
+                i.Files.Count,
+                i.Version.ToString())),
         ];
 
         return Result<IReadOnlyList<RegistryItemSummary>>.Success(summaries);

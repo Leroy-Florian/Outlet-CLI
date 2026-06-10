@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "resilience-polly",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "resilience",
   "description": "Polly v8 adapter for IResilienceExecutor (+ provider-specific access to the raw ResiliencePipeline).",

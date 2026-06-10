@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "resilience-builtin",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "resilience",
   "description": "Zero-dependency, hand-written adapter for IResilienceExecutor (retry + timeout + circuit breaker, no provider package).",

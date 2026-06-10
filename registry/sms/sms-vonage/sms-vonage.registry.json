@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "sms-vonage",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "sms",
   "description": "Vonage (Nexmo) adapter for ISmsSender, thin REST over HttpClient.",

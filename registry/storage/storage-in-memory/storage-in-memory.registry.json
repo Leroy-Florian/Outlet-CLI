@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "storage-in-memory",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "storage",
   "description": "In-memory adapter for IBlobStorage — thread-safe, zero external dependency (tests, local dev, ephemeral caches).",

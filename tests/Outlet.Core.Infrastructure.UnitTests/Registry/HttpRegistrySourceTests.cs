@@ -14,6 +14,7 @@ public sealed class HttpRegistrySourceTests
           "items": [
             {
               "name": "email-abstractions",
+              "version": "1.0.0",
               "type": "outlet:contract",
               "concern": "email",
               "targetFrameworks": ["net10.0"],
@@ -21,6 +22,7 @@ public sealed class HttpRegistrySourceTests
             },
             {
               "name": "email-smtp",
+              "version": "1.0.0",
               "type": "outlet:adapter",
               "concern": "email",
               "targetFrameworks": ["net10.0"],

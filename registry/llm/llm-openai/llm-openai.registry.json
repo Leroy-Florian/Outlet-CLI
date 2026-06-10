@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "llm-openai",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "llm",
   "description": "OpenAI adapter for IChatCompletion (+ provider-specific JSON mode), backed by the official OpenAI SDK.",

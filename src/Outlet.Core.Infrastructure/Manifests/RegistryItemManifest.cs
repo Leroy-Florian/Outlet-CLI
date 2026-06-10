@@ -8,6 +8,7 @@ namespace Outlet.Core.Infrastructure.Manifests;
 /// </summary>
 public sealed record RegistryItemManifest(
     string Name,
+    string Version,
     string Type,
     string Concern,
     string? Description,

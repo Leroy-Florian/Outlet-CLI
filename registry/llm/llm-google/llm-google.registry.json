@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "llm-google",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "llm",
   "description": "Google Gemini adapter for IChatCompletion, backed by the Mscc.GenerativeAI client.",

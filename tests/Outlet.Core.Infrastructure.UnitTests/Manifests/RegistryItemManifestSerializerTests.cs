@@ -8,6 +8,7 @@ public sealed class RegistryItemManifestSerializerTests
     private const string ValidAdapterJson = """
         {
           "name": "email-smtp",
+          "version": "1.0.0",
           "type": "outlet:adapter",
           "concern": "email",
           "description": "SMTP adapter for IEmailSender (MailKit).",
@@ -29,6 +30,7 @@ public sealed class RegistryItemManifestSerializerTests
         result.IsSuccess.Should().BeTrue(result.Error);
         var manifest = result.Value!;
         manifest.Name.Should().Be("email-smtp");
+        manifest.Version.Should().Be("1.0.0");
         manifest.Type.Should().Be("outlet:adapter");
         manifest.Concern.Should().Be("email");
         manifest.Description.Should().Be("SMTP adapter for IEmailSender (MailKit).");
@@ -67,6 +69,7 @@ public sealed class RegistryItemManifestSerializerTests
         var json = $$"""
             {
               "name": "email-smtp",
+              "version": "1.0.0",
               "type": "{{type}}",
               "concern": "email",
               "targetFrameworks": ["net10.0"],
@@ -86,6 +89,7 @@ public sealed class RegistryItemManifestSerializerTests
         var json = """
             {
               "name": "email-abstractions",
+              "version": "1.0.0",
               "type": "outlet:contract",
               "concern": "email",
               "targetFrameworks": ["net10.0"],
@@ -105,6 +109,7 @@ public sealed class RegistryItemManifestSerializerTests
         var json = """
             {
               "name": "email-abstractions",
+              "version": "1.0.0",
               "type": "outlet:contract",
               "concern": "email",
               "targetFrameworks": [],
@@ -124,6 +129,7 @@ public sealed class RegistryItemManifestSerializerTests
         var json = """
             {
               "name": "email-abstractions",
+              "version": "1.0.0",
               "type": "outlet:contract",
               "concern": "email",
               "targetFrameworks": ["net10.0"],
@@ -144,6 +150,7 @@ public sealed class RegistryItemManifestSerializerTests
         var json = """
             {
               "name": "email-smtp",
+              "version": "1.0.0",
               "type": "outlet:adapter",
               "concern": "email",
               "targetFrameworks": ["net10.0"],
@@ -156,6 +163,45 @@ public sealed class RegistryItemManifestSerializerTests
 
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Contain("'id' and 'version'");
+    }
+
+    [Fact]
+    public void Should_Fail_When_VersionIsMissing()
+    {
+        var json = """
+            {
+              "name": "email-smtp",
+              "type": "outlet:adapter",
+              "concern": "email",
+              "targetFrameworks": ["net10.0"],
+              "files": [{ "path": "SmtpEmailSender.cs", "target": "adapter" }]
+            }
+            """;
+
+        var result = RegistryItemManifestSerializer.Parse(json);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("'version' is required");
+    }
+
+    [Fact]
+    public void Should_Fail_When_VersionIsNotSemantic()
+    {
+        var json = """
+            {
+              "name": "email-smtp",
+              "version": "1.0",
+              "type": "outlet:adapter",
+              "concern": "email",
+              "targetFrameworks": ["net10.0"],
+              "files": [{ "path": "SmtpEmailSender.cs", "target": "adapter" }]
+            }
+            """;
+
+        var result = RegistryItemManifestSerializer.Parse(json);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("'version' must be");
     }
 
     [Fact]
@@ -192,6 +238,7 @@ public sealed class RegistryItemManifestSerializerTests
     {
         var manifest = new RegistryItemManifest(
             "Email_Smtp",
+            "1.0.0",
             RegistryItemManifest.AdapterType,
             "email",
             null,

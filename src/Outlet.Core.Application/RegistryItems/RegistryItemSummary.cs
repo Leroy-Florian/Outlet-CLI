@@ -8,4 +8,5 @@ public sealed record RegistryItemSummary(
     string Name,
     string Concern,
     string Type,
-    int FileCount);
+    int FileCount,
+    string Version);

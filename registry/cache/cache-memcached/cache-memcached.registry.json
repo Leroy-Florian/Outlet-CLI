@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "cache-memcached",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "cache",
   "description": "Memcached adapter for ICacheStore, backed by EnyimMemcachedCore.",

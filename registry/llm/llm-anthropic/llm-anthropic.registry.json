@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "llm-anthropic",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "llm",
   "description": "Anthropic (Claude) adapter for IChatCompletion, backed by the Anthropic.SDK client.",

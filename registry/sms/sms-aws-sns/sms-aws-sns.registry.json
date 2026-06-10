@@ -1,6 +1,7 @@
 {
   "$schema": "../../registry-item.schema.json",
   "name": "sms-aws-sns",
+  "version": "1.0.0",
   "type": "outlet:adapter",
   "concern": "sms",
   "description": "Amazon SNS adapter for ISmsSender, backed by the AWS SDK.",
