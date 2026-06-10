@@ -61,7 +61,7 @@ public static class OutletConfigSerializer
                 return Fail("each registry must declare a non-empty 'name' and 'url'.");
             if (!Uri.TryCreate(registry.Url, UriKind.Absolute, out _))
                 return Fail($"registry '{registry.Name}' has a non-absolute url '{registry.Url}'.");
-            registries.Add(new RegistryConfig(registry.Name, registry.Url));
+            registries.Add(new RegistryConfig(registry.Name, registry.Url, registry.Trusted ?? false));
         }
 
         var installed = new List<InstalledItem>();
@@ -103,6 +103,10 @@ public static class OutletConfigSerializer
     {
         public string? Name { get; init; }
         public string? Url { get; init; }
+
+        // Absent ⇒ untrusted: a registry is trusted only when it explicitly says so,
+        // so an unknown source can never silently bypass the install gate.
+        public bool? Trusted { get; init; }
     }
 
     private sealed class TargetsJson

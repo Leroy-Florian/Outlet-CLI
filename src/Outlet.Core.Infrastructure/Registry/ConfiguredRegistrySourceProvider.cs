@@ -24,7 +24,7 @@ public sealed class ConfiguredRegistrySourceProvider(
         return
         [
             .. config.Value!.Registries.Select(registry =>
-                (IRegistrySource)new HttpRegistrySource(httpClient, new Uri(registry.Url))),
+                (IRegistrySource)new HttpRegistrySource(httpClient, new Uri(registry.Url), registry.Name)),
         ];
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Outlet.Core.Application.Cli;
 using Outlet.Core.Application.Configuration;
+using Outlet.Core.Application.Registries;
 using Outlet.Core.Application.RegistryItems;
 using Outlet.Core.Domain.Cli;
 using Outlet.Core.Infrastructure.DependencyInjection;
@@ -87,10 +88,15 @@ var dryRunOption = new Option<bool>("--dry-run")
 {
     Description = "Preview the install: print the files and packages that would be written, change nothing.",
 };
+var yesOption = new Option<bool>("--yes", "-y")
+{
+    Description = "Accept installing items from a registry you have not marked trusted (you vouch for the code).",
+};
 var addCommand = new Command("add", "Copy a registry item (and its dependencies) into the project.");
 addCommand.Arguments.Add(itemArgument);
 addCommand.Options.Add(noRestoreOption);
 addCommand.Options.Add(dryRunOption);
+addCommand.Options.Add(yesOption);
 addCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
 {
     var dryRun = parseResult.GetValue(dryRunOption);
@@ -98,7 +104,8 @@ addCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediato
         Environment.CurrentDirectory,
         parseResult.GetValue(itemArgument)!,
         Restore: !parseResult.GetValue(noRestoreOption),
-        DryRun: dryRun);
+        DryRun: dryRun,
+        AcceptUntrusted: parseResult.GetValue(yesOption));
     var result = await mediator.ExecuteAsync<AddItemCommand, InstallationReport>(command, token);
 
     return result.Match(
@@ -290,6 +297,126 @@ selfUpdateCommand.SetAction((_, cancellationToken) => RunAsync(async (mediator, 
         });
 }, cancellationToken));
 
+// outlet registry list
+var registryListCommand = new Command("list", "List the configured registries and whether each is trusted.");
+registryListCommand.SetAction((_, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var result = await mediator.ExecuteAsync<ListRegistriesQuery, IReadOnlyList<RegistrySummary>>(
+        new ListRegistriesQuery(Environment.CurrentDirectory), token);
+
+    return result.Match(
+        onSuccess: registries =>
+        {
+            if (registries.Count == 0)
+            {
+                Console.WriteLine("No registries configured.");
+                return 0;
+            }
+
+            foreach (var registry in registries)
+                Console.WriteLine($"{registry.Name,-20} {(registry.Trusted ? "trusted  " : "untrusted")} {registry.Url}");
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
+}, cancellationToken));
+
+// outlet registry add <name> <url> [--trusted]
+var registryAddNameArgument = new Argument<string>("name") { Description = "Short name for the registry (its key in outlet.json)." };
+var registryAddUrlArgument = new Argument<string>("url") { Description = "Absolute base URL the registry is served from." };
+var registryTrustedOption = new Option<bool>("--trusted")
+{
+    Description = "Mark the registry trusted immediately — only if you already vouch for the code it serves.",
+};
+var registryAddCommand = new Command("add", "Add a registry source (untrusted by default).");
+registryAddCommand.Arguments.Add(registryAddNameArgument);
+registryAddCommand.Arguments.Add(registryAddUrlArgument);
+registryAddCommand.Options.Add(registryTrustedOption);
+registryAddCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var command = new AddRegistryCommand(
+        Environment.CurrentDirectory,
+        parseResult.GetValue(registryAddNameArgument)!,
+        parseResult.GetValue(registryAddUrlArgument)!,
+        parseResult.GetValue(registryTrustedOption));
+    var result = await mediator.ExecuteAsync<AddRegistryCommand, RegistryConfig>(command, token);
+
+    return result.Match(
+        onSuccess: registry =>
+        {
+            Console.WriteLine($"added registry '{registry.Name}' ({registry.Url}).");
+            if (!registry.Trusted)
+                Console.Error.WriteLine(
+                    $"warning: '{registry.Name}' is untrusted — items from it require '--yes' on 'outlet add'. " +
+                    $"Review it, then run 'outlet registry trust {registry.Name}' to vouch for it.");
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
+}, cancellationToken));
+
+// outlet registry remove <name>
+var registryRemoveNameArgument = new Argument<string>("name") { Description = "Configured registry to remove." };
+var registryRemoveCommand = new Command("remove", "Remove a configured registry.");
+registryRemoveCommand.Arguments.Add(registryRemoveNameArgument);
+registryRemoveCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var result = await mediator.ExecuteAsync<RemoveRegistryCommand, RegistryConfig>(
+        new RemoveRegistryCommand(Environment.CurrentDirectory, parseResult.GetValue(registryRemoveNameArgument)!), token);
+
+    return result.Match(
+        onSuccess: registry =>
+        {
+            Console.WriteLine($"removed registry '{registry.Name}'.");
+            return 0;
+        },
+        onFailure: error =>
+        {
+            Console.Error.WriteLine($"error: {error}");
+            return 1;
+        });
+}, cancellationToken));
+
+// outlet registry trust <name> / untrust <name>
+var registryTrustNameArgument = new Argument<string>("name") { Description = "Configured registry to mark trusted." };
+var registryTrustCommand = new Command("trust", "Mark a configured registry as trusted — you vouch for the code it serves.");
+registryTrustCommand.Arguments.Add(registryTrustNameArgument);
+registryTrustCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var result = await mediator.ExecuteAsync<SetRegistryTrustCommand, RegistryConfig>(
+        new SetRegistryTrustCommand(Environment.CurrentDirectory, parseResult.GetValue(registryTrustNameArgument)!, Trusted: true), token);
+
+    return result.Match(
+        onSuccess: registry => { Console.WriteLine($"trusted registry '{registry.Name}'."); return 0; },
+        onFailure: error => { Console.Error.WriteLine($"error: {error}"); return 1; });
+}, cancellationToken));
+
+var registryUntrustNameArgument = new Argument<string>("name") { Description = "Configured registry to mark untrusted." };
+var registryUntrustCommand = new Command("untrust", "Mark a configured registry as untrusted — reinstates the install gate.");
+registryUntrustCommand.Arguments.Add(registryUntrustNameArgument);
+registryUntrustCommand.SetAction((parseResult, cancellationToken) => RunAsync(async (mediator, token) =>
+{
+    var result = await mediator.ExecuteAsync<SetRegistryTrustCommand, RegistryConfig>(
+        new SetRegistryTrustCommand(Environment.CurrentDirectory, parseResult.GetValue(registryUntrustNameArgument)!, Trusted: false), token);
+
+    return result.Match(
+        onSuccess: registry => { Console.WriteLine($"untrusted registry '{registry.Name}'."); return 0; },
+        onFailure: error => { Console.Error.WriteLine($"error: {error}"); return 1; });
+}, cancellationToken));
+
+var registryCommand = new Command("registry", "Manage the registries this project pulls from (list, add, remove, trust).");
+registryCommand.Subcommands.Add(registryListCommand);
+registryCommand.Subcommands.Add(registryAddCommand);
+registryCommand.Subcommands.Add(registryRemoveCommand);
+registryCommand.Subcommands.Add(registryTrustCommand);
+registryCommand.Subcommands.Add(registryUntrustCommand);
+
 rootCommand.Subcommands.Add(initCommand);
 rootCommand.Subcommands.Add(addCommand);
 rootCommand.Subcommands.Add(removeCommand);
@@ -297,6 +424,7 @@ rootCommand.Subcommands.Add(diffCommand);
 rootCommand.Subcommands.Add(updateCommand);
 rootCommand.Subcommands.Add(selfUpdateCommand);
 rootCommand.Subcommands.Add(listCommand);
+rootCommand.Subcommands.Add(registryCommand);
 
 // Level 2: fire a throttled, best-effort "newer version available" check in the
 // background so it overlaps the command instead of delaying it. We print the notice

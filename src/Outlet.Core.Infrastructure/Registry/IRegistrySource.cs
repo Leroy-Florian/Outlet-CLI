@@ -12,6 +12,9 @@ namespace Outlet.Core.Infrastructure.Registry;
 /// </summary>
 public interface IRegistrySource
 {
+    /// <summary>The configured name of this registry (its key in outlet.json), used to report provenance.</summary>
+    string Name { get; }
+
     Task<IReadOnlyList<RegistryItem>> GetItemsAsync(CancellationToken cancellationToken = default);
 
     /// <summary>One item by id, or null when this source does not publish it.</summary>

@@ -16,4 +16,11 @@ public interface IRegistryClient
     Task<RegistryItem?> GetItemAsync(RegistryItemId id, CancellationToken cancellationToken = default);
 
     Task<string> GetFileContentAsync(RegistryItemId id, string filePath, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// The configured name of the registry that serves <paramref name="id"/> (first source wins,
+    /// mirroring resolution), or null when no source provides it. Lets a caller decide whether the
+    /// code about to be copied in comes from a registry the user has marked trusted.
+    /// </summary>
+    Task<string?> GetSourceNameAsync(RegistryItemId id, CancellationToken cancellationToken = default);
 }

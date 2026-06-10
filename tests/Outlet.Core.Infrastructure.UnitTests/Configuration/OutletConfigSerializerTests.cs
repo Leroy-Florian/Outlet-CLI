@@ -85,4 +85,44 @@ public sealed class OutletConfigSerializerTests
         reparsed.Value!.Targets.Contract.Should().Be(reparsed.Value.Targets.Adapter);
         reparsed.Value.Installed.Should().BeEmpty();
     }
+
+    [Fact]
+    public void Should_MarkTheDefaultOfficialRegistryTrusted()
+    {
+        var config = OutletConfig.CreateDefault("src/App/App.csproj", "App");
+
+        config.Registries.Should().ContainSingle().Which.Trusted.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Should_DefaultRegistryToUntrusted_When_TrustedIsAbsent()
+    {
+        var json = """
+            {
+              "registries": [ { "name": "corp", "url": "https://corp.example/" } ],
+              "targets": { "contract": { "project": "A.csproj", "namespace": "A" }, "adapter": { "project": "A.csproj", "namespace": "A" } }
+            }
+            """;
+
+        var result = OutletConfigSerializer.Parse(json);
+
+        result.IsSuccess.Should().BeTrue(result.Error);
+        result.Value!.Registries.Should().ContainSingle().Which.Trusted.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Should_RoundTripTrust_When_RegistryIsTrusted()
+    {
+        var json = """
+            {
+              "registries": [ { "name": "corp", "url": "https://corp.example/", "trusted": true } ],
+              "targets": { "contract": { "project": "A.csproj", "namespace": "A" }, "adapter": { "project": "A.csproj", "namespace": "A" } }
+            }
+            """;
+        var parsed = OutletConfigSerializer.Parse(json).Value!;
+
+        var reparsed = OutletConfigSerializer.Parse(OutletConfigSerializer.Serialize(parsed));
+
+        reparsed.Value!.Registries.Single().Trusted.Should().BeTrue();
+    }
 }

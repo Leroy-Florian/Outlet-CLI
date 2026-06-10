@@ -4,10 +4,12 @@ using Outlet.Core.Infrastructure.Registry;
 namespace Outlet.Core.Infrastructure.UnitTests.Fakes;
 
 /// <summary>Hand-written in-memory <see cref="IRegistrySource"/> for composition tests.</summary>
-public sealed class FakeRegistrySource : IRegistrySource
+public sealed class FakeRegistrySource(string name = "fake") : IRegistrySource
 {
     private readonly Dictionary<string, RegistryItem> _items = [];
     private readonly Dictionary<(string Item, string Path), string> _files = [];
+
+    public string Name => name;
 
     public FakeRegistrySource Add(RegistryItem item)
     {

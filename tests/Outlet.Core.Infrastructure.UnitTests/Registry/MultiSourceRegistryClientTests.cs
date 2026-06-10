@@ -76,6 +76,35 @@ public sealed class MultiSourceRegistryClientTests
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
+    [Fact]
+    public async Task Should_ReportTheOwningSourceName_When_ResolvingProvenance()
+    {
+        var publicSource = new FakeRegistrySource("outlet").Add(Item("email-smtp"));
+        var privateSource = new FakeRegistrySource("corp").Add(Item("email-internal"));
+        var client = new MultiSourceRegistryClient([publicSource, privateSource]);
+
+        (await client.GetSourceNameAsync(RegistryItemId.From("email-internal"))).Should().Be("corp");
+        (await client.GetSourceNameAsync(RegistryItemId.From("email-smtp"))).Should().Be("outlet");
+    }
+
+    [Fact]
+    public async Task Should_ReportFirstSourceName_When_ItemNameCollides()
+    {
+        var primary = new FakeRegistrySource("outlet").Add(Item("email-smtp"));
+        var secondary = new FakeRegistrySource("corp").Add(Item("email-smtp"));
+        var client = new MultiSourceRegistryClient([primary, secondary]);
+
+        (await client.GetSourceNameAsync(RegistryItemId.From("email-smtp"))).Should().Be("outlet");
+    }
+
+    [Fact]
+    public async Task Should_ReturnNullSourceName_When_NoSourceHasTheItem()
+    {
+        var client = new MultiSourceRegistryClient([new FakeRegistrySource("outlet")]);
+
+        (await client.GetSourceNameAsync(RegistryItemId.From("email-smtp"))).Should().BeNull();
+    }
+
     private static RegistryItem Item(string id, string concern = "email")
         => RegistryItem.Create(
             RegistryItemId.From(id),

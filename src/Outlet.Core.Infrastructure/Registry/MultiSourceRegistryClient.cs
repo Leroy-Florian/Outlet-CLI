@@ -47,4 +47,16 @@ public sealed class MultiSourceRegistryClient(IEnumerable<IRegistrySource> sourc
 
         throw new InvalidOperationException($"No configured registry provides item '{id.Value}'.");
     }
+
+    public async Task<string?> GetSourceNameAsync(RegistryItemId id, CancellationToken cancellationToken = default)
+    {
+        foreach (var source in _sources)
+        {
+            var item = await source.GetItemAsync(id, cancellationToken);
+            if (item is not null)
+                return source.Name;
+        }
+
+        return null;
+    }
 }

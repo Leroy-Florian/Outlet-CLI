@@ -12,9 +12,11 @@ namespace Outlet.Core.Infrastructure.Registry;
 /// <c>{baseUri}/{itemName}/{filePath}</c>. JSON parsing stays in the manifest
 /// serializer; this adapter only does transport.
 /// </summary>
-public sealed class HttpRegistrySource(HttpClient httpClient, Uri baseUri) : IRegistrySource
+public sealed class HttpRegistrySource(HttpClient httpClient, Uri baseUri, string name) : IRegistrySource
 {
     private readonly Uri _baseUri = EnsureTrailingSlash(baseUri);
+
+    public string Name => name;
 
     public async Task<IReadOnlyList<RegistryItem>> GetItemsAsync(CancellationToken cancellationToken = default)
     {

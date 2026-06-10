@@ -18,14 +18,20 @@ public sealed record OutletConfig(
     {
         var route = new TargetRoute(projectPath, rootNamespace);
         return new OutletConfig(
-            [new RegistryConfig("outlet", "https://registry.outlet.dev/")],
+            [new RegistryConfig("outlet", "https://registry.outlet.dev/", Trusted: true)],
             new OutletTargets(route, route),
             []);
     }
 }
 
-/// <summary>A configured registry source (auth is post-MVP and not modelled here yet).</summary>
-public sealed record RegistryConfig(string Name, string Url);
+/// <summary>
+/// A configured registry source. <paramref name="Trusted"/> gates installs: Outlet copies a
+/// registry's code into the project for the user to own and run, so an item resolving from an
+/// untrusted registry is refused unless the user explicitly accepts it (the official registry
+/// created by <c>init</c> is trusted; one added by hand or via <c>outlet registry add</c> is not
+/// until the user vouches for it). Auth (tokens/headers) is post-MVP and not modelled here yet.
+/// </summary>
+public sealed record RegistryConfig(string Name, string Url, bool Trusted = false);
 
 /// <summary>Routing of each item type into the user's projects.</summary>
 public sealed record OutletTargets(TargetRoute Contract, TargetRoute Adapter);
